@@ -21,10 +21,13 @@ user_route.use(bodyParser.urlencoded({extended:true}));
 //require userController
 const userController = require("../controllers/userController")
 
+//Home page
+user_route.get('/',userController.loadHome);
+
 //register routes
 user_route.get('/register',userController.loadRegister);
 
+user_route.post('/register',userController.inserUser);
 
-user_route.get('/',userController.loadHome);
 
 module.exports = user_route;

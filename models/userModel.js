@@ -17,14 +17,19 @@ const userSchema =  new mongoose.Schema({
             type:Number,
             require:true
         },
+        is_verified:{
+            type:Boolean,
+            require:true
+        },
         is_admin:{
             type:Number,
             require:true
         },
-        is_verified:{
-            type:Number,
-            default:0
-        },
+        is_blocked:{
+            type:Boolean,
+            require:true
+        }
+        
 
 })
 
