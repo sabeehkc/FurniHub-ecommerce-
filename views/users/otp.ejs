@@ -13,55 +13,83 @@
     </nav><!-- End .breadcrumb-nav -->
 
     <div class="login-page bg-image pt-8 pb-8 pt-md-12 pb-md-12 pt-lg-17 pb-lg-17" style="background-image: url('assets/images/backgrounds/login.jpg')">
-        <div class="container">
-            <div class="form-box" style="background-color: rgba(255, 255, 255, 0.5);">
-                <div class="form-tab">
-                    <h3>OTP Verification</h3>
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-                            <form action="/register" style="color: black;" >
-                                <div class="form-group">
-                                    <label for="otp" style="color: white;">Enter 4-digit OTP</label>
-                                    <input type="text" class="form-control otp-box" id="otp" name="otp" maxlength="4" pattern="\d{4}" title="Please enter a 4-digit OTP" required>
-                                    
-                         
-    
-                                </div><!-- End .form-group -->
-    
-    
-                                <div class="form-footer">
-                                    <button type="submit" class="btn btn-outline-dark-2" >
-    
-                                        <span>VERIFY OTP</span>
-                                        <i class="icon-long-arrow-right"></i>
-                                    </button>
-                                </div><!-- End .form-footer -->
+    <div class="container">
+        <div class="form-box" style="background-color: rgba(255, 255, 255, 0.5);">
+            <div class="form-tab">
+                <h3>OTP Verification</h3>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
+                        <form action="/login" method="post" style="color: black;">
+                            <div class="form-group">
+                                <label for="otp" style="color: black;">Enter 4-digit OTP</label>
+                                <input type="text" class="form-control otp-box" id="otp" name="otp" maxlength="4" pattern="\d{4}" title="Please enter a 4-digit OTP" required>
+                            </div><!-- End .form-group -->
+
+                            <div class="form-footer">
+                                <button type="submit" class="btn btn-outline-dark-2">
+                                    <span>VERIFY OTP</span>
+                                    <i class="icon-long-arrow-right"></i>
+                                </button>
+
                                 <a href="/register" class="btn btn-outline-dark-2">
-                                  <span>GO BACK</span>
-                                  <i class="icon-long-arrow-left"></i>
-                              </a>
-                            </form>
-                            <!-- <div class="form-choice">
-                                <p style="color: white;">If you do not have an account</p>
-                                 Remove the G Register button
-                            </div>End .form-choice -->
-                        </div><!-- .End .tab-pane -->
-                    </div><!-- End .tab-content -->
-                </div><!-- End .form-tab -->
-                <h6 class="text-danger" id="error-message"></h6>
-    
-                <a href="" class="text-white">resend otp <i class="icon-long-arrow-left"></i></a>
-                <div id="countdown"></div>
-            </div><!-- End .form-box -->
-            
-        </div><!-- End .container -->
-    </div><!-- End .login-page section-bg -->
-    </main><!-- End .main -->
-    
+                                    <span>GO BACK</span>
+                                    <i class="icon-long-arrow-left"></i>
+                                </a>
+                            </div><!-- End .form-footer -->
+                        </form>
+                    </div><!-- .End .tab-pane -->
+                </div><!-- End .tab-content -->
+            </div><!-- End .form-tab -->
+            <h6 class="text-danger" id="error-message"></h6>
+            <a href="/resendotp" class="text-dark">Resend OTP <i class="icon-long-arrow-left"></i></a>
+            <div id="countdown" style="color: white;"></div>
+        </div><!-- End .form-box -->
+    </div><!-- End .container -->
+
+</div><!-- End .login-page section-bg -->
+
+    <%- include('../layout/allfooter.ejs') %>
     
     <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
     <%- include('../layout/mobile.ejs') %>
+
+    <script>
+        // Set the duration of the OTP timer in seconds
+        let otpDuration = 120; // 2 minutes
+    
+        // Get the placeholder element where the timer will be displayed
+        const otpTimerElement = document.getElementById('countdown');
+    
+        // Function to update the timer every second
+        function updateTimer() {
+            const minutes = Math.floor(otpDuration / 60);
+            const seconds = otpDuration % 60;
+    
+            // Format the time as MM:SS
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+            // Update the timer element with the formatted time
+            otpTimerElement.textContent = `Time remaining: ${formattedTime}`;
+    
+            // Decrease the remaining time by 1 second
+            otpDuration--;
+    
+            // If the timer reaches 0, stop updating
+            if (otpDuration < 0) {
+                clearInterval(timerInterval);
+                otpTimerElement.textContent = 'Time expired';
+                // Optionally, you can trigger a resend OTP functionality here
+            }
+        }
+    
+        // Call the updateTimer function immediately to display the initial timer value
+        updateTimer();
+    
+        // Update the timer every second
+        const timerInterval = setInterval(updateTimer, 1000);
+    </script>
+    
      <!-- Plugins JS File -->
      <script src="assets/js/jquery.min.js"></script>
      <script src="assets/js/bootstrap.bundle.min.js"></script>

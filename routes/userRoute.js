@@ -18,6 +18,12 @@ user_route.get('/register',userController.loadRegister);
 user_route.post('/register',userController.insertUser);
 
 //Otp
-user_route.post('/otpverification',userController.loadOtp);
+user_route.get('/otpverification',userController.loadOtp);
+user_route.post('/verifyotp',userController.verifyOtp);
+
+
+
+//login routes
+user_route.post('/login',userController.loadlogin);
 
 module.exports = user_route;

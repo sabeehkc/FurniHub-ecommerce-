@@ -1,7 +1,9 @@
-//conect mongodb
+//Dotenv
+const dotenv = require('dotenv').config();
+
+//connect Mongodb Atlas
 const mongoose =  require('mongoose')
-mongoose.connect("mongodb://127.0.0.1:27017/FurniHub")
-// mongoose.connect("mongodb+srv://Sabeeh__kc:saabatlas@cluster0.lzmuqkb.mongodb.net/?retryWrites=true&w=majority")
+mongoose.connect(process.env.MONGO_URL);
 
 //Create an Express application
 const express = require('express')
@@ -14,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true})); 
 
 
-// Serve static files from the 'public' 
+// Serve static files from the 'public'  
 app.use(express.static('public'))
 
 // for no chaching
@@ -28,7 +30,7 @@ app.use(nocache())
 app.use(session({
     secret: uuidv4(),
     resave: false, 
-    saveUninitialized: false, 
+    saveUninitialized: false,  
   }));
 
 
