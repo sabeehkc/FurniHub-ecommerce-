@@ -14,7 +14,7 @@ const securePassword = async (password) => {
 };
 
 // Function to send OTP mail
-const sendOtpMail = async (name, email, otp,user_Id) => {
+const sendOtpMail = async (name, email, otp, user_Id) => {
     try {
         // Your nodemailer configuration...
         const transporter = nodemailer.createTransport({
@@ -37,21 +37,21 @@ const sendOtpMail = async (name, email, otp,user_Id) => {
             <br><p>This code expires after 2 minutes</p>`
         };
 
-        const secureOTP = await securePassword(otp)
-        const newUserOTP = await new Otp({
+        const secureOTP = await securePassword(otp);
+        const newUserOTP = new Otp({
             userId: user_Id,
-            otp:secureOTP,
+            otp: secureOTP,
             createdAt: Date.now(),
             expiresAt: Date.now() + 120000,
-        })
+        });
 
-        await newUserOTP.save()
+        await newUserOTP.save();
 
         const info = await transporter.sendMail(mailOptions);
         console.log("Email has been sent:", info.response);
     } catch (error) {
         console.log("Error sending OTP mail:", error.message);
-        // Handle the error appropriately, maybe by returning false or rethrowing
+        throw new Error("Failed to send OTP");
     }
 };
 
@@ -96,7 +96,7 @@ const insertUser = async (req, res) => {
         if (userData) {
             const otp = generateOTP();
             console.log(otp);
-            await sendOtpMail(req.body['reg-name'], req.body['reg-email'], otp,userData._id);
+            await sendOtpMail(req.body['reg-name'], req.body['reg-email'], otp, userData._id);
             res.redirect('/otpverification');
         } else {
             res.render('register');
@@ -125,11 +125,29 @@ const loadOtp = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
+
+//load login page
+const loadlogin = async (req, res) => {
+    try {
+        res.render('login');
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
 const verifyOtp = async (req, res) => {
     try {
         const otp = req.body.otp;
-        const userId = req.body.userId; 
-        
+        const userId = req.body.userId;
+        console.log(userId);
+
+        // Check if userId and otp are present in the request body
+        if (!userId || !otp) {
+            console.log("Missing userId or otp in request body");
+            return res.status(400).json({ message: "Missing userId or otp in request body" });
+        }
+
         // Find the OTP record for the user from the database
         const otpRecord = await Otp.findOne({ userId: userId }).sort({ createdAt: -1 });
 
@@ -150,10 +168,10 @@ const verifyOtp = async (req, res) => {
             }
             user.verified = true; // Setting user.verified to true
             await user.save();
-            
+
             // Optionally, you can delete the OTP record from the database
             await otpRecord.deleteOne();
-            
+
             console.log("OTP verified successfully for user:", userId);
             // Redirect to login page
             return res.redirect('/login');
@@ -162,22 +180,56 @@ const verifyOtp = async (req, res) => {
             console.log("Invalid OTP or expired for user:", userId);
             return res.status(400).json({ message: "Invalid OTP" });
         }
-        
+
     } catch (error) {
         console.error("Error verifying OTP:", error.message);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
+// verifyLogin 
+const verifyLogin = async (req, res) => {
+    try { 
+        const email = req.body.email;
+        const password = req.body.password;
 
-//load login page
-const loadlogin = async(req,res) => {
-    try {
-        res.render('login')
+        // Check if email and password are provided
+        if (!email || !password) {
+            return res.status(400).render('login', { message: "Email and password are required" });
+        }
+
+        // Find the user by email
+        const userData = await User.findOne({ email: email, is_blocked: false});
+        // console.log(userData);
+
+        // If user not found, render login page with error message
+        if (!userData) {
+            return res.status(400).render('login', { message: "Email or password  is incorrect" });
+        }
+
+        // Compare the password provided with the hashed password in the database
+        const passwordMatch = await bcrypt.compare(password, userData.password);
+        // console.log(password);
+        // console.log(passwordMatch);
+        
+        // If passwords don't match, render login page with error message
+        if (!passwordMatch) {
+            return res.status(400).render('login', { message: "Email or password is incorrect" });
+        }
+
+        // If user is not verified, render login page with error message
+        if (!userData.verified) {
+            return res.status(400).render('login', { message: "Your account is not verified" });
+        }
+
+        // Redirect user to the home page upon successful login
+        res.redirect('/');
+
     } catch (error) {
-        console.log(error.message);
+        console.error("Error verifying login:", error.message);
+        res.status(500).render('login', { message: "Internal Server Error" });
     }
-}
+};
 
 
 
@@ -188,5 +240,6 @@ module.exports = {
     insertUser,
     loadOtp,
     verifyOtp,
-    loadlogin
+    loadlogin,
+    verifyLogin
 };
