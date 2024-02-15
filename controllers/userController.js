@@ -9,7 +9,7 @@ const securePassword = async (password) => {
         const passwordHash = await bcrypt.hash(password, 10);
         return passwordHash;
     } catch (error) {
-        throw new Error(error.message);
+       console.log(error.message);
     }
 };
 
@@ -42,7 +42,7 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
             userId: user_Id,
             otp: secureOTP,
             createdAt: Date.now(),
-            expiresAt: Date.now() + 120000,
+            expiresAt: Date.now() + 120000, //expire after 2 minute
         });
 
         await newUserOTP.save();
@@ -119,7 +119,7 @@ const generateOTP = () => {
 // load OTP verification page
 const loadOtp = async (req, res) => {
     try {
-        res.render('otp');
+        res.render('otp',{message:""});
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -136,54 +136,52 @@ const loadlogin = async (req, res) => {
     }
 };
 
+//OTP verification
 const verifyOtp = async (req, res) => {
     try {
-        const otp = req.body.otp;
-        const userId = req.body.userId;
-        console.log(userId);
+        const checkotp = req.body.otp;
+        const userId = req.session.userId;
+        console.log("Received OTP:", checkotp);
+        console.log("User ID from session:", userId);
 
-        // Check if userId and otp are present in the request body
-        if (!userId || !otp) {
+        // Check if userId and otp are present
+        if (!userId || !checkotp) {
             console.log("Missing userId or otp in request body");
-            return res.status(400).json({ message: "Missing userId or otp in request body" });
+            return res.render('otp', { message: "Please Enter OTP" });
         }
 
-        // Find the OTP record for the user from the database
+        // Find the OTP record for the user
         const otpRecord = await Otp.findOne({ userId: userId }).sort({ createdAt: -1 });
 
         if (!otpRecord) {
-            // No OTP record found for the user
             console.log("No OTP record found for user:", userId);
-            return res.status(400).json({ message: "Invalid OTP" });
+            return res.render('otp', { message: "Invalid OTP, please try again" });
         }
 
-        // Check if the OTP matches
-        if (otp === otpRecord.otp && Date.now() < otpRecord.expiresAt) {
-            // OTP is valid and not expired
-            // Update the user's verified status to true
+        // Check if the OTP matches and is not expired
+        if (checkotp === otpRecord.otp && Date.now() < otpRecord.expiresAt) {
+            // Update user's verified status to true
             const user = await User.findById(userId);
             if (!user) {
                 console.log("User not found:", userId);
                 return res.status(400).json({ message: "Invalid user" });
             }
-            user.verified = true; // Setting user.verified to true
+            user.verified = true;
             await user.save();
 
-            // Optionally, you can delete the OTP record from the database
+            // Optionally, delete the OTP record from the database
             await otpRecord.deleteOne();
 
             console.log("OTP verified successfully for user:", userId);
-            // Redirect to login page
             return res.redirect('/login');
         } else {
-            // Invalid OTP or expired
             console.log("Invalid OTP or expired for user:", userId);
-            return res.status(400).json({ message: "Invalid OTP" });
+            return res.render('login', { message: "OTP expired or Invalid OTP, please try again" });
         }
 
     } catch (error) {
         console.error("Error verifying OTP:", error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };
 

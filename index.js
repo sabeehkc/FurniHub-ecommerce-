@@ -17,7 +17,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 
 
 // Serve static files from the 'public'  
-app.use(express.static('public'))
+const path = require('path');
+app.use(express.static(path.join(__dirname,'public')))
 
 // for no chaching
 const nocache = require('nocache');
@@ -37,6 +38,10 @@ app.use(session({
 // for user route
 const userRoute = require('./routes/userRoute');
 app.use('/',userRoute);
+
+//for Admin route
+const adminRoute = require('./routes/adminRoute');
+app.use('/admin',adminRoute);
 
 const PORT = process.env.PORT || 5001;
 

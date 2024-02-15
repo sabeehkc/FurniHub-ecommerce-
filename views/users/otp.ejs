@@ -24,7 +24,7 @@
                                 <label for="otp" style="color: black;">Enter 4-digit OTP</label>
                                 <input type="text" class="form-control otp-box" id="otp" name="otp" maxlength="4" pattern="\d{4}" title="Please enter a 4-digit OTP" required>
                             </div><!-- End .form-group -->
-
+                            <p style="color: rgb(225, 68, 68);"><%= message %></p>
                             <div class="form-footer">
                                 <button type="submit" class="btn btn-outline-dark-2">
                                     <span>VERIFY OTP</span>
@@ -55,10 +55,8 @@
     <%- include('../layout/mobile.ejs') %>
 
     <script>
-        // Set the duration of the OTP timer in seconds
         let otpDuration = 120; // 2 minutes
     
-        // Get the placeholder element where the timer will be displayed
         const otpTimerElement = document.getElementById('countdown');
     
         // Function to update the timer every second
@@ -79,15 +77,16 @@
             if (otpDuration < 0) {
                 clearInterval(timerInterval);
                 otpTimerElement.textContent = 'Time expired';
-                // Optionally, you can trigger a resend OTP functionality here
+            
             }
         }
     
-        // Call the updateTimer function immediately to display the initial timer value
+        // Call the updateTimer 
         updateTimer();
     
         // Update the timer every second
         const timerInterval = setInterval(updateTimer, 1000);
+
     </script>
     
      <!-- Plugins JS File -->
