@@ -37,13 +37,15 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
             <br><p>This code expires after 2 minutes</p>`
         };
 
-        const secureOTP = await securePassword(otp);
+        // const secureOTP = await securePassword(otp);
         const newUserOTP = new Otp({
             userId: user_Id,
-            otp: secureOTP,
+            otp: otp,
             createdAt: Date.now(),
             expiresAt: Date.now() + 120000, //expire after 2 minute
         });
+
+        
 
         await newUserOTP.save();
 
@@ -140,10 +142,9 @@ const loadlogin = async (req, res) => {
 const verifyOtp = async (req, res) => {
     try {
         const checkotp = req.body.otp;
-        const userId = req.session.userId;
-        console.log("Received OTP:", checkotp);
-        console.log("User ID from session:", userId);
-
+        const a = await Otp.findOne({otp:checkotp})
+        const userId = a.userId
+        
         // Check if userId and otp are present
         if (!userId || !checkotp) {
             console.log("Missing userId or otp in request body");
@@ -229,7 +230,23 @@ const verifyLogin = async (req, res) => {
     }
 };
 
-
+// go back to register page
+const goback = async(req,res) => {
+    try {
+        await Otp.deleteMany({userId:req.session.userId});
+    // Destroy the session
+   
+    if(User.find({userId:req.session.userId,is_verified:false})) 
+    {
+      await User.deleteOne({ _id: req.session.userId});
+    }
+        // Redirect the user to the register page
+        res.redirect('/register');
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 // Exporting functions
 module.exports = {
@@ -239,5 +256,6 @@ module.exports = {
     loadOtp,
     verifyOtp,
     loadlogin,
-    verifyLogin
+    verifyLogin,
+    goback
 };

@@ -9,7 +9,7 @@ const securePassword = async (password) => {
        console.log(error.message);
     }
 };
-
+ 
 //Admin login page
 const loginload = async(req,res) => {
     try {

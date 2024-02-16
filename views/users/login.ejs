@@ -1,5 +1,5 @@
 <%- include('../layout/header.ejs') %>
-<%- include('../layout/allheader.ejs') %>
+<%- include('../layout/navbar.ejs') %>
 
 
 <main class="main">
@@ -17,8 +17,12 @@
         <div class="container">
            
             <div class="form-box" style="background-color: rgb(204, 202, 202);">
+                <div class="text-center">
+                    <h3>Login</h3>
+                    <hr style="border-color: rgb(230, 151, 4);">
+                </div>
+               
                 <form action="/loginverfy" method="post">
-                    <h2 class="text-center mb-4">Sign In</h2>
                    
                     <div class="form-group">
                         <label for="singin-email">Username or Email address *</label>
@@ -38,22 +42,20 @@
             
             %>
     
-                    <div class="form-footer">
-                        <button type="submit" class="btn btn-outline-primary">
-                            <span>LOG IN</span>
-                            <i class="icon-long-arrow-right"></i>
-                        </button>
-    
-                        <!-- <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="signin-remember">
-                            <label class="custom-control-label" for="signin-remember">Remember Me</label>
-                        </div>End .custom-checkbox -->
-    
-                        <div class="mt-1 pl-5">
-                            <a href="#" class="forgot-link">Forgot Your Password?</a>
-                        </div><!-- End .mt-2 -->
+            <div class="form-footer">
+                <button type="submit" class="btn btn-outline-primary">
+                    <span>LOG IN</span>
+                    <i class="icon-long-arrow-right"></i>
+                </button>
+                        <div>
+                            <a style="margin-left: 190px;" href="" class="text-dark">Forgotten Password!</a>
+                        </div>
+                        <div class=" mt-3 " style="margin-left: 100px;">
+                            <p>Don't have an account? <a class="text-white" href="/register">Register</a></p>
+                        </div>
                     </div><!-- End .form-footer -->
                 </form>
+                <hr>
                 <div class="form-choice">
                     <p class="text-center mt-4">or sign in with</p>
                     <div class="row">
@@ -72,6 +74,7 @@
                     </div><!-- End .row -->
                 </div><!-- End .form-choice -->
             </div><!-- End .form-box -->
+       
         </div><!-- End .container -->
     </div><!-- End .login-page section-bg -->
     
