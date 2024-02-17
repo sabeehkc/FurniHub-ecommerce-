@@ -17,4 +17,8 @@ admin_route.post('/loginpost',adminController.Loginverifying);
 //Admin Dashboard
 admin_route.get('/dashboard',adminController.loadDashboard); 
 
+
+//load customer page
+admin_route.get('/customers',adminController.loadCustomer);
+
 module.exports = admin_route;

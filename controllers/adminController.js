@@ -55,10 +55,19 @@ const loadDashboard = async(req,res) => {
     } catch (error) {
         console.log(error.message);
     }
+};
+
+const loadCustomer = async(req,res) => {
+    try {
+        res.render('customer')
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
 module.exports = {
     loginload,
     Loginverifying,
-    loadDashboard
+    loadDashboard,
+    loadCustomer
 }

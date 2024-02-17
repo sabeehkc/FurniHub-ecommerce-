@@ -18,9 +18,8 @@ user_route.post('/register', userController.insertUser);
 // OTP
 user_route.get('/otpverification', userController.loadOtp);
 user_route.post('/verifyotp', userController.verifyOtp);
+user_route.get('/resendotp',userController.resendOtp);
 
-//Go back
-user_route.get('/goback',userController.goback);
 
 // Login routes
 user_route.get('/login', userController.loadlogin);

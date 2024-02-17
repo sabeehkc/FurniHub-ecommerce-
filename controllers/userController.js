@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const Otp = require('../models/otpModel.js');
 
-// Function to hash password
+//  hash password
 const securePassword = async (password) => {
     try {
         const passwordHash = await bcrypt.hash(password, 10);
@@ -23,7 +23,7 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
             secure: false,
             requireTLS: true,
             auth: {
-                user: process.env.EMAIL_USER, // Email 
+                user: process.env.EMAIL_USER, // email 
                 pass: process.env.EMAIL_PASSWORD //email password
             }
         });
@@ -37,7 +37,7 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
             <br><p>This code expires after 2 minutes</p>`
         };
 
-        // const secureOTP = await securePassword(otp);
+        
         const newUserOTP = new Otp({
             userId: user_Id,
             otp: otp,
@@ -51,10 +51,14 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
 
         const info = await transporter.sendMail(mailOptions);
         console.log("Email has been sent:", info.response);
+
     } catch (error) {
+
         console.log("Error sending OTP mail:", error.message);
         throw new Error("Failed to send OTP");
+
     }
+
 };
 
 
@@ -140,12 +144,13 @@ const loadlogin = async (req, res) => {
 
 //OTP verification
 const verifyOtp = async (req, res) => {
+
     try {
         const checkotp = req.body.otp;
-        const a = await Otp.findOne({otp:checkotp})
+        const a = await Otp.findOne({otp:checkotp}) 
         const userId = a.userId
         
-        // Check if userId and otp are present
+        // Check if userId and otp are present 
         if (!userId || !checkotp) {
             console.log("Missing userId or otp in request body");
             return res.render('otp', { message: "Please Enter OTP" });
@@ -165,24 +170,23 @@ const verifyOtp = async (req, res) => {
             const user = await User.findById(userId);
             if (!user) {
                 console.log("User not found:", userId);
-                return res.status(400).json({ message: "Invalid user" });
+                return res.render('otp',{message:"Invalied user"})
             }
             user.verified = true;
             await user.save();
 
-            // Optionally, delete the OTP record from the database
+            //  delete the OTP record from the database
             await otpRecord.deleteOne();
 
             console.log("OTP verified successfully for user:", userId);
             return res.redirect('/login');
         } else {
             console.log("Invalid OTP or expired for user:", userId);
-            return res.render('login', { message: "OTP expired or Invalid OTP, please try again" });
+            return res.render('otp', { message: "OTP expired or Invalid OTP, please try again" });
         }
 
     } catch (error) {
         console.error("Error verifying OTP:", error.message);
-        return res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
@@ -191,34 +195,36 @@ const verifyLogin = async (req, res) => {
     try { 
         const email = req.body.email;
         const password = req.body.password;
+        console.log(email);
+        console.log(password);
 
         // Check if email and password are provided
         if (!email || !password) {
-            return res.status(400).render('login', { message: "Email and password are required" });
+            return res.render('login', { message: "Email and password are required" });
         }
 
         // Find the user by email
         const userData = await User.findOne({ email: email, is_blocked: false});
-        // console.log(userData);
+        console.log(userData);
 
         // If user not found, render login page with error message
         if (!userData) {
-            return res.status(400).render('login', { message: "Email or password  is incorrect" });
+            return res.render('login', { message: "Email or password  is incorrect" });
         }
 
         // Compare the password provided with the hashed password in the database
         const passwordMatch = await bcrypt.compare(password, userData.password);
-        // console.log(password);
-        // console.log(passwordMatch);
+        console.log(password);
+        console.log(passwordMatch);
         
         // If passwords don't match, render login page with error message
         if (!passwordMatch) {
-            return res.status(400).render('login', { message: "Email or password is incorrect" });
+            return res.render('login', { message: "Email or password is incorrect" });
         }
 
         // If user is not verified, render login page with error message
         if (!userData.verified) {
-            return res.status(400).render('login', { message: "Your account is not verified" });
+            return res.render('login', { message: "Your account is not verified" });
         }
 
         // Redirect user to the home page upon successful login
@@ -230,23 +236,46 @@ const verifyLogin = async (req, res) => {
     }
 };
 
-// go back to register page
-const goback = async(req,res) => {
+//Resent OTP
+const resendOtp = async (req, res) => {
     try {
-        await Otp.deleteMany({userId:req.session.userId});
-    // Destroy the session
-   
-    if(User.find({userId:req.session.userId,is_verified:false})) 
-    {
-      await User.deleteOne({ _id: req.session.userId});
-    }
-        // Redirect the user to the register page
-        res.redirect('/register');
-        
+        const myotp = await Otp.findOne();
+        console.log(myotp.userId);
+
+        // Find the user by userId
+        const user = await User.findById(myotp.userId);
+
+        if (!user) {
+            console.log('user not found');
+            return res.render('otp',{message:""});
+            
+        }
+
+        // Generate new OTP
+        const otp = generateOTP();
+        console.log(otp);
+
+        // Update OTP record in the database
+        // const newOtpRecord = new Otp({
+        //     userId: myotp.userId,
+        //     otp: otp,
+        //     createdAt: Date.now(),
+        //     expiresAt: Date.now() + (2 * 60 * 1000), //expire after 2 minutes
+        // });
+
+        await Otp.deleteOne();
+
+        // await newOtpRecord.save();
+
+        // Send OTP mail
+        await sendOtpMail(user.name, user.email, otp, myotp.userId);
+
+        return res.redirect('/otpverification')
     } catch (error) {
-        console.log(error.message);
+        console.error("Error resending OTP:", error.message);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
-}
+};
 
 // Exporting functions
 module.exports = {
@@ -257,5 +286,5 @@ module.exports = {
     verifyOtp,
     loadlogin,
     verifyLogin,
-    goback
+    resendOtp,
 };

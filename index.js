@@ -1,7 +1,7 @@
 //Dotenv
 const dotenv = require('dotenv').config();
 
-//connect Mongodb Atlas
+//connect Mongodb
 const mongoose =  require('mongoose')
 mongoose.connect(process.env.MONGO_URL);
 
