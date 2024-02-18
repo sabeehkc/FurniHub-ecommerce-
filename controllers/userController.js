@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const Otp = require('../models/otpModel.js');
 
-//  hash password
+//-----------------  hash password -----------------//
+
 const securePassword = async (password) => {
     try {
         const passwordHash = await bcrypt.hash(password, 10);
@@ -13,7 +14,8 @@ const securePassword = async (password) => {
     }
 };
 
-// Function to send OTP mail
+//-----------------  send OTP mail -----------------//
+
 const sendOtpMail = async (name, email, otp, user_Id) => {
     try {
         // Your nodemailer configuration...
@@ -62,7 +64,8 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
 };
 
 
-// Function to load home page
+//----------------- load home page -----------------//
+
 const loadHome = async (req, res) => {
     try {
         res.render('home');
@@ -72,7 +75,8 @@ const loadHome = async (req, res) => {
     }
 };
 
-//  load registration page
+//-----------------  load registration page -----------------//
+
 const loadRegister = async (req, res) => {
     try {
         res.render('register');
@@ -82,7 +86,8 @@ const loadRegister = async (req, res) => {
     }
 };
 
-// insert user into the database
+//----------------- insert user into the database -----------------//
+
 const insertUser = async (req, res) => {
     try {
         const hashedPassword = await securePassword(req.body['reg-password']);
@@ -93,7 +98,7 @@ const insertUser = async (req, res) => {
             password: hashedPassword,
             mobile: req.body['reg-mobileno'],
             verified: false,
-            is_Admin: 0,
+            is_admin: 0,
             is_blocked: false
         });
 
@@ -112,7 +117,10 @@ const insertUser = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-// Function to generate OTP
+
+
+//----------------- Function to generate OTP -----------------//
+
 const generateOTP = () => {
     const digits = '0123456789';
     let OTP = '';
@@ -122,7 +130,8 @@ const generateOTP = () => {
     return OTP;
 };
 
-// load OTP verification page
+//----------------- load OTP verification page -----------------//
+
 const loadOtp = async (req, res) => {
     try {
         res.render('otp',{message:""});
@@ -132,7 +141,8 @@ const loadOtp = async (req, res) => {
     }
 };
 
-//load login page
+//----------------- load login page -----------------//
+
 const loadlogin = async (req, res) => {
     try {
         res.render('login');
@@ -142,7 +152,8 @@ const loadlogin = async (req, res) => {
     }
 };
 
-//OTP verification
+//----------------- OTP verification(post) -----------------//
+
 const verifyOtp = async (req, res) => {
 
     try {
@@ -168,7 +179,7 @@ const verifyOtp = async (req, res) => {
         if (checkotp === otpRecord.otp && Date.now() < otpRecord.expiresAt) {
             // Update user's verified status to true
             const user = await User.findById(userId);
-            if (!user) {
+            if (!user) { 
                 console.log("User not found:", userId);
                 return res.render('otp',{message:"Invalied user"})
             }
@@ -190,13 +201,14 @@ const verifyOtp = async (req, res) => {
     }
 };
 
-// verifyLogin 
+//----------------- verifyLogin -----------------//
+
 const verifyLogin = async (req, res) => {
     try { 
         const email = req.body.email;
         const password = req.body.password;
-        console.log(email);
-        console.log(password);
+        // console.log(email);
+        // console.log(password);
 
         // Check if email and password are provided
         if (!email || !password) {
@@ -205,7 +217,7 @@ const verifyLogin = async (req, res) => {
 
         // Find the user by email
         const userData = await User.findOne({ email: email, is_blocked: false});
-        console.log(userData);
+        // console.log(userData);
 
         // If user not found, render login page with error message
         if (!userData) {
@@ -214,8 +226,8 @@ const verifyLogin = async (req, res) => {
 
         // Compare the password provided with the hashed password in the database
         const passwordMatch = await bcrypt.compare(password, userData.password);
-        console.log(password);
-        console.log(passwordMatch);
+        // console.log(password);
+        // console.log(passwordMatch);
         
         // If passwords don't match, render login page with error message
         if (!passwordMatch) {
@@ -236,7 +248,8 @@ const verifyLogin = async (req, res) => {
     }
 };
 
-//Resent OTP
+//----------------- Resent OTP -----------------//
+
 const resendOtp = async (req, res) => {
     try {
         const myotp = await Otp.findOne();

@@ -39,10 +39,10 @@ app.use(session({
 const userRoute = require('./routes/userRoute');
 app.use('/',userRoute);
 
-//for Admin route
+//for Admin route  
 const adminRoute = require('./routes/adminRoute');
 app.use('/admin',adminRoute);
 
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT,()=>{console.log("Server is running")}) 
+app.listen(PORT,()=>{console.log(`Server is running http://localhost:${PORT}`)}) 

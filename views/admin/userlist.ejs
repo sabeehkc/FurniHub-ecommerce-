@@ -1,0 +1,78 @@
+<%- include('./layout/adheader.ejs') %>
+<div class="container-scroller text-center">
+<%- include('./layout/sidenav.ejs') %>
+<table class="table-bordered w-75 ml-4">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% if(users.length > 0){ %>
+            <% for(let i=0; i<users.length; i++){ %>
+                <tr>
+                    <td><%= i+1 %></td>
+                    <td><%= users[i].name %></td>
+                    <td><%= users[i].email %></td>
+                    <td><%= users[i].mobile %></td>
+                    <td>
+                        <button class="block-btn <%= users[i].is_blocked ? 'btn-danger' : 'btn-success' %>" onclick="toggleBlock('<%= users[i].email %>')">
+                            <% if (users[i].is_blocked) { %>                       
+                                Unblock
+                            <% } else { %>
+                                Block
+                            <% } %>
+                        </button>
+                    </td>
+                </tr>
+            <% } %>
+        <% } else { %>
+            <tr>
+                <td colspan="5">Users Not Found</td>
+            </tr>
+        <% } %>
+    </tbody>
+</table><!-- End table -->
+
+</div> <!-- End container-scroller -->
+
+<footer class="footer">
+    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+      <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © FurniHub.com 2024</span>
+      <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
+    </div>
+</footer>
+
+
+<script>
+     function toggleBlock(email) {
+        const url = '/admin/block-user';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data.message);
+            location.reload(); //page reload
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }
+    </script>
+    
+
+<%- include('./layout/adfooter.ejs') %>

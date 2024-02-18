@@ -1,29 +1,31 @@
 const express = require('express');
 const user_route = express();
 
-// Set view engine 
+//----------------- Set view engine -----------------// 
 user_route.set('view engine', 'ejs');
 user_route.set('views', './views/users');
 
-// Require userController
+//----------------- Require userController -----------------//
 const userController = require("../controllers/userController");
 
-// Home page
+//----------------- Home page -----------------//
 user_route.get('/', userController.loadHome);
 
-// Register routes
+//----------------- Register routes -----------------//
 user_route.get('/register', userController.loadRegister);
 user_route.post('/register', userController.insertUser);
 
-// OTP
+
+//----------------- OTP -----------------//
 user_route.get('/otpverification', userController.loadOtp);
 user_route.post('/verifyotp', userController.verifyOtp);
 user_route.get('/resendotp',userController.resendOtp);
 
 
-// Login routes
+//----------------- Login routes -----------------//
 user_route.get('/login', userController.loadlogin);
 user_route.post('/loginverfy',userController.verifyLogin);
 
 
+//----------------- export user route -----------------//
 module.exports = user_route;
