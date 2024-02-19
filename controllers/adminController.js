@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const Category = require("../models/categoryModel")
 const bcrypt = require('bcrypt');
 
 const securePassword = async (password) => {
@@ -73,12 +74,12 @@ const loadCustomer = async(req,res) => {
 };
 
 
-//-----------------  block user -----------------//
+//-----------------  block and unblock user -----------------//
 
 const blockUser = async (req, res) => {
     try {
         const { email } = req.body;
-        console.log(email,"blocked");
+        console.log(email);
 
         const user = await User.findOne({ email });
         console.log(user);
@@ -95,15 +96,111 @@ const blockUser = async (req, res) => {
         
         await user.save();
 
-        res.redirect('userlist');
-
+        res.json({success:true})
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+//-----------------  load category page -----------------//
+
+const loadCategory = async (req, res) => {
+    try {
+        const categories = await Category.find();
+        res.render('category', { categories });
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+//-----------------  load Addcategory page -----------------//
+
+const loadAddCategory = async (req, res) => {
+    try {
+        res.render('addcategory');
+    } catch (error) {
+        console.log(error.message);
     }
 };
 
 
+//-----------------  Addcategory (post) -----------------//
+
+const addCategory = async (req, res) => {
+    try {
+        const { name, description } = req.body;
+
+        const category = new Category({ name, description }); 
+
+        await category.save();
+
+        res.redirect('/admin/category');
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+//----------------- Load EditCategory page -----------------//
+
+const LoadEditCategory = async (req, res) => { 
+    try {
+        const id = req.params.id;
+        
+        const catData = await Category.findById(id); 
+        
+        if(catData) {
+            res.render('editcategory',{category:catData});
+        } else {
+            res.redirect('/admin/category');
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+//-----------------  EditCategory (post) -----------------//
+
+const editCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.id; 
+        const { name, description } = req.body;
+
+    
+        const category = await Category.findById(categoryId);
+
+        if (!category) {
+            return res.status(404).send('Category not found');
+        }
+
+        category.name = name;
+        category.description = description;
+
+        await category.save();
+
+        res.redirect('/admin/category');
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+
+//-----------------  Delete category -----------------//
+
+const deleteCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+
+        
+        await Category.findByIdAndDelete(categoryId);
+
+        res.redirect('/admin/category');
+    } catch (error) {
+        console.log(error.message);
+       
+    }
+};
 
 module.exports = {
     loginload,
@@ -111,5 +208,11 @@ module.exports = {
     loadDashboard,
     loadCustomer,
     blockUser, 
-    
+    loadCategory,
+    loadAddCategory,
+    addCategory,
+    LoadEditCategory,
+    editCategory,
+    deleteCategory
+
 }

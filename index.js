@@ -20,14 +20,14 @@ app.use(bodyParser.urlencoded({extended:true}));
 const path = require('path');
 app.use(express.static(path.join(__dirname,'public')))
 
-// for no chaching
+// for nocache
 const nocache = require('nocache');
 
 
 //session
 const session = require('express-session');
 const{v4:uuidv4}= require('uuid')
-app.use(nocache())
+app.use(nocache()) //nocache
 app.use(session({
     secret: uuidv4(),
     resave: false, 

@@ -159,6 +159,10 @@ const verifyOtp = async (req, res) => {
     try {
         const checkotp = req.body.otp;
         const a = await Otp.findOne({otp:checkotp}) 
+        if(!a){
+            console.log('incorect Otp')
+            return  res.render('otp',{message: "incorrect OTP"});
+        }
         const userId = a.userId
         
         // Check if userId and otp are present 
@@ -175,7 +179,7 @@ const verifyOtp = async (req, res) => {
             return res.render('otp', { message: "Invalid OTP, please try again" });
         }
 
-        // Check if the OTP matches and is not expired
+        // Check OTP matches and is not expired
         if (checkotp === otpRecord.otp && Date.now() < otpRecord.expiresAt) {
             // Update user's verified status to true
             const user = await User.findById(userId);
@@ -201,46 +205,46 @@ const verifyOtp = async (req, res) => {
     }
 };
 
+
+const backRegister = async (req,res) => {
+    try {
+        await User.deleteOne({ verified: false });
+        res.redirect('/register');
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 //----------------- verifyLogin -----------------//
 
 const verifyLogin = async (req, res) => {
     try { 
         const email = req.body.email;
         const password = req.body.password;
-        // console.log(email);
-        // console.log(password);
 
-        // Check if email and password are provided
         if (!email || !password) {
             return res.render('login', { message: "Email and password are required" });
         }
 
-        // Find the user by email
         const userData = await User.findOne({ email: email, is_blocked: false});
-        // console.log(userData);
-
-        // If user not found, render login page with error message
+        
         if (!userData) {
             return res.render('login', { message: "Email or password  is incorrect" });
         }
 
-        // Compare the password provided with the hashed password in the database
         const passwordMatch = await bcrypt.compare(password, userData.password);
-        // console.log(password);
-        // console.log(passwordMatch);
-        
-        // If passwords don't match, render login page with error message
+       
         if (!passwordMatch) {
             return res.render('login', { message: "Email or password is incorrect" });
         }
 
-        // If user is not verified, render login page with error message
         if (!userData.verified) {
-            return res.render('login', { message: "Your account is not verified" });
+            return res.render('login', { message: "Your account is not verified " });
         }
 
-        // Redirect user to the home page upon successful login
+       
         res.redirect('/');
+       
 
     } catch (error) {
         console.error("Error verifying login:", error.message);
@@ -268,17 +272,7 @@ const resendOtp = async (req, res) => {
         const otp = generateOTP();
         console.log(otp);
 
-        // Update OTP record in the database
-        // const newOtpRecord = new Otp({
-        //     userId: myotp.userId,
-        //     otp: otp,
-        //     createdAt: Date.now(),
-        //     expiresAt: Date.now() + (2 * 60 * 1000), //expire after 2 minutes
-        // });
-
         await Otp.deleteOne();
-
-        // await newOtpRecord.save();
 
         // Send OTP mail
         await sendOtpMail(user.name, user.email, otp, myotp.userId);
@@ -290,6 +284,15 @@ const resendOtp = async (req, res) => {
     }
 };
 
+// const loadAllProduct = async (req,res) => {
+//     try {
+        
+//         res.render('allproducts')
+//     } catch (error) {
+//         console.log(error.message);
+//     }
+// }
+ 
 // Exporting functions
 module.exports = {
     loadHome,
@@ -300,4 +303,6 @@ module.exports = {
     loadlogin,
     verifyLogin,
     resendOtp,
+    backRegister,
+    // loadAllProduct
 };

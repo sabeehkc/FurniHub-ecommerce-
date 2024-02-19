@@ -1,7 +1,12 @@
 <%- include('./layout/adheader.ejs') %>
 <div class="container-scroller text-center">
 <%- include('./layout/sidenav.ejs') %>
-<table class="table-bordered w-75 ml-4">
+<div class="container-fluid page-body-wrapper">
+<%- include('./layout/topnav.ejs') %>
+
+
+<div class="w-100 container-fluid bg-dark mt-5">
+<table class="table-bordered w-100 mt-4 h-75">
     <thead>
         <tr>
             <th>No</th>
@@ -37,8 +42,10 @@
         <% } %>
     </tbody>
 </table><!-- End table -->
+</div>
 
-</div> <!-- End container-scroller -->
+</div> <!-- End container-fluid page-body-wrapper-->
+</div><!-- End container-scroller -->
 
 <footer class="footer">
     <div class="d-sm-flex justify-content-center justify-content-sm-between">
@@ -73,6 +80,7 @@
         });
     }
     </script>
-    
-
+  
+  
+  
 <%- include('./layout/adfooter.ejs') %>

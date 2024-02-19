@@ -1,0 +1,34 @@
+<%- include('./layout/adheader.ejs') %>
+<div class="container-scroller text-center">
+ <%- include('./layout/sidenav.ejs') %>
+ <div class="container-fluid page-body-wrapper">
+ <%- include('./layout/topnav.ejs') %>
+
+ <div class="w-100 container-fluid bg-dark mt-5">
+
+<!-- Add Category Form -->
+<div class="container mt-5">
+    <h2>Add Category</h2>
+    <form action="/admin/category/add" method="POST">
+        <div class="form-group">
+            <label for="name">Category Name</label>
+            <input type="text" name="name" id="name" class="form-control" placeholder="Category Name" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Category Description</label>
+            <textarea name="description" id="description" class="form-control" rows="3" placeholder="Category Description" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Category</button>
+
+
+        <a href="/admin/category"  class="btn btn-primary">Back</a>
+    </form>
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<%- include('./layout/adfooter.ejs') %>

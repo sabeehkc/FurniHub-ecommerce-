@@ -21,11 +21,14 @@ user_route.get('/otpverification', userController.loadOtp);
 user_route.post('/verifyotp', userController.verifyOtp);
 user_route.get('/resendotp',userController.resendOtp);
 
+user_route.get('/back-register',userController.backRegister);
 
 //----------------- Login routes -----------------//
 user_route.get('/login', userController.loadlogin);
 user_route.post('/loginverfy',userController.verifyLogin);
 
+
+// user_route.get('/allproducts',userController.loadAllProduct); 
 
 //----------------- export user route -----------------//
 module.exports = user_route;

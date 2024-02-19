@@ -1,0 +1,58 @@
+<%- include('./layout/adheader.ejs') %>
+<div class="container-scroller text-center">
+ <%- include('./layout/sidenav.ejs') %>
+ <div class="container-fluid page-body-wrapper">
+ <%- include('./layout/topnav.ejs') %>
+
+ <div class="w-100 container-fluid bg-dark mt-5">
+
+ <!-- Category List -->
+ <div class="container mt-5">
+    <h2>Product Categories</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% categories.forEach(category => { %>
+                <tr>
+                    <td><%= category.name %></td>
+                    <td>
+                        <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/category/edit/<%= category._id %>">Edit</a></button>
+
+                    
+                        <form id="deleteForm_<%= category._id %>" action="/admin/category/delete/<%= category._id %>?_method=DELETE" method="POST" style="display: inline;">
+                            <button type="button" class="btn btn-danger" onclick="deleteCategory('<%= category._id %>')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+
+ <!-- Add New Category Button -->
+ <div class="container mt-3">
+    <a href="/admin/category/add" class="btn btn-primary">Add New Category</a>
+ </div>
+
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+    function deleteCategory(categoryId) {
+        if (confirm("Are you sure you want to delete this category?")) {
+            document.getElementById("deleteForm_" + categoryId).submit();
+        }
+    }
+</script>
+
+<%- include('./layout/adfooter.ejs') %>
