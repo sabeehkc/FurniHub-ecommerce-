@@ -30,5 +30,9 @@ user_route.post('/loginverfy',userController.verifyLogin);
 
 // user_route.get('/allproducts',userController.loadAllProduct); 
 
+//----------------- Logout -----------------//
+user_route.get('/logout',userController.logOut);
+
+
 //----------------- export user route -----------------//
 module.exports = user_route;

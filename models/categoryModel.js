@@ -20,6 +20,6 @@ const categorySchema = mongoose.Schema({
         default: false
     }
 
-})
+});
 
 module.exports = mongoose.model('category',categorySchema);

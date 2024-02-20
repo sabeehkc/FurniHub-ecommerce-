@@ -68,7 +68,8 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
 
 const loadHome = async (req, res) => {
     try {
-        res.render('home');
+        const userName = req.session.user ? req.session.user.name : null;
+        res.render('home',{userName : userName});
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -103,6 +104,7 @@ const insertUser = async (req, res) => {
         });
 
         const userData = await user.save();
+        req.session.user = userData; 
 
         if (userData) {
             const otp = generateOTP();
@@ -243,7 +245,10 @@ const verifyLogin = async (req, res) => {
         }
 
        
-        res.redirect('/');
+        req.session.user = userData;
+        req.session.save(() => {
+            res.redirect('/');
+        });
        
 
     } catch (error) {
@@ -284,6 +289,21 @@ const resendOtp = async (req, res) => {
     }
 };
 
+
+const logOut = async (req,res) => {
+    try {
+        req.session.destroy((err) => {
+            if(err){
+                console.error("Error destroying session:", err);
+            }
+        })
+
+        res.redirect('/')
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
 // const loadAllProduct = async (req,res) => {
 //     try {
         
@@ -304,5 +324,6 @@ module.exports = {
     verifyLogin,
     resendOtp,
     backRegister,
+    logOut
     // loadAllProduct
 };

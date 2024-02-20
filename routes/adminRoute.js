@@ -39,5 +39,9 @@ admin_route.post('/category/edit/:id', adminController.editCategory);
 //----------------- Delete Categories -----------------//
 admin_route.post('/category/delete/:id', adminController.deleteCategory);
 
+
+
+admin_route.get('/products',adminController.loadProducts);
+
 //----------------- export admin route -----------------//
 module.exports = admin_route;

@@ -36,16 +36,16 @@ const Loginverifying = async(req,res) => {
             console.log(passwordMatch);
             if(passwordMatch){
                 if(userData.is_admin === 0 ){
-                    res.render('login',{message:"Email and Password is incorrect"});
+                    res.render('login',{message:"Your not Admin"});
                 }else{
                     req.session.user_id = userData._id; //user Id assign session
                     res.redirect('/admin/dashboard');
                 }
             }else{
-                res.render('login',{message:"Email and Password is incorrect"});
+                res.render('login',{message:"Email or Password is incorrect"});
             }
         }else{
-            res.render('login',{message:"Email and Password is incorrect"});
+            res.render('login',{message:"Email or Password is incorrect"});
         }
     } catch (error) {
         console.log(error.message);
@@ -202,6 +202,15 @@ const deleteCategory = async (req, res) => {
     }
 };
 
+
+const loadProducts = async(req,res) => {
+    try {
+        res.render('product');
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 module.exports = {
     loginload,
     Loginverifying,
@@ -213,6 +222,7 @@ module.exports = {
     addCategory,
     LoadEditCategory,
     editCategory,
-    deleteCategory
+    deleteCategory,
+    loadProducts
 
 }
