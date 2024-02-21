@@ -14,10 +14,6 @@ const categorySchema = mongoose.Schema({
         type: String,
         enum: ['active', 'blocked'],
         default: 'active'
-    },
-    deleted: {
-        type: Boolean,
-        default: false
     }
 
 });

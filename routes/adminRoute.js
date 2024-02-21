@@ -9,6 +9,24 @@ admin_route.set('views','./views/admin');
 //----------------- Require adminController -----------------//
 const adminController = require("../controllers/adminController");
 
+//----------------- Require productController -----------------//
+const productController = require("../controllers/productController");
+
+const multer =require('multer');
+const path = require("path");
+
+const storage = multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null,path.join(__dirname, '../public/product_images'));
+    },
+    filename:function(req,file,cb){
+        const name = Date.now()+'-'+file.originalname;
+        cb(null,name);
+    }
+});
+
+const upload = multer({storage:storage});
+
 
 //----------------- load admin login page -----------------//
 admin_route.get('/',adminController.loginload);
@@ -36,12 +54,15 @@ admin_route.post('/category/add', adminController.addCategory);
 admin_route.get('/category/edit/:id', adminController.LoadEditCategory);
 admin_route.post('/category/edit/:id', adminController.editCategory);
 
-//----------------- Delete Categories -----------------//
-admin_route.post('/category/delete/:id', adminController.deleteCategory);
+//-----------------  Categories  active and blocked -----------------//
+admin_route.post('/category/toggle/:id', adminController.toggleCategoryStatus);
 
 
+//-----------------  load Product page  -----------------//   
+admin_route.get('/products',productController.loadProducts);
 
-admin_route.get('/products',adminController.loadProducts);
+admin_route.get('/products/add',productController.loadAddProducts);
+admin_route.post('/product/addpost',upload.single('images'),productController.addProduct)
 
 //----------------- export admin route -----------------//
 module.exports = admin_route;

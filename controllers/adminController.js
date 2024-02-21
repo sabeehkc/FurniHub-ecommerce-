@@ -84,7 +84,8 @@ const blockUser = async (req, res) => {
         const user = await User.findOne({ email });
         console.log(user);
         if (!user) {
-            return res.render('userlist');
+            res.render('userlist');
+            alert("user not found");
         }
         if(user.is_blocked == false){
             user.is_blocked = true
@@ -170,7 +171,7 @@ const editCategory = async (req, res) => {
         const category = await Category.findById(categoryId);
 
         if (!category) {
-            return res.status(404).send('Category not found');
+            console.log('Category not found');
         }
 
         category.name = name;
@@ -181,35 +182,32 @@ const editCategory = async (req, res) => {
         res.redirect('/admin/category');
     } catch (error) {
         console.log(error.message);
-        res.status(500).send('Internal Server Error');
     }
 };
 
 
-//-----------------  Delete category -----------------//
+//-----------------  active and block category -----------------//
 
-const deleteCategory = async (req, res) => {
+const toggleCategoryStatus = async (req, res) => {
     try {
         const categoryId = req.params.id;
+        const category = await Category.findById(categoryId);
+
+        if (!category) {
+            console.log('Category not found');
+        }
 
         
-        await Category.findByIdAndDelete(categoryId);
+        category.status = category.status === 'active' ? 'blocked' : 'active';
+
+        await category.save();
 
         res.redirect('/admin/category');
     } catch (error) {
         console.log(error.message);
-       
     }
 };
 
-
-const loadProducts = async(req,res) => {
-    try {
-        res.render('product');
-    } catch (error) {
-        console.log(error.message);
-    }
-}
 
 module.exports = {
     loginload,
@@ -222,7 +220,5 @@ module.exports = {
     addCategory,
     LoadEditCategory,
     editCategory,
-    deleteCategory,
-    loadProducts
-
+    toggleCategoryStatus,
 }
