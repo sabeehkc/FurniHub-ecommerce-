@@ -1,13 +1,13 @@
 <%- include('./layout/adheader.ejs') %>
 <div class="container-scroller">
-    <%- include('./layout/sidenav.ejs') %>
-    <div class="container-fluid page-body-wrapper">
-        <%- include('./layout/topnav.ejs') %>
+<%- include('./layout/sidenav.ejs') %>
+<div class="container-fluid page-body-wrapper">
+<%- include('./layout/topnav.ejs') %>
 
         <div class="container mt-5">
             <div class="w-100 container-fluid bg-dark mt-4">
                 <h2 class="text-center text-white mt-3 mb-4">Add Product</h2>
-                <form action="/admin/product/addpost" method="POST" enctype="multipart/form-data">
+                <form action="/admin/products/addpost" method="POST" enctype="multipart/form-data">
                     <div class="row justify-content-center">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -42,12 +42,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="productImages">Images</label>
-                                <input type="file" name="images" id="productImages" class="form-control" accept="image/" required>
+                                <input type="file" name="images" id="productImages" class="form-control" multiple accept="image/" required>
                             </div>
                         </div>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary">Add Product</button>
+                        
                         <a href="/admin/products" class="btn btn-primary ml-2">Back</a>
                     </div>
                 </form>

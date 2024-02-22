@@ -6,7 +6,6 @@
         <div class="container">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Pages</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Otp</li>
             </ol>
         </div><!-- End .container -->
@@ -41,8 +40,14 @@
                 </div><!-- End .tab-content -->
             </div><!-- End .form-tab -->
             <!-- <h6 class="text-danger" id="error-message"></h6> -->
-           <button class="btn btn-outline-dark-2"><a href="/resendotp" class="text-dark" onclick="alerts()">Resend OTP <i class="icon-long-arrow-left"></i></a></button> 
-
+            <div class="" id="button-container" style="display: none;">
+                <button class="btn btn-outline-dark-2 text-dark" id="resend-btn" onclick="alerts()" type="submit">
+                    <a href="/resendotp">
+                        Resend OTP
+                    </a>
+                </button>
+            </div>
+            
             <div id="countdown" style="color: white;"></div> <!-- count Down-->
         </div><!-- End .form-box -->
     </div><!-- End .container -->
@@ -88,6 +93,11 @@
         // Update the timer every second
         const timerInterval = setInterval(updateTimer, 1000);
 
+    </script>
+    <script>
+        setTimeout(function() {
+            document.getElementById('button-container').style.display = 'block';
+        },120000);
     </script>
 
     <script>

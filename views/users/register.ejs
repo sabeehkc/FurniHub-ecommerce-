@@ -185,7 +185,6 @@
                 <div class="container">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Register</li>
                     </ol>
                 </div><!-- End .container -->
@@ -203,35 +202,36 @@
 							<div class="tab-content">
 							   
 							    <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-							    	<form action="/register" method="post" name="register-form">
+							    	<form  action="/register" method="POST" name="register-form" onsubmit="return validate()">
                                         <div class="form-group">
 							    			<label for="register-fullnsme-2">Full Name *</label>
-							    			<input type="text" class="form-control" id="reg-name" name="reg-name" required>
+							    			<input type="text" class="form-control" id="reg-name" name="reg-name">
+                                            <small id="fullNameError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
 							    		<div class="form-group">
 							    			<label for="register-email-2">Your email address *</label>
-							    			<input type="email" class="form-control" id="reg-email" name="reg-email" required>
+							    			<input type="email" class="form-control" id="reg-email" name="reg-email" >
+                                            <small id="emailError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
 
 							    		<div class="form-group">
 							    			<label for="register-password-2">Password *</label>
-							    			<input type="password" class="form-control" id="reg-password" name="reg-password" required>
+							    			<input type="password" class="form-control" id="reg-password" name="reg-password" >
+                                            <small id="passwordError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
                                         <div class="form-group">
 							    			<label for="register-mobileno-2">Mobile No *</label>
-							    			<input type="text" class="form-control" id="reg-mobileno" name="reg-mobileno" required>
+							    			<input type="text" class="form-control" id="reg-mobileno" name="reg-mobileno" >
+                                            <small id="mobilenoError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
+
+                                        <span class="text-danger"><%= message %></span>
 
 							    		<div class="form-footer">
 							    			<button type="submit " class="btn btn-outline-primary-2">
 			                					<span>SIGN UP</span>
 			            						<i class="icon-long-arrow-right"></i>
 			                				</button>
-                                            <!--                                    
-			                				<div class="custom-control custom-checkbox">
-												<input type="checkbox" class="custom-control-input" id="register-policy-2" required>
-												<label class="custom-control-label" for="register-policy-2">I agree to the <a href="#">privacy policy</a> *</label>
-											 </div> End .custom-checkbox -->
                                              <div style="padding-left: 80px;">
                                                 <p>Already have an Account? <a class="text-white"  href="/login">Login</a></p>
                                              </div>
@@ -279,35 +279,61 @@
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
 
-    <script>
-        function validate(){
-            const name = document.getElementById('reg-name');
-            const email = document.getElementById('reg-email');
-            const password = document.getElementById('reg-password');
-            const mobileno = document.getElementById('reg-mobileno');
+<script>
+        function validate() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const mobileno = document.getElementById('reg-mobileno').value.trim();
 
-            if(name.value == ""){
-                alert("Must have a username")
-                document.register-form.reg-name.focus();
-                return false;
-            }
-            if(email.value == ""){
-                alert("Must have a Email ID")
-                document.register-form.reg-email.focus();
-                return false;
-            }
-            if(password.value == ""){
-                alert("Must have a Password")
-                document.register-form.reg-password.focus();
-                return false;
-            }
-            if(mobileno.value == ""){
-                alert("Must have a Mobile No")
-                document.register-form.reg-mobileno.focus();
-                return false;
+            const fullNameError = document.getElementById('fullNameError');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const mobilenoError = document.getElementById('mobilenoError');
+
+            // Reset errors
+            fullNameError.textContent = '';
+            emailError.textContent = '';     
+            passwordError.textContent = '';
+            mobilenoError.textContent = '';
+
+            let isValid = true;
+
+            function isOnlyLetters(str) {
+                return /^[a-zA-Z\s]+$/.test(str);
             }
 
+            if (name.length < 2 || !isOnlyLetters(name)) {
+                fullNameError.textContent = 'Fullname must be at least 2 characters.';
+                isValid = false;
+            }
+
+            if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
+                emailError.textContent = 'Please enter a valid email address.';
+                isValid = false;
+            }
+
+            if (!/^\d{10}$/.test(mobileno)) {
+                mobilenoError.textContent = 'Please enter a valid 10-digit mobile number.';
+                isValid = false;
+            }
+
+            // Stronger password requirements
+            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(password)) {
+                passwordError.textContent = 'Password must be at least 6 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.';
+                isValid = false;
+            }
+
+
+            if (isValid) {
+                window.location.href = "/otpverification"; 
+            }
+
+            // Form is valid
+            return isValid;
         }
-    </script>
 
-    <%- include('../layout/footer.ejs') %>
+
+</script>
+
+<%- include('../layout/footer.ejs') %>

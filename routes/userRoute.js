@@ -23,7 +23,7 @@ user_route.get('/resendotp',userController.resendOtp);
 
 user_route.get('/back-register',userController.backRegister);
 
-//----------------- Login routes -----------------//
+//----------------- Login routes -----------------// 
 user_route.get('/login', userController.loadlogin);
 user_route.post('/loginverfy',userController.verifyLogin);
 

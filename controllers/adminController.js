@@ -38,7 +38,7 @@ const Loginverifying = async(req,res) => {
                 if(userData.is_admin === 0 ){
                     res.render('login',{message:"Your not Admin"});
                 }else{
-                    req.session.user_id = userData._id; //user Id assign session
+                    req.session.admin_id = userData._id; //user Id assign session
                     res.redirect('/admin/dashboard');
                 }
             }else{
@@ -209,6 +209,17 @@ const toggleCategoryStatus = async (req, res) => {
 };
 
 
+const logout = async(req,res) => {
+    try {
+        req.session.destroy();
+        res.redirect('/admin');
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
 module.exports = {
     loginload,
     Loginverifying,
@@ -221,4 +232,5 @@ module.exports = {
     LoadEditCategory,
     editCategory,
     toggleCategoryStatus,
+    logout
 }

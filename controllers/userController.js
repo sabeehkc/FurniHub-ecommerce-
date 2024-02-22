@@ -80,7 +80,7 @@ const loadHome = async (req, res) => {
 
 const loadRegister = async (req, res) => {
     try {
-        res.render('register');
+        res.render('register',{message:""});
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -91,6 +91,13 @@ const loadRegister = async (req, res) => {
 
 const insertUser = async (req, res) => {
     try {
+
+        const emailExists = await User.findOne({ email:req.body['reg-email'] });
+
+        if (emailExists) {
+            res.render('register',{message:"This Email already used"})            
+        } else {
+
         const hashedPassword = await securePassword(req.body['reg-password']);
 
         const user = new User({
@@ -114,9 +121,10 @@ const insertUser = async (req, res) => {
         } else {
             res.render('register');
         }
+    }
     } catch (error) {
         console.log("Error inserting user:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("Internal Server Error"); 
     }
 };
 
@@ -275,7 +283,7 @@ const resendOtp = async (req, res) => {
 
         // Generate new OTP
         const otp = generateOTP();
-        console.log(otp);
+        console.log("Resend OTP:",otp);
 
         await Otp.deleteOne();
 

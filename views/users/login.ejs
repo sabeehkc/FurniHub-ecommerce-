@@ -7,7 +7,6 @@
         <div class="container">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Pages</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Login</li>
             </ol>
         </div><!-- End .container -->
@@ -27,11 +26,13 @@
                     <div class="form-group">
                         <label for="singin-email">Username or Email address *</label>
                         <input type="text" class="form-control" id="singin-email" name="email" required>
+                        <small id="emailError" class="text-danger"></small>
                     </div><!-- End .form-group -->
     
                     <div class="form-group">
                         <label for="singin-password">Password *</label>
                         <input type="password" class="form-control" id="singin-password" name="password" required>
+                        <small id="passwordError" class="text-danger"></small>
                     </div><!-- End .form-group -->
                     <% 
                     if(typeof message !== 'undefined'){
@@ -96,6 +97,5 @@
 <script src="assets/js/owl.carousel.min.js"></script>
 <!-- Main JS File -->
 <script src="assets/js/main.js"></script>
-
 
 <%- include('../layout/footer.ejs') %>
