@@ -5,6 +5,8 @@ const Product = require("../models/productModel");
 const loadProducts = async(req,res) => {
     try {
         const products = await Product.find().populate({path:'category',model:Category});
+        console.log(products);
+
         res.render('product', { products });
     } catch (error) {
         console.log(error.message);

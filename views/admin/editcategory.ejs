@@ -9,14 +9,16 @@
 <!-- Add Category Form -->
 <div class="container mt-5">
     <h2>Edit Category</h2>
-    <form action="/admin/category/edit/<%= category._id %>" method="POST">
+    <form id="editCategoryForm" action="/admin/category/edit/<%= category._id %>" method="POST" onsubmit="return validateForm()">
         <div class="form-group">
             <label for="name">Category Name</label>
             <input type="text" name="name" id="name" class="form-control" value="<%= category.name %>" required>
+            <small id="nameError" class="text-danger"></small>
         </div>
         <div class="form-group">
             <label for="description">Category Description</label>
             <textarea name="description" id="description" class="form-control" rows="3" required><%= category.description %></textarea>
+            <small id="descriptionError" class="text-danger"></small>
         </div>
         
         <button type="submit" class="btn btn-primary">Edit Category</button>
@@ -38,3 +40,33 @@
 </footer>
 
 <%- include('./layout/adfooter.ejs') %>
+
+<script>
+    function validateForm() {
+        var name = document.getElementById("name").value.trim();
+        var description = document.getElementById("description").value.trim();
+
+        var nameError = document.getElementById("nameError");
+        var descriptionError = document.getElementById("descriptionError");
+
+        // Reset  errors
+        nameError.textContent = "";
+        descriptionError.textContent = "";
+
+        var isValid = true;
+
+       
+        if (name === "") {
+            nameError.textContent = "Please enter a category name.";
+            isValid = false;
+        }
+
+    
+        if (description === "") {
+            descriptionError.textContent = "Please enter a category description.";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+</script>

@@ -205,23 +205,23 @@
 							    	<form  action="/register" method="POST" name="register-form" onsubmit="return validate()">
                                         <div class="form-group">
 							    			<label for="register-fullnsme-2">Full Name *</label>
-							    			<input type="text" class="form-control" id="reg-name" name="reg-name">
+							    			<input type="text" class="form-control" id="reg-name" name="reg-name" placeholder="Enter your Fullname">
                                             <small id="fullNameError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
 							    		<div class="form-group">
 							    			<label for="register-email-2">Your email address *</label>
-							    			<input type="email" class="form-control" id="reg-email" name="reg-email" >
+							    			<input type="email" class="form-control" id="reg-email" name="reg-email" placeholder="Enter a valid email address" >
                                             <small id="emailError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
 
 							    		<div class="form-group">
 							    			<label for="register-password-2">Password *</label>
-							    			<input type="password" class="form-control" id="reg-password" name="reg-password" >
+							    			<input type="password" class="form-control" id="reg-password" name="reg-password" placeholder="Password must be at least 6 characters" >
                                             <small id="passwordError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
                                         <div class="form-group">
 							    			<label for="register-mobileno-2">Mobile No *</label>
-							    			<input type="text" class="form-control" id="reg-mobileno" name="reg-mobileno" >
+							    			<input type="text" class="form-control" id="reg-mobileno" name="reg-mobileno" placeholder="Enter a valid 10-digit mobile number." >
                                             <small id="mobilenoError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
 
@@ -304,7 +304,7 @@
             }
 
             if (name.length < 2 || !isOnlyLetters(name)) {
-                fullNameError.textContent = 'Fullname must be at least 2 characters.';
+                fullNameError.textContent = "Fullname must be at least 2 characters. or Don't type  number in full name";
                 isValid = false;
             }
 
@@ -336,4 +336,11 @@
 
 </script>
 
+
+<style>
+    .form-control::placeholder {
+    font-size: 80%; 
+    opacity: 0.7; 
+}
+</style>
 <%- include('../layout/footer.ejs') %>

@@ -204,7 +204,7 @@ const verifyOtp = async (req, res) => {
             await otpRecord.deleteOne();
 
             console.log("OTP verified successfully for user:", userId);
-            return res.redirect('/login');
+            return res.redirect('/');
         } else {
             console.log("Invalid OTP or expired for user:", userId);
             return res.render('otp', { message: "OTP expired or Invalid OTP, please try again" });

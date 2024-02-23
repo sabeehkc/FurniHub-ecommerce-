@@ -9,18 +9,18 @@
 <!-- Add Category Form -->
 <div class="container mt-5">
     <h2>Add Category</h2>
-    <form action="/admin/category/add" method="POST">
+    <form id="addCategoryForm" action="/admin/category/add" method="POST" onsubmit="return validateForm()">
         <div class="form-group">
             <label for="name">Category Name</label>
             <input type="text" name="name" id="name" class="form-control" placeholder="Category Name" required>
+            <small id="nameError" class="text-danger"></small>
         </div>
         <div class="form-group">
             <label for="description">Category Description</label>
             <textarea name="description" id="description" class="form-control" rows="3" placeholder="Category Description" required></textarea>
+            <small id="descriptionError" class="text-danger"></small>
         </div>
         <button type="submit" class="btn btn-primary">Add Category</button>
-
-
         <a href="/admin/category"  class="btn btn-primary">Back</a>
     </form>
 </div>
@@ -39,3 +39,33 @@
 </footer>
 
 <%- include('./layout/adfooter.ejs') %>
+
+<script>
+    function validateForm() {
+        var name = document.getElementById("name").value.trim();
+        var description = document.getElementById("description").value.trim();
+
+        var nameError = document.getElementById("nameError");
+        var descriptionError = document.getElementById("descriptionError");
+
+        //reset error
+        nameError.textContent = "";
+        descriptionError.textContent = "";
+
+        var isValid = true;
+
+       
+        if (name === "" ) {
+            nameError.textContent = "Please enter a category name.";
+            isValid = false;
+        }
+
+        
+        if (description === "") {
+            descriptionError.textContent = "Please enter a category description.";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+</script>
