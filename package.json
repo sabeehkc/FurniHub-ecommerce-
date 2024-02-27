@@ -26,6 +26,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
     "sharp": "^0.33.2",
+    "sweetalert2": "^11.10.5",
     "uuid": "^9.0.1"
   }
 }

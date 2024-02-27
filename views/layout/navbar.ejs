@@ -1,5 +1,4 @@
-
-
+<div class="page-wrapper">
     <header class="header">
         <div class="header-top">
             <div class="container">
@@ -20,9 +19,12 @@
                             <ul>
                                 <li><a href="tel:#"><i class="icon-phone"></i>Call: +91 9778073408</a></li>
                                 <li><a href="wishlist.html"><i class="icon-heart-o"></i>My Wishlist</a></li>
-                                <li><a href="about.html">About Us</a></li>
+                                <li><a href="/about">About Us</a></li>
                                 <li><a href="contact.html">Contact Us</a></li>
-                                <li><a href="/login"><i class="icon-user"></i>Login</a></li>
+                                <% if (!isLoggedIn) { %> 
+                                    <li><a href="/login"><i class="icon-user"></i>Login</a></li>
+                                <%}%>
+                               
                             </ul>
                         </li>
                     </ul><!-- End .top-menu -->
@@ -57,9 +59,13 @@
                                 <a href="#" class="sf-with-ul">Pages</a>
 
                                 <ul>
+                                    <% if(!isLoggedIn) { %>
+                                    
                                     <li><a href="/login">Login</a></li>
+
+                                    <% } %>
                                     <li>
-                                        <a href="about.html" >About</a>
+                                        <a href="/about" >About</a>
                                     </li>
                                     <li>
                                         <a href="contact.html" >Contact</a>
@@ -107,7 +113,7 @@
                                             <span class="cart-product-info">
                                                 <span class="cart-product-qty">1</span>
                                                 x $84.00
-                                            </span>
+                                            </span
                                         </div> End .product-cart-details 
 
                                         <figure class="product-image-container">
@@ -116,7 +122,7 @@
                                             </a>
                                         </figure>
                                         <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                    </div>End .product
+                                    </div> End .product
 
                                     <div class="product">
                                         <div class="product-cart-details">
@@ -136,7 +142,7 @@
                                             </a>
                                         </figure>
                                         <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                    </div>End .product
+                                    </div>End .product 
                                 </div> End .cart-product 
 
                                 <div class="dropdown-cart-total">
@@ -148,13 +154,23 @@
                                 <div class="dropdown-cart-action">
                                     <a href="cart.html" class="btn btn-primary">View Cart</a>
                                     <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
-                                </div>End .dropdown-cart-total
+                                </div> End .dropdown-cart-total
                             </div>End .dropdown-menu -->
                         </div><!-- End .cart-dropdown -->
-                        <!-- <div class="profile-icon">
-                            <a href="/profile" style="font-size: 20px; padding-left: 15px; color: black;"><i class="fa-solid fa-user"></i>
-                            </a>
-                        </div> End porfile icon -->
+                        <div class="profile  ml-3 dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <% if (userName) { %>
+                                    <%= userName %> 
+                                <% } else { %>
+                                    Welcome
+                                <% } %>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#">Profile</a>
+                                <a class="dropdown-item" href="/logout">Log Out</a>
+                            </div>
+                        </div><!-- End profile-->
+                        
                     </div><!-- End .header-right -->
                 </div><!-- End .container -->
             </div><!-- End .header-middle -->

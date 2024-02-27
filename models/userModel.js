@@ -28,6 +28,16 @@ const userSchema =  new mongoose.Schema({
         is_blocked:{
             type:Boolean,
             require:true
+        },
+         // Fields for Google authentication
+        googleId: {
+            type: String
+        },
+        googleName: {
+            type: String
+        },
+        googleEmail: {
+            type: String
         }
         
 

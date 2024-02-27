@@ -69,7 +69,9 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
 const loadHome = async (req, res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
-        res.render('home',{userName : userName});
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+        res.render('home', { userName: userName, isLoggedIn: isLoggedIn });
+
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -191,7 +193,7 @@ const verifyOtp = async (req, res) => {
 
         // Check OTP matches and is not expired
         if (checkotp === otpRecord.otp && Date.now() < otpRecord.expiresAt) {
-            // Update user's verified status to true
+            // Update user's verified 
             const user = await User.findById(userId);
             if (!user) { 
                 console.log("User not found:", userId);
@@ -200,7 +202,7 @@ const verifyOtp = async (req, res) => {
             user.verified = true;
             await user.save();
 
-            //  delete the OTP record from the database
+            //  delete the OTP record 
             await otpRecord.deleteOne();
 
             console.log("OTP verified successfully for user:", userId);
@@ -239,7 +241,7 @@ const verifyLogin = async (req, res) => {
         const userData = await User.findOne({ email: email, is_blocked: false});
         
         if (!userData) {
-            return res.render('login', { message: "Email or password  is incorrect" });
+            return res.render('login', { message: "Your Not Registered" });
         }
 
         const passwordMatch = await bcrypt.compare(password, userData.password);
@@ -297,6 +299,7 @@ const resendOtp = async (req, res) => {
     }
 };
 
+//----------------- User Logout -----------------//
 
 const logOut = async (req,res) => {
     try {
@@ -312,15 +315,74 @@ const logOut = async (req,res) => {
     }
 };
 
-// const loadAllProduct = async (req,res) => {
-//     try {
-        
-//         res.render('allproducts')
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// }
+const loadAllProduct = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+        res.render('allproducts',{userName:userName,isLoggedIn:isLoggedIn});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
  
+//----------------- Login With Google (success)-----------------//
+
+const successGoogleLogin = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.redirect('/register');
+        }
+        
+        const { id, displayName, email } = req.user;
+
+        // Check the user already exists in the database
+        let user = await User.findOne({ googleId: id });
+
+        if (!user) {
+            
+            user = new User({
+                name: displayName,
+                email: email,
+                verified: true, 
+                is_admin: 0,
+                is_blocked: false,
+                googleId: id,
+                googleName: displayName,
+                googleEmail: email
+            });
+
+            // Save new user
+            await user.save();
+        }
+
+        req.session.user = user;
+        req.session.save(() => {
+            res.redirect('/');
+        });
+    } catch (error) {
+        console.error("Error handling Google login:", error.message);
+        res.redirect('/register'); 
+    }
+};
+
+//----------------- Login With Google (failure) -----------------//
+
+const failureGoogleLogin = (req,res) => {
+    res.redirect('/register');
+}
+
+//----------------- Load About Page -----------------//
+const loadAbout = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+        res.render('about',{userName:userName,isLoggedIn:isLoggedIn});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
 // Exporting functions
 module.exports = {
     loadHome,
@@ -332,6 +394,9 @@ module.exports = {
     verifyLogin,
     resendOtp,
     backRegister,
-    logOut
-    // loadAllProduct
+    logOut,
+    successGoogleLogin,
+    failureGoogleLogin,
+    loadAllProduct,
+    loadAbout
 };
