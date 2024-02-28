@@ -54,38 +54,55 @@ const loadEditProduct = async (req,res) => {
     }
 };
 
-// const editProduct = async (req, res) => {
-//     try {
-//         const id = req.params.id;
-//         const { name, category, price, quantity, description, date } = req.body;
+const editProduct = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { name, category, price, quantity, description, date } = req.body;
         
-//         let product = await Product.findById(id);
+        let product = await Product.findById(id);
 
-//         if (!product) {
-//            console.log("Product not Found");
-//         }
+        if (!product) {
+           console.log("Product not Found");
+        }
 
-//         // Update the product details
-//         product.name = name;
-//         product.category = category;
-//         product.price = price;
-//         product.quantity = quantity;
-//         product.description = description;
-//         product.date = date;
+        // Update the product details
+        product.name = name;
+        product.category = category;
+        product.price = price;
+        product.quantity = quantity;
+        product.description = description;
+        product.date = date;
 
-//         await product.save(); 
+        await product.save(); 
 
-//         res.redirect(`/admin/products`);
+        res.redirect(`/admin/products`);
 
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// };
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const deleteProduct = async(req,res) => {
+    try {
+        const id = req.params.id
+        const product = await Product.findById(id);
+
+        console.log(product);
+
+        await product.deleteOne();
+        console.log("Product Delete successfully");
+        res.redirect('/admin/products')
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 module.exports = {
     loadProducts,
     loadAddProducts,
     addProduct,
     loadEditProduct,
-    // editProduct
+    editProduct,
+    deleteProduct
 }

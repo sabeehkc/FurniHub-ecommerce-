@@ -332,8 +332,10 @@ const successGoogleLogin = async (req, res) => {
         if (!req.user) {
             return res.redirect('/register');
         }
+        console.log(req.user);
         
         const { id, displayName, email } = req.user;
+    
 
         // Check the user already exists in the database
         let user = await User.findOne({ googleId: id });

@@ -37,8 +37,10 @@
                                     </td>
                                     <td>
                                         <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/products/edit/<%= product._id %>">Edit</a></button>
-                                        <button class="btn btn-danger"><a style="color: white; text-decoration: none;" href="">Delete</a></button>
-                                        <button class="btn btn-success"><a style="color: white; text-decoration: none;" href="">List</a></button>
+                                        <button class="btn btn-danger"><a style="color: white; text-decoration: none;" href="/admin/products/delete/<%= product._id %>">Delete</a></button>
+                                        <button type="button" class="btn <%= product.status === 'active' ? 'btn-success' : 'btn-danger' %>">
+                                            <%= product.status === 'active' ? 'Active' : 'Blocked' %>
+                                        </button>
                                     </td>
                                 </tr>
                             <% }); %>

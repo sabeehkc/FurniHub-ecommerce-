@@ -60,6 +60,7 @@
 <script>
     function toggleCategory(categoryId, currentStatus) {
     const confirmationMessage = currentStatus ? "Are you sure you want to block this category?" : "Are you sure you want to activate this category?";
+
     if (confirm(confirmationMessage)) {
         fetch(`/admin/category/toggle/${categoryId}`, {
             method: 'POST'

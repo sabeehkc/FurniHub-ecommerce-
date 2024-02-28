@@ -1,63 +1,90 @@
 <%- include('./layout/adheader.ejs') %>
 <div class="container-scroller">
-<%- include('./layout/sidenav.ejs') %>
-<div class="container-fluid page-body-wrapper">
-<%- include('./layout/topnav.ejs') %>
+    <%- include('./layout/sidenav.ejs') %>
+    <div class="container-fluid page-body-wrapper">
+        <%- include('./layout/topnav.ejs') %>
 
         <div class="container mt-5">
-            <div class="w-100 container-fluid bg-dark mt-4">
-                <h2 class="text-center text-white mt-3 mb-4">Add Product</h2>
-                <form action="/admin/products/addpost" method="POST" enctype="multipart/form-data">
-                    <div class="row justify-content-center">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="p-name">Product Name</label>
-                                <input type="text" name="name" id="name" class="form-control" placeholder="Product Name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="productCategory">Category</label>
-                                <select class="form-control" id="productCategory" name="category" required>
-                                    <% categories.forEach(category => { %>
-                                        <option value="<%= category._id %>"><%= category.name %></option>
-                                    <% }); %>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="productPrice">Price</label>
-                                <input type="number" name="price" id="productPrice" class="form-control" placeholder="Price" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="productQuantity">Quantity</label>
-                                <input type="number" name="quantity" id="productQuantity" class="form-control" placeholder="Quantity" required>
-                            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h2 class="text-center mb-0">Add Product</h2>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="description">Product Description</label>
-                                <textarea name="description" id="description" class="form-control" rows="5" placeholder="Product Description" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="product-date">Date</label>
-                                <input type="date" name="date" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="productImages">Images</label>
-                                <input type="file" name="images" id="productImages" class="form-control" multiple accept="image/" required>
-                            </div>
+                        <div class="card-body">
+                            <form action="/admin/products/addpost" method="POST" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="p-name">Product Name</label>
+                                    <input type="text" name="name" id="name" class="form-control" placeholder="Enter Product Name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="productCategory">Category</label>
+                                    <select class="form-control" id="productCategory" name="category" required>
+                                        <% categories.forEach(category => { %>
+                                            <option value="<%= category._id %>"><%= category.name %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="productPrice">Price</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">₹</span>
+                                            </div>
+                                            <input type="number" name="price" id="productPrice" class="form-control" placeholder="Enter Price" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="productQuantity">Quantity</label>
+                                        <input type="number" name="quantity" id="productQuantity" class="form-control" placeholder="Enter Quantity" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Product Description</label>
+                                    <textarea name="description" id="description" class="form-control" rows="5" placeholder="Enter Product Description" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="product-date">Date</label>
+                                    <input type="date" name="date" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image 1 *</label>
+                                    <input type="file" id="productImages1" name="images" class="form-control"  required >
+                                    <div id="image-preview1"></div>
+                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image 2 *</label>
+                                    <input type="file" id="productImages2" name="images" class="form-control"  required >
+                                    <div id="image-preview2"></div>
+                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image 3 *</label>
+                                    <input type="file" id="productImages3" name="images" class="form-control"  required >
+                                    <div id="image-preview3"></div>
+                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label >Image 4 *</label>
+                                    <input type="file" id="productImages4" name="images" class="form-control" required >
+                                    <div id="image-preview4"></div>
+                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button type="submit" name="submit" class="btn btn-primary">Add Product</button>
+                                    <a href="/admin/products" class="btn btn-primary ml-2">Back</a>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Add Product</button>
-                        
-                        <a href="/admin/products" class="btn btn-primary ml-2">Back</a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
-
     </div>
 </div>
-
 
 <footer class="footer mt-5">
     <div class="d-sm-flex justify-content-center justify-content-sm-between">
@@ -65,5 +92,129 @@
         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
     </div>
 </footer>
+
+
+
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+  // Get all file inputs and image preview divs
+  const fileInputs = document.querySelectorAll('[id^="productImages"]');
+  const imagePreviews = document.querySelectorAll('[id^="image-preview"]');
+
+  // Initialize cropper for each image preview
+  const croppers = [];
+
+  fileInputs.forEach((fileInput, index) => {
+    let originalFile; // Variable to store the original file object
+    let croppedBlob; // Variable to store the cropped image blob
+    let cropper; // Variable to store the cropper instance
+    let editButton; // Variable to store the edit button
+
+    fileInput.addEventListener("change", function () {
+      // Clear previous previews for the specific index
+      imagePreviews[index].innerHTML = "";
+
+      // Display image previews for the specific index
+      Array.from(fileInput.files).forEach((file) => {
+        originalFile = file; // Store the original file object
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.style.maxWidth = "100%"; // Adjust the max width as needed
+          img.style.height = "auto"; // Maintain aspect ratio
+          img.style.maxHeight = "500px"; // Limit maximum height
+
+          if (!editButton) {
+            // Add edit button only if it doesn't exist
+            editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.addEventListener("click", function (event) {
+              // Prevent default form submission behavior
+              event.preventDefault();
+
+              if (!cropper) {
+                // Initialize cropper if not already initialized
+                if (croppedBlob) {
+                  // Display cropped image
+                  const croppedImg = document.createElement("img");
+                  croppedImg.src = URL.createObjectURL(croppedBlob);
+                  croppedImg.style.maxWidth = "100%";
+                  croppedImg.style.height = "auto";
+                  imagePreviews[index].appendChild(croppedImg);
+                }
+
+                cropper = new Cropper(img, {
+                  aspectRatio: 1, // Square aspect ratio
+                  viewMode: 1, // Preview mode
+                  cropBoxResizable: false, // Disable resizable crop box
+                  crop: function (event) {
+                    // Do something with cropped data if needed
+                  },
+                });
+              } else {
+                // Re-enable cropping functionality
+                cropper.replace(img);
+
+                if (croppedBlob) {
+                  // Display cropped image
+                  const croppedImg = document.createElement("img");
+                  croppedImg.src = URL.createObjectURL(croppedBlob);
+                  croppedImg.style.maxWidth = "100%";
+                  croppedImg.style.height = "auto";
+                  imagePreviews[index].appendChild(croppedImg);
+                }
+              }
+
+              // Save cropped image and update preview on save button click
+              const saveButton = document.createElement("button");
+              saveButton.textContent = "Save";
+              saveButton.addEventListener("click", function () {
+                // Get cropped canvas
+                const canvas = cropper.getCroppedCanvas({
+                  width: 500,
+                  height: 500,
+                });
+
+                // Update image preview
+                imagePreviews[index].innerHTML = "";
+                imagePreviews[index].appendChild(canvas);
+
+                // Replace original file with cropped image
+                croppedBlob = canvas.toBlob(function (blob) {
+                  // Store the cropped image blob
+                  croppedBlob = blob;
+
+                  // Hide cropper interface
+                  cropper.crop();
+
+                  // Remove edit button
+                  editButton.remove();
+
+                  // Destroy cropper instance
+                  cropper.destroy();
+                  cropper = null;
+                });
+              });
+
+              imagePreviews[index].appendChild(saveButton);
+            });
+
+            // Append edit button to image preview
+            imagePreviews[index].appendChild(editButton);
+          }
+
+          // Append original image to image preview
+          imagePreviews[index].appendChild(img);
+        };
+
+        reader.readAsDataURL(file);
+      });
+    });
+  });
+});
+</script>
 
 <%- include('./layout/adfooter.ejs') %>

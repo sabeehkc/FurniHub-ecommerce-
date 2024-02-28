@@ -1,60 +1,91 @@
-<!-- <%- include('./layout/adheader.ejs') %>
+<%- include('./layout/adheader.ejs') %>
 <div class="container-scroller">
 <%- include('./layout/sidenav.ejs') %>
 <div class="container-fluid page-body-wrapper">
 <%- include('./layout/topnav.ejs') %>
 
 <div class="container mt-5">
-    <div class="w-100 container-fluid bg-dark mt-4">
-        <h2 class="text-center text-white mt-3 mb-4">Edit Product</h2>
-        <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="name">Product Name</label>
-                        <input type="text" name="name" id="name" class="form-control" value="<%= product.name %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="category">Category</label>
-                        <select class="form-control" id="category" name="category" required>
-                            <% categories.forEach(category => { %>
-                                <option value="<%= category._id %>" <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>><%= category.name %></option>
-                            <% }); %>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="price">Price</label>
-                        <input type="number" name="price" id="price" class="form-control" value="<%= product.price %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="quantity">Quantity</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" value="<%= product.quantity %>" required>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h2 class="text-center mb-0">Edit Product</h2>
+                </div>
+                    <div class="card-body">
+                        <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="name">Product Name</label>
+                                    <input type="text" name="name" id="name" class="form-control" value="<%= product.name %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select class="form-control" id="category" name="category" required>
+                                        <% categories.forEach(category => { %>
+                                            <option value="<%= category._id %>" <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>><%= category.name %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="price">Price</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">₹</span>
+                                            </div>
+                                            <input type="number" name="price" id="price" class="form-control" value="<%= product.price %>" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="quantity">Quantity</label>
+                                            <input type="number" name="quantity" id="quantity" class="form-control" value="<%= product.quantity %>" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Product Description</label>
+                                    <textarea name="description" id="description" class="form-control" rows="5" required><%= product.description %></textarea>
+                                </div>
+                        
+                                <div class="form-group">
+                                    <label for="date">Date</label>
+                                    <input type="date" name="date" id="date" class="form-control" value="<%= product.date.toISOString().substr(0, 10) %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image 1 *</label>
+                                    <input type="file" id="productImages1" name="images" class="form-control"  required >
+                                    <div id="image-preview1"></div>
+                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image 2 *</label>
+                                    <input type="file" id="productImages2" name="images" class="form-control"  required >
+                                    <div id="image-preview2"></div>
+                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image 3 *</label>
+                                    <input type="file" id="productImages3" name="images" class="form-control"  required >
+                                    <div id="image-preview3"></div>
+                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label >Image 4 *</label>
+                                    <input type="file" id="productImages4" name="images" class="form-control" required >
+                                    <div id="image-preview4"></div>
+                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                </div>
+                            
+                                <div class="text-center">
+                                    <button type="submit" name="submit" class="btn btn-primary">Edit  Product</button>
+                                    <a href="/admin/products" class="btn btn-primary ml-2">Back</a>
+                                </div>  
+                            </form>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="description">Product Description</label>
-                        <textarea name="description" id="description" class="form-control" rows="5" required><%= product.description %></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="date">Date</label>
-                        <input type="date" name="date" id="date" class="form-control" value="<%= product.date.toISOString().substr(0, 10) %>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="images">Images</label>
-                        <input type="file" name="images" id="images" class="form-control" accept="image/*" multiple required >
-                    </div>
-                </div>
-            </div>
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary">Edit Product</button>
-                <a href="/admin/products" class="btn btn-primary ml-2">Back</a>
-            </div>
-        </form>
-    </div>
-</div>
-</div>
-</div>
+            </div><!--End row-->
+        </div><!--End container-->
+    </div><!--End container-fluid page-body-wrapper-->
+</div><!--End container-scroller-->
 
 <footer class="footer mt-5">
     <div class="d-sm-flex justify-content-center justify-content-sm-between">
@@ -64,4 +95,4 @@
 </footer>
 
 
-<%- include('./layout/adfooter.ejs') %> -->
+<%- include('./layout/adfooter.ejs') %>
