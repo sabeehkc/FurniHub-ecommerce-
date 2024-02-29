@@ -32,7 +32,7 @@
                                     <td>₹<%= product.price %></td>
                                     <td><%= product.quantity %></td>
                                     <td><%for(let i=0;i<product.pictures.length;i++){%>
-                                        <img src="/product_images/<%=product.pictures[i]%>" alt="Product Images">
+                                        <img src="/product_images/<%=product.pictures[i].resizedFile%>" alt="Product Images">
                                         <%}%>
                                     </td>
                                     <td>

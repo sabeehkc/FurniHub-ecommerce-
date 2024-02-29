@@ -1,12 +1,11 @@
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
-
+const Sharp = require("sharp");
+const path = require("path")
 
 const loadProducts = async(req,res) => {
     try {
         const products = await Product.find().populate({path:'category',model:Category});
-        console.log(products);
-
         res.render('product', { products });
     } catch (error) {
         console.log(error.message);
@@ -22,26 +21,59 @@ const loadAddProducts = async (req,res) => {
         console.log(error.message);
     }
 };
-
-const addProduct = async(req,res) => {
+const addProduct = async (req, res) => {
     try {
-        const image = req.files.map(file => file.filename)
-        const product = new Product({
-            name: req.body.name,
-            category: req.body.category,
-            price: req.body.price,
-            quantity: req.body.quantity,
-            description: req.body.description,
-            date: req.body.date,
-            pictures: image,
-        })
+        const { name, category, price, quantity, description, date } = req.body;
 
-        await product.save()
-        res.redirect('/admin/products')
+        // Process and save product images
+        const productImages = await Promise.all(req.files.map(async (file) => {
+            try {
+                console.log("Processing image:", file.filename);
+                const resizedFilename = `resized-${file.filename}`;
+                const resizedPath = path.join(__dirname, '../public/product_images', resizedFilename);
+                                 
+                await Sharp(file.path)
+                    .resize({ height: 600, width: 650, fit: 'fill' })
+                    .toFile(resizedPath);
+
+                console.log("Image processed successfully:", file.filename);
+                return {
+                    filename: file.filename,
+                    path: file.path,
+                    resizedFile: resizedFilename,
+                };
+            } catch (error) {
+                console.error('Error processing and saving image:', error);
+                return null; // Exclude failed images
+            }
+        }));
+
+        console.log("Processed images:", productImages);
+
+        // Create new product with image data
+        const product = new Product({
+            name,
+            category,
+            price, 
+            quantity, 
+            description,
+            date,
+            pictures: productImages
+        });
+
+        // Save product to database
+        await product.save();
+        
+        // Redirect after successful save
+        res.redirect('/admin/products');
+      
     } catch (error) {
-        console.log(error.message);
+        console.error('Error adding product:', error);
+        // Handle error response
+        res.status(500).send('Error adding product');
     }
 };
+
 
 const loadEditProduct = async (req,res) => {
     try {

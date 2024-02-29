@@ -2,15 +2,7 @@ const User = require("../models/userModel");
 const Category = require("../models/categoryModel")
 const bcrypt = require('bcrypt');
 
-const securePassword = async (password) => {
-    try {
-        const passwordHash = await bcrypt.hash(password, 10);
-        return passwordHash;
-    } catch (error) {
-       console.log(error.message);
-    }
-};
- 
+
 //----------------- Admin login page -----------------//
 
 const loginload = async(req,res) => {

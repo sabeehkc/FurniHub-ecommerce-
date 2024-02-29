@@ -2,6 +2,8 @@ const User = require('../models/userModel.js');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const Otp = require('../models/otpModel.js');
+const Product = require('../models/productModel.js');
+const Category = require('../models/categoryModel.js')
 
 //-----------------  hash password -----------------//
 
@@ -65,15 +67,34 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
 
 
 //----------------- load home page -----------------//
-
 const loadHome = async (req, res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const email = req.session.user ? req.session.user.email: null;
+        console.log(email);
+
+        if (req.session.user) {
+            const user = await User.findOne({ email: email });
+            console.log(user);
+            if (user && user.is_blocked) {
+                req.session.destroy((err) => {
+                    if (err) {
+                        console.error("Error destroying session:", err);
+                    } else {
+                        res.redirect('/');
+                    }
+                });
+                return; // Exit the function to avoid sending multiple responses
+            }
+        }
+
         res.render('home', { userName: userName, isLoggedIn: isLoggedIn });
 
     } catch (error) {
         console.log(error.message);
+        // Handle the error appropriately
         res.status(500).send("Internal Server Error");
     }
 };
@@ -319,7 +340,29 @@ const loadAllProduct = async (req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
-        res.render('allproducts',{userName:userName,isLoggedIn:isLoggedIn});
+
+        const products = await Product.find({status: 'active'})
+        console.log(products);
+        const categories = await Category.find()
+
+        res.render('allproducts',{userName:userName,isLoggedIn:isLoggedIn,products:products,categories:categories});
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const product = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const id = req.params.id;
+
+        const productData = await Product.findById(id);
+        console.log(productData);
+
+        res.render('product',{userName:userName,isLoggedIn:isLoggedIn,product:productData});
+
     } catch (error) {
         console.log(error.message);
     }
@@ -400,5 +443,6 @@ module.exports = {
     successGoogleLogin,
     failureGoogleLogin,
     loadAllProduct,
-    loadAbout
+    loadAbout,
+    product
 };
