@@ -341,7 +341,7 @@ const loadAllProduct = async (req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        const products = await Product.find({status: 'active'})
+        const products = await Product.find({status: 'active'}).populate({path:'category',model:Category});
         console.log(products);
         const categories = await Category.find()
 
@@ -358,7 +358,7 @@ const product = async(req,res) => {
 
         const id = req.params.id;
 
-        const productData = await Product.findById(id);
+        const productData = await Product.findById(id).populate({path:'category',model:Category});
         console.log(productData);
 
         res.render('product',{userName:userName,isLoggedIn:isLoggedIn,product:productData});

@@ -38,7 +38,7 @@
                                     <td>
                                         <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/products/edit/<%= product._id %>">Edit</a></button>
                                         <button class="btn btn-danger"><a style="color: white; text-decoration: none;" href="/admin/products/delete/<%= product._id %>">Delete</a></button>
-                                        <button type="button" class="btn <%= product.status === 'active' ? 'btn-success' : 'btn-danger' %>">
+                                        <button type="button" class="btn <%= product.status === 'active' ? 'btn-success' : 'btn-danger' %>"  onclick="toggleProduct('<%= product._id %>', '<%= product.status %>')">
                                             <%= product.status === 'active' ? 'Active' : 'Blocked' %>
                                         </button>
                                     </td>
@@ -62,5 +62,29 @@
         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
     </div>
 </footer>
+
+
+<script>
+    function toggleProduct(productId, currentStatus) {
+    const confirmationMessage = currentStatus ? "Are you sure you want to block this Product?" : "Are you sure you want to activate this Products?";
+
+    if (confirm(confirmationMessage)) {
+        fetch(`/admin/products/toggle/${productId}`, {
+            method: 'POST'
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location.reload(); // Refresh the page
+            } else {
+                throw new Error('Something went wrong');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}
+</script>
+
 
 <%- include('./layout/adfooter.ejs') %>

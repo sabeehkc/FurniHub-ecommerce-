@@ -69,12 +69,14 @@ admin_route.post('/products/addpost',upload.array('images',4),productController.
 
 admin_route.get('/products/edit/:id',auth.isLogin,productController.loadEditProduct);
 admin_route.post('/products/edit/:id',productController.editProduct);
+admin_route.post('/products/toggle/:id',productController.toggleProductStatus);
 
+admin_route.get('/products/delete/:id',productController.deleteProduct);
 
 admin_route.get('/logout',auth.isLogin,adminController.logout);
 
 
-admin_route.get('/products/delete/:id',productController.deleteProduct);
+
 
 //----------------- export admin route -----------------//
 module.exports = admin_route;

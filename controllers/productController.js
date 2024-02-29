@@ -128,7 +128,30 @@ const deleteProduct = async(req,res) => {
     } catch (error) {
         console.log(error.message);
     }
-}
+};
+
+
+
+const toggleProductStatus = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findById(productId)
+
+        if (!product) {
+            console.log('Product  not found');
+        }
+
+        
+        product.status = product.status === 'active' ? 'blocked' : 'active';
+
+        await product.save();
+
+        res.redirect('/admin/products');
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
 
 module.exports = {
     loadProducts,
@@ -136,5 +159,6 @@ module.exports = {
     addProduct,
     loadEditProduct,
     editProduct,
-    deleteProduct
+    deleteProduct,
+    toggleProductStatus
 }
