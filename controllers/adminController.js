@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const Category = require("../models/categoryModel")
 const bcrypt = require('bcrypt');
+const { product } = require("./userController");
 
 
 //----------------- Admin login page -----------------//
@@ -110,6 +111,7 @@ const loadCategory = async (req, res) => {
 
 const loadAddCategory = async (req, res) => {
     try {
+        
         res.render('addcategory');
     } catch (error) {
         console.log(error.message);

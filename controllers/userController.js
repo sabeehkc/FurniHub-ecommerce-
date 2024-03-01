@@ -72,24 +72,6 @@ const loadHome = async (req, res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        const email = req.session.user ? req.session.user.email: null;
-        console.log(email);
-
-        if (req.session.user) {
-            const user = await User.findOne({ email: email });
-            console.log(user);
-            if (user && user.is_blocked) {
-                req.session.destroy((err) => {
-                    if (err) {
-                        console.error("Error destroying session:", err);
-                    } else {
-                        res.redirect('/');
-                    }
-                });
-                return; // Exit the function to avoid sending multiple responses
-            }
-        }
-
         res.render('home', { userName: userName, isLoggedIn: isLoggedIn });
 
     } catch (error) {

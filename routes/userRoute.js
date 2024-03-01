@@ -30,8 +30,10 @@ user_route.get('/failure', userController.failureGoogleLogin);
 user_route.set('view engine', 'ejs');
 user_route.set('views', './views/users');
 
+const auth = require('../middleware/userAuth');
+
 //----------------- Home page -----------------//
-user_route.get('/',userController.loadHome);
+user_route.get('/',auth.isBlock,userController.loadHome);
 
 //----------------- Register routes -----------------//
 user_route.get('/register', userController.loadRegister);
@@ -51,14 +53,14 @@ user_route.get('/login',userController.loadlogin);
 user_route.post('/loginverfy',userController.verifyLogin);
 
 
-user_route.get('/allproducts',userController.loadAllProduct); 
-user_route.get('/product/:id',userController.product);
+user_route.get('/allproducts',auth.isBlock,userController.loadAllProduct); 
+user_route.get('/product/:id',auth.isBlock,userController.product);
 
 //----------------- Logout -----------------//
 user_route.get('/logout',userController.logOut);
 
 //----------------- About page -----------------//
-user_route.get('/about',userController.loadAbout);
+user_route.get('/about',auth.isBlock,userController.loadAbout);
 
 
 //----------------- export user route -----------------//

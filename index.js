@@ -1,3 +1,7 @@
+//Create an Express application
+const express = require('express')
+const app = express();
+
 //Dotenv
 const dotenv = require('dotenv').config();
 
@@ -6,9 +10,7 @@ const dotenv = require('dotenv').config();
 const mongoose =  require('mongoose')
 mongoose.connect(process.env.MONGO_URL);
 
-//Create an Express application
-const express = require('express')
-const app = express();
+
 
 
 //body_parser
