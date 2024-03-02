@@ -41,19 +41,19 @@ user_route.post('/register', userController.insertUser);
 
 
 //----------------- OTP -----------------//
-user_route.get('/otpverification', userController.loadOtp);
-user_route.post('/verifyotp', userController.verifyOtp);
-user_route.get('/resendotp',userController.resendOtp);
+user_route.get('/otp-verification', userController.loadOtp);
+user_route.post('/verify-otp', userController.verifyOtp);
+user_route.get('/resend-otp',userController.resendOtp);
 
 //----------------- Back Register page -----------------//
 user_route.get('/back-register',userController.backRegister);
 
 //----------------- user Login routes -----------------// 
 user_route.get('/login',userController.loadlogin);
-user_route.post('/loginverfy',userController.verifyLogin);
+user_route.post('/login-verify',userController.verifyLogin);
 
 
-user_route.get('/allproducts',auth.isBlock,userController.loadAllProduct); 
+user_route.get('/all-products',auth.isBlock,userController.loadAllProduct); 
 user_route.get('/product/:id',auth.isBlock,userController.product);
 
 //----------------- Logout -----------------//

@@ -122,7 +122,7 @@ const insertUser = async (req, res) => {
             const otp = generateOTP();
             console.log(otp);
             await sendOtpMail(req.body['reg-name'], req.body['reg-email'], otp, userData._id);
-            res.redirect('/otpverification');
+            res.redirect('/otp-verification');
         } else {
             res.render('register');
         }
@@ -295,7 +295,7 @@ const resendOtp = async (req, res) => {
         // Send OTP mail
         await sendOtpMail(user.name, user.email, otp, myotp.userId);
 
-        return res.redirect('/otpverification')
+        return res.redirect('/otp-verification')
     } catch (error) {
         console.error("Error resending OTP:", error.message);
         return res.status(500).json({ message: "Internal Server Error" });

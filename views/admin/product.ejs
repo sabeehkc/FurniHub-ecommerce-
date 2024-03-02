@@ -38,8 +38,8 @@
                                     <td>
                                         <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/products/edit/<%= product._id %>">Edit</a></button>
                                         <button class="btn btn-danger"><a style="color: white; text-decoration: none;" href="/admin/products/delete/<%= product._id %>">Delete</a></button>
-                                        <button type="button" class="btn <%= product.status === 'active' ? 'btn-success' : 'btn-danger' %>"  onclick="toggleProduct('<%= product._id %>', '<%= product.status %>')">
-                                            <%= product.status === 'active' ? 'Active' : 'Blocked' %>
+                                        <button type="button" class="btn <%= product.status === 'active' ? 'btn-danger' : 'btn-success' %>"  onclick="toggleProduct('<%= product._id %>', '<%= product.status %>')">
+                                            <%= product.status === 'active' ? 'Blocked' : 'Active' %>
                                         </button>
                                     </td>
                                 </tr>

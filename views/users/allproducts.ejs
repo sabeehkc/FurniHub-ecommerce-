@@ -56,7 +56,7 @@
                     
                                                 <div class="product-action-vertical">
                                                     <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
-                                                    <a href="popup/quickView.html" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a>
+                                                    <!-- <a href="" class="btn-product-icon btn-quickview" title="Quick view"><span>Quick view</span></a> -->
                                                 </div><!-- End .product-action-vertical -->
                     
                                                 <div class="product-action">
@@ -68,9 +68,9 @@
                                         </figure><!-- End .product-media -->
                                         <div class="product-body">
                                             <div class="product-cat">
-                                                <a href="#"><%= product.category.name %></a>
+                                                <a href=""><%= product.category.name %></a>
                                             </div><!-- End .product-cat -->
-                                            <h3 class="product-title"><a href="product.html"><%= product.name %></a></h3><!-- End .product-title -->
+                                            <h3 class="product-title"><a href="/product/<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
                                             <div class="product-price">₹
                                                <%= product.price %>
                                             </div><!-- End .product-price -->

@@ -49,7 +49,7 @@
                                 <a href="/">Home</a>
                             </li>
                             <li>
-                                <a href="">Shop</a>
+                                <a href="/all-products">Shop</a>
                             </li>
                             <li>
                                 <a href="" >Product</a>
@@ -63,7 +63,7 @@
                                         <a href="/about" >About</a>
                                     </li>
                                     <li>
-                                        <a href="contact.html" >Contact</a>
+                                        <a href="" >Contact</a>
                                     </li>
                                    
                                     <!-- <li><a href="404.html">Error 404</a></li> -->
@@ -213,16 +213,20 @@
 							    			<input type="email" class="form-control" id="reg-email" name="reg-email" placeholder="Enter a valid email address" >
                                             <small id="emailError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
-
+                                        <div class="form-group">
+							    			<label for="register-mobileno-2">Mobile No *</label>
+							    			<input type="text" class="form-control" id="reg-mobileno" name="reg-mobileno" placeholder="Enter a valid 10-digit mobile number." >
+                                            <small id="mobilenoError" class="text-danger"></small>
+							    		</div><!-- End .form-group -->
 							    		<div class="form-group">
 							    			<label for="register-password-2">Password *</label>
 							    			<input type="password" class="form-control" id="reg-password" name="reg-password" placeholder="Password must be at least 6 characters" >
                                             <small id="passwordError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
                                         <div class="form-group">
-							    			<label for="register-mobileno-2">Mobile No *</label>
-							    			<input type="text" class="form-control" id="reg-mobileno" name="reg-mobileno" placeholder="Enter a valid 10-digit mobile number." >
-                                            <small id="mobilenoError" class="text-danger"></small>
+							    			<label for="register-password-2">Confirm Password *</label>
+							    			<input type="password" class="form-control" id="reg-con-password" name="reg-con-password" placeholder="Password must be at least 6 characters" >
+                                            <small id="confirmPasswordError" class="text-danger"></small>
 							    		</div><!-- End .form-group -->
 
                                         <span class="text-danger"><%= message %></span>
@@ -285,17 +289,20 @@
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-password').value.trim();
             const mobileno = document.getElementById('reg-mobileno').value.trim();
+            const confPassword = document.getElementById('reg-con-password').value.trim();
 
             const fullNameError = document.getElementById('fullNameError');
             const emailError = document.getElementById('emailError');
             const passwordError = document.getElementById('passwordError');
             const mobilenoError = document.getElementById('mobilenoError');
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
 
             // Reset errors
             fullNameError.textContent = '';
             emailError.textContent = '';     
             passwordError.textContent = '';
             mobilenoError.textContent = '';
+            confirmPasswordError.textContent = '';
 
             let isValid = true;
 
@@ -322,6 +329,11 @@
             if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(password)) {
                 passwordError.textContent = 'Password must be at least 6 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.';
                 isValid = false;
+            }
+
+            if(password !== confPassword) {
+                confirmPasswordError.textContent = 'Password do not match.';
+                isValid = false
             }
 
 

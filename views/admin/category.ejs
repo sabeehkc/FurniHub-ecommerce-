@@ -26,8 +26,8 @@
                     <td>
                         <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/category/edit/<%= category._id %>">Edit</a></button>
 
-                        <button type="button" class="btn <%= category.status === 'active' ? 'btn-success' : 'btn-danger' %>" onclick="toggleCategory('<%= category._id %>', '<%= category.status %>')">
-                            <%= category.status === 'active' ? 'Active' : 'Blocked' %>
+                        <button type="button" class="btn ml-2 <%= category.status === 'active' ? 'btn-danger' : 'btn-success' %>" onclick="toggleCategory('<%= category._id %>', '<%= category.status %>')">
+                            <%= category.status === 'active' ? 'Blocked' : 'Active' %>
                         </button>
                     </td>
                 </tr>

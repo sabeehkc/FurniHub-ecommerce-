@@ -96,113 +96,6 @@ const blockUser = async (req, res) => {
     }
 };
 
-//-----------------  load category page -----------------//
-
-const loadCategory = async (req, res) => {
-    try {
-        const categories = await Category.find();
-        res.render('category', { categories });
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-//-----------------  load Addcategory page -----------------//
-
-const loadAddCategory = async (req, res) => {
-    try {
-        
-        res.render('addcategory');
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-
-//-----------------  Addcategory (post) -----------------//
-
-const addCategory = async (req, res) => {
-    try {
-        const { name, description } = req.body;
-
-        const category = new Category({ name, description }); 
-
-        await category.save();
-
-        res.redirect('/admin/category');
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-//----------------- Load EditCategory page -----------------//
-
-const LoadEditCategory = async (req, res) => { 
-    try {
-        const id = req.params.id;
-        
-        const catData = await Category.findById(id); 
-        
-        if(catData) {
-            res.render('editcategory',{category:catData});
-        } else {
-            res.redirect('/admin/category');
-        }
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
-
-//-----------------  EditCategory (post) -----------------//
-
-const editCategory = async (req, res) => {
-    try {
-        const categoryId = req.params.id; 
-        const { name, description } = req.body;
-
-    
-        const category = await Category.findById(categoryId);
-
-        if (!category) {
-            console.log('Category not found');
-        }
-
-        category.name = name;
-        category.description = description;
-
-        await category.save();
-
-        res.redirect('/admin/category');
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-
-//-----------------  active and block category -----------------//
-
-const toggleCategoryStatus = async (req, res) => {
-    try {
-        const categoryId = req.params.id;
-        const category = await Category.findById(categoryId);
-
-        if (!category) {
-            console.log('Category not found');
-        }
-
-        
-        category.status = category.status === 'active' ? 'blocked' : 'active';
-
-        await category.save();
-
-        res.redirect('/admin/category');
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-
 const logout = async(req,res) => {
     try {
         req.session.destroy();
@@ -220,11 +113,5 @@ module.exports = {
     loadDashboard,
     loadCustomer,
     blockUser, 
-    loadCategory,
-    loadAddCategory,
-    addCategory,
-    LoadEditCategory,
-    editCategory,
-    toggleCategoryStatus,
     logout
 }

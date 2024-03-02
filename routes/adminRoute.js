@@ -15,6 +15,10 @@ const adminController = require("../controllers/adminController");
 //----------------- Require productController -----------------//
 const productController = require("../controllers/productController");
 
+//----------------- Require categoryController -----------------//
+const categoryController = require("../controllers/categoryController");
+
+//----------------- Multer -----------------//
 const multer =require('multer');
 const path = require("path");
 
@@ -47,18 +51,18 @@ admin_route.post('/block-user', adminController.blockUser);
 
 
 //----------------- load category page -----------------//
-admin_route.get('/category',auth.isLogin, adminController.loadCategory);
+admin_route.get('/category',auth.isLogin, categoryController.loadCategory);
 
 //----------------- load Addcategory page (get,post) -----------------//
-admin_route.get('/category/add',auth.isLogin ,adminController.loadAddCategory);
-admin_route.post('/category/add', adminController.addCategory);
+admin_route.get('/category/add',auth.isLogin ,categoryController.loadAddCategory);
+admin_route.post('/category/add', categoryController.addCategory);
 
 //----------------- load Editcategory page (get,post) -----------------//
-admin_route.get('/category/edit/:id', auth.isLogin,adminController.LoadEditCategory);
-admin_route.post('/category/edit/:id', adminController.editCategory);
+admin_route.get('/category/edit/:id', auth.isLogin,categoryController.LoadEditCategory);
+admin_route.post('/category/edit/:id', categoryController.editCategory);
 
 //-----------------  Categories  active and blocked -----------------//
-admin_route.post('/category/toggle/:id', adminController.toggleCategoryStatus);
+admin_route.post('/category/toggle/:id', categoryController.toggleCategoryStatus);
 
 
 //-----------------  load Product page  -----------------//   

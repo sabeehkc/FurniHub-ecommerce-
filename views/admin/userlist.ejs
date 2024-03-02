@@ -25,7 +25,7 @@
                     <td><%= users[i].email %></td>
                     <td><%= users[i].mobile %></td>
                     <td>
-                        <button class="block-btn <%= users[i].is_blocked ? 'btn-danger' : 'btn-success' %>" onclick="toggleBlock('<%= users[i].email %>')">
+                        <button class="block-btn <%= users[i].is_blocked ? 'btn-success' : 'btn-danger' %>" onclick="toggleBlock('<%= users[i].email %>')">
                             <% if (users[i].is_blocked) { %>                       
                                 Unblock
                             <% } else { %>
