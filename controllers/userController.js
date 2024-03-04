@@ -343,7 +343,29 @@ const product = async(req,res) => {
         const productData = await Product.findById(id).populate({path:'category',model:Category});
         console.log(productData);
 
-        res.render('product',{userName:userName,isLoggedIn:isLoggedIn,product:productData});
+        const loocate = productData.category.name
+        console.log("product category name",loocate);
+        
+        
+        let relatedProducts =[]
+
+        if(loocate){
+            relatedProducts = await Product.find({
+                $and: [
+                    { name: { $ne: productData.name } },
+                    { category: productData.category }
+                ]
+            }).limit(4)
+            console.log("dfd",relatedProducts);
+
+            if ( relatedProducts.length === 0) {
+                console.log("Related Products not found");
+            }
+            console.log( relatedProducts);
+                
+        }
+
+        res.render('product',{userName:userName,isLoggedIn:isLoggedIn,product:productData, relProducts: relatedProducts });
 
     } catch (error) {
         console.log(error.message);

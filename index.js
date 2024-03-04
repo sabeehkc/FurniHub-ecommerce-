@@ -13,10 +13,9 @@ mongoose.connect(process.env.MONGO_URL);
 
 
 
-//body_parser
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true})); 
+
+app.use(express.json());
+app.use(express.urlencoded({extended:true})); 
 
 
 // Serve static files from the 'public'  

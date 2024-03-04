@@ -117,11 +117,8 @@ const editProduct = async (req, res) => {
 const deleteProduct = async(req,res) => {
     try {
         const id = req.params.id
-        const product = await Product.findById(id);
-
+        const product = await Product.findByIdAndDelete(id);
         console.log(product);
-
-        await product.deleteOne();
         console.log("Product Delete successfully");
         res.redirect('/admin/products')
 
