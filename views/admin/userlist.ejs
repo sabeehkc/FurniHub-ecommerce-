@@ -25,7 +25,7 @@
                     <td><%= users[i].email %></td>
                     <td><%= users[i].mobile %></td>
                     <td>
-                        <button class="block-btn <%= users[i].is_blocked ? 'btn-success' : 'btn-danger' %>" onclick="toggleBlock('<%= users[i].email %>')">
+                        <button class="block-btn <%= users[i].is_blocked ? 'btn-success' : 'btn-danger' %>" onclick="toggleBlock('<%= users[i].email %>','<%= users[i].is_blocked %>')">
                             <% if (users[i].is_blocked) { %>                       
                                 Unblock
                             <% } else { %>
@@ -56,30 +56,51 @@
 
 
 <script>
-     function toggleBlock(email) {
+    function toggleBlock(email, isBlocked) {
         const url = '/admin/block-user';
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        const action = isBlocked ? 'unblock' : 'block';
+        
+        Swal.fire({
+            title: 'Are you sure?',
+            text: `This action will ${action} the user.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success'
+                    }).then(() => {
+                        location.reload();
+                    });
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was an error processing your request.',
+                        icon: 'error'
+                    });
+                });
             }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data.message);
-            location.reload(); //page reload
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
         });
     }
-    </script>
+    
+</script>
+
+
   
   
   

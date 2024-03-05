@@ -24,5 +24,6 @@ const isBlock = async (req, res, next) => {
 };
 
 module.exports = {
-    isBlock
+    isBlock,
+    
 }

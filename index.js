@@ -11,9 +11,6 @@ const mongoose =  require('mongoose')
 mongoose.connect(process.env.MONGO_URL);
 
 
-
-
-
 app.use(express.json());
 app.use(express.urlencoded({extended:true})); 
 

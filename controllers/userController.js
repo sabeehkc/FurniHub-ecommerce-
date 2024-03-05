@@ -355,8 +355,9 @@ const product = async(req,res) => {
                     { name: { $ne: productData.name } },
                     { category: productData.category }
                 ]
-            }).limit(4)
-            console.log("dfd",relatedProducts);
+            }).limit(4).populate({path:'category',model:Category});
+
+            console.log("Related Products",relatedProducts);
 
             if ( relatedProducts.length === 0) {
                 console.log("Related Products not found");
