@@ -4,62 +4,86 @@
 <div class="container-fluid page-body-wrapper">
 <%- include('./layout/topnav.ejs') %>
 
-
-<div class="w-100 container-fluid bg-dark mt-5">
-<table class="table-bordered w-100 mt-4 h-75">
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Mobile</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% if(users.length > 0){ %>
-            <% for(let i=0; i<users.length; i++){ %>
+    <div class="w-100 container-fluid bg-dark mt-5">
+        <table class="table-bordered w-100 mt-4 h-75">
+            <thead>
                 <tr>
-                    <td><%= i+1 %></td>
-                    <td><%= users[i].name %></td>
-                    <td><%= users[i].email %></td>
-                    <td><%= users[i].mobile %></td>
-                    <td>
-                        <button class="block-btn <%= users[i].is_blocked ? 'btn-success' : 'btn-danger' %>" onclick="toggleBlock('<%= users[i].email %>','<%= users[i].is_blocked %>')">
-                            <% if (users[i].is_blocked) { %>                       
-                                Unblock
-                            <% } else { %>
-                                Block
-                            <% } %>
-                        </button>
-                    </td>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Action</th>
                 </tr>
-            <% } %>
-        <% } else { %>
-            <tr>
-                <td colspan="5">Users Not Found</td>
-            </tr>
-        <% } %>
-    </tbody>
-</table><!-- End table -->
-</div>
+            </thead>
+            <tbody>
+                <% if(users.length > 0){ %>
+                    <% for(let i=0; i<users.length; i++){ %>
+                        <tr>
+                            <td><%= i+1 %></td>
+                            <td><%= users[i].name %></td>
+                            <td><%= users[i].email %></td>
+                            <td><%= users[i].mobile %></td>
+                            <td>
+                                <button class="block-btn <%= users[i].is_blocked ? 'btn-success' : 'btn-danger' %>" onclick="toggleBlock('<%= users[i].email %>','<%= users[i].is_blocked %>')">
+                                    <% if (users[i].is_blocked) { %>                       
+                                        Unblock
+                                    <% } else { %>
+                                        Block
+                                    <% } %>
+                                </button>
+                            </td>
+                        </tr>
+                    <% } %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="5">Users Not Found</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table><!-- End table -->
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation ">
+            <ul class="pagination justify-content-center mt-3">
+                <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                    </li>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+        <!-- End Pagination -->
+    </div>
 
 </div> <!-- End container-fluid page-body-wrapper-->
 </div><!-- End container-scroller -->
 
 <footer class="footer">
     <div class="d-sm-flex justify-content-center justify-content-sm-between">
-      <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © FurniHub.com 2024</span>
-      <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
+        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © FurniHub.com 2024</span>
+        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
     </div>
 </footer>
-
 
 <script>
     function toggleBlock(email, isBlocked) {
         const url = '/admin/block-user';
-        const action = isBlocked ? 'unblock' : 'block';
-        
+        let action = isBlocked=='true'? 'unblock' : 'block';
+        console.log(isBlocked,action);
         Swal.fire({
             title: 'Are you sure?',
             text: `This action will ${action} the user.`,

@@ -41,38 +41,47 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label for="discount">Discount Price</label>
+                                    <input type="number" name="discount" id="discountPrice" class="form-control" value="<%= product.discount %>" required>
+                                    <div id="discountError" class="text-danger"></div>
+                                </div>
+                                <div class="form-group">
                                     <label for="description">Product Description</label>
                                     <textarea name="description" id="description" class="form-control" rows="5" required><%= product.description %></textarea>
                                 </div>
-                        
-                                <div class="form-group">
-                                    <label for="date">Date</label>
-                                    <input type="date" name="date" id="date" class="form-control" value="<%= product.date.toISOString().substr(0, 10) %>" required>
-                                </div>
                                 <div class="form-group">
                                     <label>Image 1 *</label>
-                                    <input type="file" id="productImages1" name="images" class="form-control"  required >
-                                    <div id="image-preview1"></div>
-                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                    <input type="file" id="productImages1" name="images" class="form-control" value=""  >   
+                                    <div id="image-preview1">
+                                        <img src="/product_images/<%=product.pictures[0].resizedFile %>" alt="">
+                                    </div>      
+                                    <div id="imagesError1" class="text-danger"></div>
                                 </div>
                                 <div class="form-group">
                                     <label>Image 2 *</label>
-                                    <input type="file" id="productImages2" name="images" class="form-control"  required >
-                                    <div id="image-preview2"></div>
-                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                    <input type="file" id="productImages2" name="images" class="form-control"   >
+                                    <div id="image-preview2">
+                                        <img src="/product_images/<%=product.pictures[1].resizedFile %>" alt="">
+                                    </div>
+                                    <div id="imagesError2" class="text-danger"></div>
                                 </div>
                                 <div class="form-group">
                                     <label>Image 3 *</label>
-                                    <input type="file" id="productImages3" name="images" class="form-control"  required >
-                                    <div id="image-preview3"></div>
-                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                    <input type="file" id="productImages3" name="images" class="form-control"   >
+                                    <div id="image-preview3">
+                                        <img src="/product_images/<%=product.pictures[2].resizedFile %>" alt="">
+                                    </div>
+                                    <div id="imagesError3" class="text-danger"></div>
                                 </div>
                                 <div class="form-group">
                                     <label >Image 4 *</label>
-                                    <input type="file" id="productImages4" name="images" class="form-control" required >
-                                    <div id="image-preview4"></div>
-                                    <div class="invalid-feedback">Please upload at least one image.</div>
+                                    <input type="file" id="productImages4" name="images" class="form-control"  >
+                                    <div id="image-preview4">
+                                        <img src="/product_images/<%=product.pictures[3].resizedFile %>" alt="">
+                                    </div>    
+                                    <div id="imagesError4" class="text-danger"></div>
                                 </div>
+                                
                             
                                 <div class="text-center">
                                     <button type="submit" name="submit" class="btn btn-primary">Edit  Product</button>

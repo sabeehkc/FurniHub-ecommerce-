@@ -44,13 +44,14 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
+                                    <label for="discount">Discount Price</label>
+                                    <input type="number" name="discount" id="discountPrice" class="form-control" placeholder="Enter Discount Percentage"  pattern="[1-9][0-9]?">
+                                    <div id="discountError" class="text-danger"></div>
+                                </div>
+                                <div class="form-group">
                                     <label for="description">Product Description</label>
                                     <textarea name="description" id="description" class="form-control" rows="5" placeholder="Enter Product Description" ></textarea>
                                     <div id="descriptionError" class="text-danger"></div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="product-date">Date</label>
-                                    <input type="date" name="date" class="form-control" >
                                 </div>
                                 <div class="form-group">
                                     <label>Image 1 *</label>
@@ -103,15 +104,17 @@
         var description = document.getElementById("description").value.trim();
         var price = document.getElementById("productPrice").value.trim();
         var quantity = document.getElementById("productQuantity").value.trim();
-        var images1 = document.getElementById("productImages1");
-        var images2 = document.getElementById("productImages2");
-        var images3 = document.getElementById("productImages3");
-        var images4 = document.getElementById("productImages4");
+        var discount = document.getElementById("discountPrice").value.trim();
+        var images1 = document.getElementById("productImages1").value.trim();
+        var images2 = document.getElementById("productImages2").value.trim();
+        var images3 = document.getElementById("productImages3").value.trim();
+        var images4 = document.getElementById("productImages4").value.trim();
 
         var nameError = document.getElementById("nameError");
         var descriptionError = document.getElementById("descriptionError");
         var priceError = document.getElementById("priceError");
         var quantityError = document.getElementById("quantityError");
+        var discountError = document.getElementById("discountError");
         var imagesError1 = document.getElementById("imagesError1");
         var imagesError2 = document.getElementById("imagesError2");
         var imagesError3 = document.getElementById("imagesError3");
@@ -123,6 +126,7 @@
         descriptionError.textContent = "";
         priceError.textContent = "";
         quantityError.textContent = "";
+        discountError.textContent = "";
         imagesError1.textContent = "";
         imagesError2.textContent = "";
         imagesError3.textContent = "";
@@ -152,29 +156,33 @@
             isValid = false;
         }
 
-        //  // Allowing file type
-        //  var allowedExtensions =     /(\.jpg|\.jpeg|\.png|\.gif|\.webp)$/i;
-                
-             
-        // if (!allowedExtensions.exec(images1)) {
-        //     imagesError1.textContent = "Please upload image"
-        //     isValid =  false;
-        // } 
+        if(isNaN(parseFloat(discount)) || discount <= 0 || discount >=100 ) {
+            discountError.textContent = "Check Discount Percentage"
+            isValid = false;
+        }
 
-        // if (!allowedExtensions.exec(images2)) {
-        //     imagesError2.textContent = "Please upload image"
-        //     isValid =  false;
-        // } 
+        // Allowing file type
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.webp)$/i;
 
-        // if (!allowedExtensions.exec(images3)) {
-        //     imagesError3.textContent = "Please upload image"
-        //     isValid =  false;
-        // } 
+        if (!allowedExtensions.test(images1)) {
+            imagesError1.textContent = "Please upload image"
+            isValid = false;
+        }
 
-        // if (!allowedExtensions.exec(images4)) {
-        //     imagesError4.textContent = "Please upload image"
-        //     isValid =  false;
-        // } 
+        if (!allowedExtensions.test(images2)) {
+            imagesError2.textContent = "Please upload image"
+            isValid = false;
+        }
+
+        if (!allowedExtensions.test(images3)) {
+            imagesError3.textContent = "Please upload image"
+            isValid = false;
+        }
+
+        if (!allowedExtensions.test(images4)) {
+            imagesError4.textContent = "Please upload image"
+            isValid = false;
+        }
 
         return isValid;
     }

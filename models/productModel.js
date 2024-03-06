@@ -20,12 +20,12 @@ const productSchema =  mongoose.Schema({
         min: 0,
         required: true,
     },
+    discount: {
+        type: Number,
+        default:0,
+    },
     description: { 
         type: String,
-        required: true,
-    },
-    date: {
-        type: Date,
         required: true,
     },
     pictures: {
@@ -37,9 +37,8 @@ const productSchema =  mongoose.Schema({
         enum: ['active', 'blocked'],
         default: 'active',
     },
-    
-      
-
+}, {
+    timestamps: true,
 })
 
 module.exports = mongoose.model('products',productSchema);

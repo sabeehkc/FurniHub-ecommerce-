@@ -318,60 +318,6 @@ const logOut = async (req,res) => {
     }
 };
 
-const loadAllProduct = async (req,res) => {
-    try {
-        const userName = req.session.user ? req.session.user.name : null;
-        const isLoggedIn = req.session.user ? true : false; //hide login button
-
-        const products = await Product.find({status: 'active'}).populate({path:'category',model:Category});
-        console.log(products);
-        const categories = await Category.find()
-
-        res.render('allproducts',{userName:userName,isLoggedIn:isLoggedIn,products:products,categories:categories});
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-const product = async(req,res) => {
-    try {
-        const userName = req.session.user ? req.session.user.name : null;
-        const isLoggedIn = req.session.user ? true : false; //hide login button
-
-        const id = req.params.id;
-
-        const productData = await Product.findById(id).populate({path:'category',model:Category});
-        console.log(productData);
-
-        const loocate = productData.category.name
-        console.log("product category name",loocate);
-        
-        
-        let relatedProducts =[]
-
-        if(loocate){
-            relatedProducts = await Product.find({
-                $and: [
-                    { name: { $ne: productData.name } },
-                    { category: productData.category }
-                ]
-            }).limit(4).populate({path:'category',model:Category});
-
-            console.log("Related Products",relatedProducts);
-
-            if ( relatedProducts.length === 0) {
-                console.log("Related Products not found");
-            }
-            console.log( relatedProducts);
-                
-        }
-
-        res.render('product',{userName:userName,isLoggedIn:isLoggedIn,product:productData, relProducts: relatedProducts });
-
-    } catch (error) {
-        console.log(error.message);
-    }
-}
  
 //----------------- Login With Google (success)-----------------//
 
@@ -447,7 +393,5 @@ module.exports = {
     logOut,
     successGoogleLogin,
     failureGoogleLogin,
-    loadAllProduct,
     loadAbout,
-    product
 };

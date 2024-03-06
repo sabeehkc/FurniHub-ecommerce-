@@ -23,7 +23,7 @@ const loadAddProducts = async (req,res) => {
 };
 const addProduct = async (req, res) => {
     try {
-        const { name, category, price, quantity, description, date } = req.body;
+        const { name, category, price, quantity, description, discount } = req.body;
 
         // Process and save product images
         const productImages = await Promise.all(req.files.map(async (file) => {
@@ -50,14 +50,18 @@ const addProduct = async (req, res) => {
 
         console.log("Processed images:", productImages);
 
+        //calculate discount price
+        const  calculatedDiscount = price -  price * discount / 100 
+        console.log(discount);
+
         // Create new product with image data
         const product = new Product({
             name,
             category,
             price, 
-            quantity, 
+            quantity,
+            discount:calculatedDiscount, 
             description,
-            date,
             pictures: productImages
         });
 
@@ -69,8 +73,6 @@ const addProduct = async (req, res) => {
       
     } catch (error) {
         console.error('Error adding product:', error);
-        // Handle error response
-        res.status(500).send('Error adding product');
     }
 };
 
@@ -150,6 +152,63 @@ const toggleProductStatus = async (req, res) => {
 };
 
 
+
+const loadAllProduct = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const products = await Product.find({status: 'active'}).populate({path:'category',model:Category});
+        console.log(products);
+        const categories = await Category.find()
+
+        res.render('allproducts',{userName:userName,isLoggedIn:isLoggedIn,products:products,categories:categories});
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const product = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const id = req.params.id;
+
+        const productData = await Product.findById(id).populate({path:'category',model:Category});
+        console.log(productData);
+
+        const loocate = productData.category.name
+        console.log("product category name",loocate);
+        
+        
+        let relatedProducts =[]
+
+        if(loocate){
+            relatedProducts = await Product.find({
+                $and: [
+                    { name: { $ne: productData.name } },
+                    { category: productData.category }
+                ]
+            }).limit(4).populate({path:'category',model:Category});
+
+            console.log("Related Products",relatedProducts);
+
+            if ( relatedProducts.length === 0) {
+                console.log("Related Products not found");
+            }
+            console.log( relatedProducts);
+                
+        }
+
+        res.render('product',{userName:userName,isLoggedIn:isLoggedIn,product:productData, relProducts: relatedProducts });
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
 module.exports = {
     loadProducts,
     loadAddProducts,
@@ -157,5 +216,7 @@ module.exports = {
     loadEditProduct,
     editProduct,
     deleteProduct,
-    toggleProductStatus
+    toggleProductStatus,
+    loadAllProduct,
+    product
 }

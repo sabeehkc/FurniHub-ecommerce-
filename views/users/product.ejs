@@ -60,8 +60,11 @@
                             </div><!-- End .rating-container -->
 
                             <div class="product-price">₹
-                              <%= product.price %>
-                            </div><!-- End .product-price -->
+                                <%= product.discount %>
+                                <div class="text-muted ml-3">
+                                <small><del>₹<%= product.price %></del></small>
+                                </div>
+                             </div><!-- End .product-price -->
 
                             <div class="product-content">
                                 <p><%= product.description %></p>
@@ -275,8 +278,11 @@
                             </div> <!--End .product-cat -->
                             <h3 class="product-title"><a href="/product/<%= product._id %>"><%= product.name %></a></h3> <!--End .product-title -->
                             <div class="product-price">₹
-                              <%= product.price %>
-                            </div> <!--End .product-price -->
+                                <%= product.discount %>
+                                <div class="text-muted ml-2">
+                                <small><del>₹<%= product.price %></del></small>
+                                </div>
+                             </div><!-- End .product-price -->
                             <div class="ratings-container">
                                 <div class="ratings">
                                     <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->

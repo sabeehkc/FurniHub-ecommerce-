@@ -56,11 +56,27 @@ const loadDashboard = async(req,res) => {
 };
 
 //----------------- userlist  page -----------------//
-
-const loadCustomer = async(req,res) => {
+const loadCustomer = async (req, res) => {
     try {
-        const userData = await User.find({is_admin:0});
-        res.render('userlist',{users:userData})
+        const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+        const pageSize = 6; // Number of users per page
+
+        // Calculate the skip value 
+        const skip = (page - 1) * pageSize;
+
+        const userData = await User.find({ is_admin: 0 }).limit(pageSize).skip(skip);
+
+        // Count total number of users
+        const totalCount = await User.countDocuments({ is_admin: 0 });
+
+        // Calculate total number of pages
+        const totalPages = Math.ceil(totalCount / pageSize);
+
+        res.render('userlist', { 
+            users: userData,
+            currentPage: page,
+            totalPages: totalPages
+        });
     } catch (error) {
         console.log(error.message);
     }

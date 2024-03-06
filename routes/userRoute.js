@@ -5,6 +5,9 @@ const user_route = express();
 //----------------- Require userController -----------------//
 const userController = require("../controllers/userController");
 
+//----------------- Require ProductController -----------------//
+const productController = require("../controllers/productController")
+ 
 //----------------- Login With Google -----------------//
 const passport = require('passport');
 require('../passport');    //passport.js
@@ -53,8 +56,8 @@ user_route.get('/login',userController.loadlogin);
 user_route.post('/login-verify',userController.verifyLogin);
 
 
-user_route.get('/all-products',auth.isBlock,userController.loadAllProduct); 
-user_route.get('/product/:id',auth.isBlock,userController.product);
+user_route.get('/all-products',auth.isBlock,productController.loadAllProduct); 
+user_route.get('/product/:id',auth.isBlock,productController.product);
 
 //----------------- Logout -----------------//
 user_route.get('/logout',userController.logOut);
