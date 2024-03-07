@@ -15,19 +15,21 @@
     <table class="table">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Name</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <% categories.forEach(category => { %>
+            <% categories.forEach((category, index) => { %>
                 <tr>
+                    <td><%= index + 1 %></td>
                     <td><%= category.name %></td>
                     <td>
                         <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/category/edit/<%= category._id %>">Edit</a></button>
 
                         <button type="button" class="btn ml-2 <%= category.status === 'active' ? 'btn-danger' : 'btn-success' %>" onclick="toggleCategory('<%= category._id %>', '<%= category.status %>')">
-                            <%= category.status === 'active' ? 'Blocked' : 'Active' %>
+                            <%= category.status === 'active' ? 'Block' : 'Activate' %>
                         </button>
                     </td>
                 </tr>

@@ -18,6 +18,7 @@
                                 <th>Product Name</th>
                                 <th>Category</th>
                                 <th>Price</th>
+                                <th>Discount Price</th>
                                 <th>Quantity</th>
                                 <th>Image</th>
                                 <th>Action</th>
@@ -30,16 +31,16 @@
                                     <td><%= product.name %></td>
                                     <td><%= product.category.name %></td>
                                     <td>₹<%= product.price %></td>
+                                    <td>₹<%= product.discount %></td>
                                     <td><%= product.quantity %></td>
                                     <td><%for(let i=0;i<product.pictures.length;i++){%>
-                                        <img src="/product_images/<%=product.pictures[i].resizedFile%>" alt="Product Images">
+                                        <img src="<%=product.pictures[i]%>" alt="Product Images">
                                         <%}%>
                                     </td>
                                     <td>
                                         <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/products/edit/<%= product._id %>">Edit</a></button>
-                                        <button class="btn btn-danger"><a style="color: white; text-decoration: none;" href="/admin/products/delete/<%= product._id %>">Delete</a></button>
                                         <button type="button" class="btn <%= product.status === 'active' ? 'btn-danger' : 'btn-success' %>"  onclick="toggleProduct('<%= product._id %>', '<%= product.status %>')">
-                                            <%= product.status === 'active' ? 'Blocked' : 'Active' %>
+                                            <%= product.status === 'active' ? 'Block' : 'Activate' %>
                                         </button>
                                     </td>
                                 </tr>
@@ -52,6 +53,32 @@
             <div class="container mt-3">
                 <a href="/admin/products/add" class="btn btn-primary">Add New Product</a>
             </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation ">
+                <ul class="pagination justify-content-center mt-4">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li> 
+                    <% } %>
+                    <% for (let i = 1; i <= totalPages; i++) { %> 
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                                <span aria-label="true">&raquo;</span>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+            <!-- End Pagination -->
         </div>
     </div>
 </div>

@@ -12,14 +12,15 @@
                     <h2 class="text-center mb-0">Edit Product</h2>
                 </div>
                     <div class="card-body">
-                        <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data">
+                        <form enctype="multipart/form-data" >
                                 <div class="form-group">
-                                    <label for="name">Product Name</label>
-                                    <input type="text" name="name" id="name" class="form-control" value="<%= product.name %>" required>
+                                    <label >Product Name</label>
+                                    <input type="text" name="name" id="name" class="form-control" value="<%= product.name %>" >
+                                    <div id="nameError" class="text-danger"></div>
                                 </div>
                                 <div class="form-group">
                                     <label for="category">Category</label>
-                                    <select class="form-control" id="category" name="category" required>
+                                    <select class="form-control" id="category" name="category" >
                                         <% categories.forEach(category => { %>
                                             <option value="<%= category._id %>" <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>><%= category.name %></option>
                                         <% }); %>
@@ -32,59 +33,52 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">₹</span>
                                             </div>
-                                            <input type="number" name="price" id="price" class="form-control" value="<%= product.price %>" required>
+                                            <input type="number" name="price" id="price" class="form-control" value="<%= product.price %>" >
                                         </div>
+                                        <div id="priceError" class="text-danger" ></div>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label for="quantity">Quantity</label>
-                                            <input type="number" name="quantity" id="quantity" class="form-control" value="<%= product.quantity %>" required>
+                                        <input type="number" name="quantity" id="quantity" class="form-control" value="<%= product.quantity %>" >
+                                        <div id="quantityError" class="text-danger" ></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="discount">Discount Price</label>
-                                    <input type="number" name="discount" id="discountPrice" class="form-control" value="<%= product.discount %>" required>
+                                    <input type="number" name="discount" id="discountPrice" class="form-control" value="<%= discountPercentage %>" >
                                     <div id="discountError" class="text-danger"></div>
                                 </div>
                                 <div class="form-group">
                                     <label for="description">Product Description</label>
-                                    <textarea name="description" id="description" class="form-control" rows="5" required><%= product.description %></textarea>
+                                    <textarea name="description" id="description" class="form-control" rows="5" ><%= product.description %></textarea>
+                                    <div id="descriptionError" class="text-danger"></div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Image 1 *</label>
-                                    <input type="file" id="productImages1" name="images" class="form-control" value=""  >   
-                                    <div id="image-preview1">
-                                        <img src="/product_images/<%=product.pictures[0].resizedFile %>" alt="">
-                                    </div>      
-                                    <div id="imagesError1" class="text-danger"></div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Image 2 *</label>
-                                    <input type="file" id="productImages2" name="images" class="form-control"   >
-                                    <div id="image-preview2">
-                                        <img src="/product_images/<%=product.pictures[1].resizedFile %>" alt="">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="image-container">
+                                                <% if(product.pictures && product.pictures.length > 0) { %>
+                                                    <% product.pictures.forEach((image, index) => { %>
+                                                        <div class="image-item">
+                                                            <label>Existing Image <%= index + 1 %> </label>
+                                                            <img src="<%= image %>" alt="Product Image <%= index + 1 %>" class="preview-image" />
+                                                            <button type="button" class="delete-image-btn btn btn-danger"
+                                                                data-product-id="<%= product._id %>"
+                                                                data-image-index="<%= index %>">Delete</button>
+                                                            <!-- Hidden input field to store deleted image indexes -->
+                                                            <input type="hidden" name="deletedImages[]" value="<%= index %>" />
+                                                        </div>
+                                                    <% }) %>
+                                                <% } else { %>
+                                                    <p>No images available to delete.</p>
+                                                <% } %>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div id="imagesError2" class="text-danger"></div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Image 3 *</label>
-                                    <input type="file" id="productImages3" name="images" class="form-control"   >
-                                    <div id="image-preview3">
-                                        <img src="/product_images/<%=product.pictures[2].resizedFile %>" alt="">
-                                    </div>
-                                    <div id="imagesError3" class="text-danger"></div>
-                                </div>
-                                <div class="form-group">
-                                    <label >Image 4 *</label>
-                                    <input type="file" id="productImages4" name="images" class="form-control"  >
-                                    <div id="image-preview4">
-                                        <img src="/product_images/<%=product.pictures[3].resizedFile %>" alt="">
-                                    </div>    
-                                    <div id="imagesError4" class="text-danger"></div>
-                                </div>
-                                
-                            
-                                <div class="text-center">
-                                    <button type="submit" name="submit" class="btn btn-primary">Edit  Product</button>
+
+                                <div class="text-center mt-4">
+                                    <button type="button" class="btn btn-primary" onclick="validate()">Edit  Product</button>
                                     <a href="/admin/products" class="btn btn-primary ml-2">Back</a>
                                 </div>  
                             </form>
@@ -102,6 +96,129 @@
         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
     </div>
 </footer>
+
+
+
+
+<script>
+    function validate() {
+           var name = document.getElementById("name").value.trim();
+           console.log(name)
+           var description = document.getElementById("description").value.trim();
+           console.log(description)
+           var price = document.getElementById("price").value.trim();
+           console.log(price)
+           var quantity = document.getElementById("quantity").value.trim();
+           console.log(quantity)
+           var discount = document.getElementById("discountPrice").value.trim();
+           console.log(discount)
+            var category = document.getElementById("category").value;
+            console.log(category);
+
+
+           var nameError = document.getElementById("nameError");
+           var descriptionError = document.getElementById("descriptionError");
+           var priceError = document.getElementById("priceError");
+           var quantityError = document.getElementById("quantityError");
+           var discountError = document.getElementById("discountError");
+           
+           // Reset errors
+           nameError.textContent = "";
+           descriptionError.textContent = "";
+           priceError.textContent = "";
+           quantityError.textContent = "";
+           discountError.textContent = "";
+   
+           var isValid = true;
+   
+           if (name === "") {
+               nameError.textContent = "Please enter a product name.";
+               isValid = false;
+           }
+   
+           if (description === "") {
+               descriptionError.textContent = "Please enter a product description.";
+               isValid = false;
+           }
+   
+           if (isNaN(parseFloat(price)) || price <= 0) {
+               priceError.textContent = "Please enter a valid price.";
+               isValid = false;
+           }
+   
+           if (isNaN(parseInt(quantity)) || quantity <= 0) {
+               quantityError.textContent = "Please enter a valid quantity.";
+               isValid = false;
+           }
+   
+           if(isNaN(parseFloat(discount)) || discount <= 0 || discount >=100 ) {
+               discountError.textContent = "Check Discount Percentage"
+               isValid = false;
+           }
+   
+           if(isValid==false){
+            return
+           }
+           let formData={name,category,description,price,quantity,discount}
+            console.log(formData)
+
+       fetch('/admin/products/edit/<%= product._id %>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Success:', data);
+            window.location.href = '/admin/products';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+       }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const deleteButtons = document.querySelectorAll(".delete-image-btn");
+
+    deleteButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+            const productId = button.getAttribute("data-product-id");
+            const imageIndex = button.getAttribute("data-image-index");
+
+
+            console.log(productId);
+            console.log(imageIndex);
+            fetch(`/admin/productsdelete?productId=${productId}&imageIndex=${imageIndex}`, {
+                method: "DELETE"
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data.message);
+                button.parentElement.remove();
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+        });
+    });
+});
+</script>
+
+
+
 
 
 <%- include('./layout/adfooter.ejs') %>

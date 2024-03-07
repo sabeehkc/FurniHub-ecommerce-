@@ -21132,4 +21132,25 @@ div.tagsinput {
   -webkit-flex-grow: 1;
   flex-grow: 1; }
 
+
+.image-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Align images horizontally at the center */
+    align-items: center; /* Align images vertically at the center */
+    gap: 20px; /* Add some space between images */
+}
+
+.image-item {
+    flex: 0 0 calc(25% - 20px); /* Set the width of each image container */
+    position: relative;
+}
+
+.image-item img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Center the image horizontally within its container */
+}
+
 /*# sourceMappingURL=maps/style.css.map */

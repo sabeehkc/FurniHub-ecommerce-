@@ -5,8 +5,22 @@ const path = require("path")
 
 const loadProducts = async(req,res) => {
     try {
-        const products = await Product.find().populate({path:'category',model:Category});
-        res.render('product', { products });
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = 6;
+
+        const skip = (page - 1) * pageSize;
+
+        const products = await Product.find().limit(pageSize).skip(skip).populate({path:'category',model:Category});
+
+        const totalCount = await Product.countDocuments();
+
+        const totalPages = Math.ceil(totalCount/ pageSize);
+
+        res.render('product', {
+            products,
+            currentPage: page,
+            totalPages: totalPages
+        });
     } catch (error) {
         console.log(error.message);
     }
@@ -37,11 +51,10 @@ const addProduct = async (req, res) => {
                     .toFile(resizedPath);
 
                 console.log("Image processed successfully:", file.filename);
-                return {
-                    filename: file.filename,
-                    path: file.path,
-                    resizedFile: resizedFilename,
-                };
+                
+                // Return only the path of the resized image
+                return `/product_images/${resizedFilename}`;
+
             } catch (error) {
                 console.error('Error processing and saving image:', error);
                 return null; // Exclude failed images
@@ -51,16 +64,16 @@ const addProduct = async (req, res) => {
         console.log("Processed images:", productImages);
 
         //calculate discount price
-        const  calculatedDiscount = price -  price * discount / 100 
+        const calculatedDiscount = price - price * discount / 100;
         console.log(discount);
 
-        // Create new product with image data
+        // Create new product with image paths
         const product = new Product({
             name,
             category,
-            price, 
+            price,
             quantity,
-            discount:calculatedDiscount, 
+            discount: calculatedDiscount,
             description,
             pictures: productImages
         });
@@ -82,7 +95,15 @@ const loadEditProduct = async (req,res) => {
         const id = req.params.id;
         const categories = await Category.find();
         const productData = await Product.findById(id); 
-        res.render('productedit',{categories, product:productData});
+
+        // calculate product discount percentage
+        let productDicountPrice = productData.price - productData.discount;
+        productDicountPrice = productDicountPrice*100 
+
+        const discountPercentage = productDicountPrice/productData.price;
+
+        res.render('productedit',{categories, product:productData, discountPercentage});
+        
     } catch (error) {
         console.log(error.message);
     }
@@ -91,13 +112,19 @@ const loadEditProduct = async (req,res) => {
 const editProduct = async (req, res) => {
     try {
         const id = req.params.id;
-        const { name, category, price, quantity, description, date } = req.body;
+        const n=req.body.name
+        const { name, category, price, quantity, description, discount } = req.body;
+        console.log("jfhfh",req.body);
         
         let product = await Product.findById(id);
 
         if (!product) {
-           console.log("Product not Found");
+            console.log("Product not Found");
         }
+
+        // Check if discount is a valid number
+        const parsedDiscount = parseFloat(discount);
+        const calculatedDiscount = isNaN(parsedDiscount) ? 0 : price - (price * parsedDiscount / 100);
 
         // Update the product details
         product.name = name;
@@ -105,31 +132,40 @@ const editProduct = async (req, res) => {
         product.price = price;
         product.quantity = quantity;
         product.description = description;
-        product.date = date;
+        product.discount = calculatedDiscount;
 
         await product.save(); 
 
-        res.redirect(`/admin/products`);
-
+        res.json({success:'true'});
     } catch (error) {
-        console.log(error.message);
+        console.log('this is error',error.message);
     }
 };
 
-const deleteProduct = async(req,res) => {
+const deleteImage = async (req, res) => {
     try {
-        const id = req.params.id
-        const product = await Product.findByIdAndDelete(id);
-        console.log(product);
-        console.log("Product Delete successfully");
-        res.redirect('/admin/products')
+        const productId = req.query.productId;
+        const imageIndex = req.query.imageIndex;
+
+        console.log(productId);
+        console.log(imageIndex);
+    
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        //Remove image specific index
+        product.pictures.splice(imageIndex, 1);
+
+        await product.save();
+
+        res.status(200).json({ message: 'Image deleted successfully' });
 
     } catch (error) {
-        console.log(error.message);
+        console.error(error);
     }
 };
-
-
 
 const toggleProductStatus = async (req, res) => {
     try {
@@ -139,13 +175,12 @@ const toggleProductStatus = async (req, res) => {
         if (!product) {
             console.log('Product  not found');
         }
-
-        
         product.status = product.status === 'active' ? 'blocked' : 'active';
 
         await product.save();
 
         res.redirect('/admin/products');
+
     } catch (error) {
         console.log(error.message);
     }
@@ -158,11 +193,28 @@ const loadAllProduct = async (req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        const products = await Product.find({status: 'active'}).populate({path:'category',model:Category});
+        const page = parseInt(req.query.page) || 1; 
+        const pageSize = 9;
+
+        const skip = (page - 1) * pageSize;
+
+        const products = await Product.find({status: 'active'}).limit(pageSize).skip(skip).populate({path:'category',model:Category});
         console.log(products);
+
+        const totalCount = await Product.countDocuments({status: 'active'});
+
+        const totalPages = Math.ceil(totalCount / pageSize);
+
         const categories = await Category.find()
 
-        res.render('allproducts',{userName:userName,isLoggedIn:isLoggedIn,products:products,categories:categories});
+        res.render('allproducts',{
+            userName:userName,
+            isLoggedIn:isLoggedIn,
+            products:products,
+            categories:categories,
+            currentPage: page,
+            totalPages: totalPages
+        });
     } catch (error) {
         console.log(error.message);
     }
@@ -215,7 +267,7 @@ module.exports = {
     addProduct,
     loadEditProduct,
     editProduct,
-    deleteProduct,
+    deleteImage,
     toggleProductStatus,
     loadAllProduct,
     product

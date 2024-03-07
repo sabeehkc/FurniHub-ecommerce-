@@ -71,11 +71,13 @@ admin_route.get('/products',auth.isLogin,productController.loadProducts);
 admin_route.get('/products/add',auth.isLogin,productController.loadAddProducts);
 admin_route.post('/products/addpost',upload.array('images',4),productController.addProduct);
 
-admin_route.get('/products/edit/:id',auth.isLogin,productController.loadEditProduct);
+admin_route.get('/products/edit/:id',productController.loadEditProduct);
 admin_route.post('/products/edit/:id',productController.editProduct);
+
+admin_route.delete('/productsdelete', productController.deleteImage);
+
 admin_route.post('/products/toggle/:id',productController.toggleProductStatus);
 
-admin_route.get('/products/delete/:id',productController.deleteProduct);
 
 admin_route.get('/logout',auth.isLogin,adminController.logout);
 
