@@ -5,12 +5,12 @@ const app = express();
 //Dotenv
 const dotenv = require('dotenv').config();
 
-
 //connect Mongodb
-const mongoose =  require('mongoose')
-mongoose.connect(process.env.MONGO_URL);
+const connectDB = require("./config/mongoose");
+connectDB();// Call mongoose connection
 
 
+//code configure middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended:true})); 
 
@@ -21,7 +21,6 @@ app.use(express.static(path.join(__dirname,'public')))
 
 // for nocache
 const nocache = require('nocache');
-
 
 //session
 const session = require('express-session');

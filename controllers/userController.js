@@ -76,8 +76,6 @@ const loadHome = async (req, res) => {
 
     } catch (error) {
         console.log(error.message);
-        // Handle the error appropriately
-        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -88,7 +86,6 @@ const loadRegister = async (req, res) => {
         res.render('register',{message:""});
     } catch (error) {
         console.log(error.message);
-        res.status(500).send("Internal Server Error");
     }
 };
 
@@ -129,7 +126,6 @@ const insertUser = async (req, res) => {
     }
     } catch (error) {
         console.log("Error inserting user:", error.message);
-        res.status(500).send("Internal Server Error"); 
     }
 };
 

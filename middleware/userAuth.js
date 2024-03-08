@@ -9,7 +9,7 @@ const isBlock = async (req, res, next) => {
 
       if (!user) {
         console.log("User not found");
-      } else if (user.is_blocked) {
+      }else if (user.is_blocked) {
         await req.session.destroy(); 
         res.redirect('/'); 
       } else {
@@ -24,6 +24,6 @@ const isBlock = async (req, res, next) => {
 };
 
 module.exports = {
-    isBlock,
+  isBlock,
     
 }

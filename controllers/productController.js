@@ -3,6 +3,7 @@ const Product = require("../models/productModel");
 const Sharp = require("sharp");
 const path = require("path")
 
+//-----------------  load Product Mangement page -----------------//
 const loadProducts = async(req,res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -26,7 +27,7 @@ const loadProducts = async(req,res) => {
     }
 };
 
-
+//----------------- Load Add Product Page -----------------//
 const loadAddProducts = async (req,res) => {
     try {
         const categories = await Category.find();
@@ -35,6 +36,8 @@ const loadAddProducts = async (req,res) => {
         console.log(error.message);
     }
 };
+
+//----------------- Add Product (post) -----------------//
 const addProduct = async (req, res) => {
     try {
         const { name, category, price, quantity, description, discount } = req.body;
@@ -89,7 +92,7 @@ const addProduct = async (req, res) => {
     }
 };
 
-
+//----------------- Load Edit Page -----------------//
 const loadEditProduct = async (req,res) => {
     try {
         const id = req.params.id;
@@ -109,10 +112,10 @@ const loadEditProduct = async (req,res) => {
     }
 };
 
+//----------------- Edit product (post) -----------------//
 const editProduct = async (req, res) => {
     try {
         const id = req.params.id;
-        const n=req.body.name
         const { name, category, price, quantity, description, discount } = req.body;
         console.log("jfhfh",req.body);
         
@@ -142,6 +145,7 @@ const editProduct = async (req, res) => {
     }
 };
 
+//----------------- Delete Images in Database -----------------//
 const deleteImage = async (req, res) => {
     try {
         const productId = req.query.productId;
@@ -167,6 +171,7 @@ const deleteImage = async (req, res) => {
     }
 };
 
+//----------------- Product Active and Block -----------------//
 const toggleProductStatus = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -187,7 +192,7 @@ const toggleProductStatus = async (req, res) => {
 };
 
 
-
+//----------------- Load AllProduct Page (userside) -----------------//
 const loadAllProduct = async (req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
@@ -220,6 +225,7 @@ const loadAllProduct = async (req,res) => {
     }
 };
 
+//----------------- Show the Each Product  -----------------//
 const product = async(req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;

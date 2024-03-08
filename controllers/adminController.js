@@ -58,7 +58,7 @@ const loadDashboard = async(req,res) => {
 //----------------- userlist  page -----------------//
 const loadCustomer = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+        const page = parseInt(req.query.page) || 1; // Default to page 1 
         const pageSize = 6; // Number of users per page
 
         // Calculate the skip value 

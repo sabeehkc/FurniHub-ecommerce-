@@ -65,8 +65,6 @@
                                                             <button type="button" class="delete-image-btn btn btn-danger"
                                                                 data-product-id="<%= product._id %>"
                                                                 data-image-index="<%= index %>">Delete</button>
-                                                            <!-- Hidden input field to store deleted image indexes -->
-                                                            <input type="hidden" name="deletedImages[]" value="<%= index %>" />
                                                         </div>
                                                     <% }) %>
                                                 <% } else { %>
@@ -76,6 +74,7 @@
                                         </div>
                                     </div>
                                 </div>
+
 
                                 <div class="text-center mt-4">
                                     <button type="button" class="btn btn-primary" onclick="validate()">Edit  Product</button>
