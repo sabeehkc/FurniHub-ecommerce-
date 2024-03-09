@@ -21153,4 +21153,19 @@ div.tagsinput {
     margin: 0 auto; /* Center the image horizontally within its container */
 }
 
+.new-img-div {
+  margin-top: 20px; /* Adjust margin as needed */
+}
+
+.newimg {
+  margin-bottom: 10px; /* Adjust margin as needed */
+}
+
+.newimg label {
+  font-weight: bold;
+}
+
+.newimg input[type="file"] {
+  margin-top: 5px; /* Adjust margin as needed */
+}
 /*# sourceMappingURL=maps/style.css.map */

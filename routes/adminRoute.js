@@ -1,22 +1,14 @@
 const express = require('express');
 const admin_route = express();
-
+const auth = require("../middleware/adminAuth");
+const adminController = require("../controllers/adminController");
+const productController = require("../controllers/productController");
+const categoryController = require("../controllers/categoryController");
 
 //----------------- set view engine -----------------//
 admin_route.set('view engine','ejs');
 admin_route.set('views','./views/admin');
 
-const auth = require("../middleware/adminAuth");
-
-
-//----------------- Require adminController -----------------//
-const adminController = require("../controllers/adminController");
-
-//----------------- Require productController -----------------//
-const productController = require("../controllers/productController");
-
-//----------------- Require categoryController -----------------//
-const categoryController = require("../controllers/categoryController");
 
 //----------------- Multer -----------------//
 const multer =require('multer');
@@ -39,6 +31,7 @@ const upload = multer({storage:storage});
 admin_route.get('/',auth.isLogout,adminController.loginload);
 admin_route.post('/loginpost',adminController.Loginverifying);
 
+admin_route.use(auth.isLogin)
 
 //----------------- Admin Dashboard -----------------//
 admin_route.get('/dashboard',auth.isLogin,adminController.loadDashboard); 

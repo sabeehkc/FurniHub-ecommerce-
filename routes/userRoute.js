@@ -1,11 +1,8 @@
 const express = require('express');
 const user_route = express();
 
-
-//----------------- Require userController -----------------//
 const userController = require("../controllers/userController");
 
-//----------------- Require ProductController -----------------//
 const productController = require("../controllers/productController")
  
 //----------------- Login With Google -----------------//

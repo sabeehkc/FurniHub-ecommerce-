@@ -137,6 +137,33 @@ const editProduct = async (req, res) => {
         product.description = description;
         product.discount = calculatedDiscount;
 
+         // Handle new images if files are uploaded
+         if (req.files && req.files.length > 0) {
+            const newImages = [];
+            await Promise.all(req.files.map(async (file) => {
+                try {
+                    console.log("Processing image:", file.filename);
+                    const resizedFilename = `resized-${file.filename}`;
+                    const resizedPath = path.join(__dirname, '../public/product_images', resizedFilename);
+                    
+                    await Sharp(file.path)
+                        .resize({ height: 600, width: 650, fit: 'fill' })
+                        .toFile(resizedPath);
+
+                    console.log("Image processed successfully:", file.filename);
+
+                    // Add the path of the resized image to the newImages array
+                    newImages.push(`/product_images/${resizedFilename}`);
+                } catch (error) {
+                    console.error("Error processing image:", error);
+                }
+            }));
+
+            // Append new images to the product's pictures array
+            product.pictures = product.pictures.concat(newImages);
+        }
+
+
         await product.save(); 
 
         res.json({success:'true'});

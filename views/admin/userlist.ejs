@@ -107,7 +107,8 @@
                         text: data.message,
                         icon: 'success'
                     }).then(() => {
-                        location.reload();
+                        // location.reload();
+                        document.querySelector("body > div > div > div > table > tbody > tr:nth-child(3) > td:nth-child(5) > button").innerText = 'Testing'
                     });
                 })
                 .catch(error => {

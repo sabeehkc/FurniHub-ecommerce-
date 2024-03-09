@@ -74,6 +74,37 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="new-img-div mt-1">
+                                    <div class="newimg">
+                                         <% if (product.pictures.length < 4) { %>
+                                        <label for="">New Image1</label><br>
+                                        <input type="file" name="newimage1" id="newimage1">
+                                        <div id="image-preview1"></div>
+                                        <% } %>
+                                    </div>
+                                    <div class="newimg">
+                                        <% if (product.pictures.length < 3) { %>
+                                            <label for="">New Image2</label><br>
+                                            <input type="file" name="newimage2" id="newimage2">
+                                            <div id="image-preview2"></div>
+                                        <% } %>
+                                    </div>
+                                    <div class="newimg">
+                                        <% if (product.pictures.length < 2) { %>
+                                            <label for="">New Image3</label><br>
+                                            <input type="file" name="newimage3" id="newimage3">
+                                            <div id="image-preview3"></div>
+                                        <% } %>
+                                    </div>
+                                    <div class="newimg">
+                                        <% if (product.pictures.length < 1) { %>
+                                            <label for="">New Image4</label><br>
+                                            <input type="file" name="newimage4" id="newimage4">
+                                            <div id="image-preview4"></div>
+                                        <% } %>
+    
+                                    </div>
+                                </div>
 
 
                                 <div class="text-center mt-4">
@@ -215,7 +246,35 @@
     });
 });
 </script>
+<script>
+    function previewImage(input,previewId) {
+        const preview = document.getElementById(previewId);
+        if(input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="New Image Preview" style="max-width: 50%; max-hight: 200px;">`;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }else{
+            preview.innerHTML = '';
+        }
+    }
 
+
+    document.getElementById('newimage1').addEventListener('change', function() {
+        previewImage(this,'image-preview1');
+    });
+    document.getElementById('newimage2').addEventListener('change', function() {
+        previewImage(this,'image-preview2');
+    });
+    document.getElementById('newimage3').addEventListener('change', function() {
+        previewImage(this,'image-preview3');
+    });
+    document.getElementById('newimage4').addEventListener('change', function() {
+        previewImage(this,'image-preview4');
+    });
+
+</script>
 
 
 
