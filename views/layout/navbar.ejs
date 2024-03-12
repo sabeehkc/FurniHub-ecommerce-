@@ -165,10 +165,14 @@
                                     Welcome
                                 <% } %>
                             </button>
+                            <% if(isLoggedIn) { %>
                             <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">Profile</a>
+                               
+                                <a class="dropdown-item" href="/profile">Profile</a>
+                                
                                 <a class="dropdown-item" href="/logout">Log Out</a>
                             </div>
+                            <% } %>
                         </div><!-- End profile-->
                         
                     </div><!-- End .header-right -->

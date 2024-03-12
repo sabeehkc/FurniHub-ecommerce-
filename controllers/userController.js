@@ -374,6 +374,16 @@ const loadAbout = async(req,res) => {
     }
 }
 
+const loadProfile = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false;
+        res.render('profile',{userName:userName,isLoggedIn:isLoggedIn});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 // Exporting functions
 module.exports = {
@@ -390,4 +400,5 @@ module.exports = {
     successGoogleLogin,
     failureGoogleLogin,
     loadAbout,
+    loadProfile
 };

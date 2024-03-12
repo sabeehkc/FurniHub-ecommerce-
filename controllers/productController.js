@@ -117,17 +117,16 @@ const editProduct = async (req, res) => {
     try {
         const id = req.params.id;
         const { name, category, price, quantity, description, discount } = req.body;
-        console.log("jfhfh",req.body);
+        console.log("body",req.body);
         
         let product = await Product.findById(id);
 
         if (!product) {
-            console.log("Product not Found");
+            return res.status(404).json({ error: 'Product not found' });
         }
 
-        // Check if discount is a valid number
-        const parsedDiscount = parseFloat(discount);
-        const calculatedDiscount = isNaN(parsedDiscount) ? 0 : price - (price * parsedDiscount / 100);
+        // Calculate the discounted price
+        const discountedPrice = price - price * discount / 100;
 
         // Update the product details
         product.name = name;
@@ -135,40 +134,34 @@ const editProduct = async (req, res) => {
         product.price = price;
         product.quantity = quantity;
         product.description = description;
-        product.discount = calculatedDiscount;
+        product.discount = discountedPrice;
 
-         // Handle new images if files are uploaded
-         if (req.files && req.files.length > 0) {
+        // Handle new images if files are uploaded
+        if (req.files && req.files.length > 0) {
             const newImages = [];
-            await Promise.all(req.files.map(async (file) => {
-                try {
-                    console.log("Processing image:", file.filename);
-                    const resizedFilename = `resized-${file.filename}`;
-                    const resizedPath = path.join(__dirname, '../public/product_images', resizedFilename);
-                    
-                    await Sharp(file.path)
-                        .resize({ height: 600, width: 650, fit: 'fill' })
-                        .toFile(resizedPath);
 
-                    console.log("Image processed successfully:", file.filename);
+            // Process each new image using Sharp
+            for (const file of req.files) {
+                const resizedFilename = `resized-${file.filename}`;
+                const resizedPath = path.join(__dirname, '../public/product_images', resizedFilename);
+                
+                await Sharp(file.path)
+                    .resize({ height: 600, width: 650, fit: 'fill' })
+                    .toFile(resizedPath);
 
-                    // Add the path of the resized image to the newImages array
-                    newImages.push(`/product_images/${resizedFilename}`);
-                } catch (error) {
-                    console.error("Error processing image:", error);
-                }
-            }));
 
-            // Append new images to the product's pictures array
+                newImages.push(`/product_images/${resizedFilename}`);
+            }
+
+            // Add new images to the product
             product.pictures = product.pictures.concat(newImages);
         }
 
+        await product.save();
+        res.json({ success: true });
 
-        await product.save(); 
-
-        res.json({success:'true'});
     } catch (error) {
-        console.log('this is error',error.message);
+        console.error('Error:', error.message);
     }
 };
 
