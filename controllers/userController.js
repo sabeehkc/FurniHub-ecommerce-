@@ -378,7 +378,25 @@ const loadProfile = async (req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false;
-        res.render('profile',{userName:userName,isLoggedIn:isLoggedIn});
+        const userEmail = req.session.user ? req.session.user.email :null;
+        
+        const user = await User.findOne({email:userEmail})
+
+        if(!user){
+            console.log("user not found");
+        }
+
+        res.render('profile',{userName:userName,isLoggedIn:isLoggedIn,user:user});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const loadAddress = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false;
+        res.render('address',{userName:userName,isLoggedIn:isLoggedIn})
     } catch (error) {
         console.log(error.message);
     }
@@ -400,5 +418,6 @@ module.exports = {
     successGoogleLogin,
     failureGoogleLogin,
     loadAbout,
-    loadProfile
+    loadProfile,
+    loadAddress
 };

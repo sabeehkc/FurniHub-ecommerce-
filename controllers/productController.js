@@ -158,7 +158,8 @@ const editProduct = async (req, res) => {
         }
 
         await product.save();
-        res.json({ success: true });
+        // res.json({ success: true });
+        res.redirect('/admin/products')
 
     } catch (error) {
         console.error('Error:', error.message);

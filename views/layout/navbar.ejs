@@ -157,7 +157,7 @@
                                 </div> End .dropdown-cart-total
                             </div>End .dropdown-menu -->
                         </div><!-- End .cart-dropdown -->
-                        <div class="profile  ml-3 dropdown">
+                        <div class="profile ml-3 dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <% if (userName) { %>
                                     <%= userName %> 
@@ -166,11 +166,9 @@
                                 <% } %>
                             </button>
                             <% if(isLoggedIn) { %>
-                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" aria-labelledby="dropdownMenuButton">
-                               
-                                <a class="dropdown-item" href="/profile">Profile</a>
-                                
-                                <a class="dropdown-item" href="/logout">Log Out</a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" aria-labelledby="dropdownMenuButton" style="min-width: 150px; padding: 08px;">
+                               <p><a class="dropdown-item" href="/profile">Profile</a></p> 
+                                <p><a class="dropdown-item" href="/logout">Log Out</a></p>
                             </div>
                             <% } %>
                         </div><!-- End profile-->

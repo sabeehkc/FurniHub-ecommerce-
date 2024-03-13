@@ -12,7 +12,7 @@
                     <h2 class="text-center mb-0">Edit Product</h2>
                 </div>
                     <div class="card-body">
-                        <form enctype="multipart/form-data" >
+                        <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" >
                                 <div class="form-group">
                                     <label >Product Name</label>
                                     <input type="text" name="name" id="name" class="form-control" value="<%= product.name %>" >
@@ -78,28 +78,28 @@
                                     <div class="newimg">
                                          <% if (product.pictures.length < 4) { %>
                                         <label for="">New Image1</label><br>
-                                        <input type="file" name="newimage1" id="newimage1">
+                                        <input type="file" id="newimage1" name="images" class="form-control" required  >
                                         <div id="image-preview1"></div>
                                         <% } %>
                                     </div>
                                     <div class="newimg">
                                         <% if (product.pictures.length < 3) { %>
                                             <label for="">New Image2</label><br>
-                                            <input type="file" name="newimage2" id="newimage2">
+                                            <input type="file" id="newimage2" name="images" class="form-control" required  >
                                             <div id="image-preview2"></div>
                                         <% } %>
                                     </div>
                                     <div class="newimg">
                                         <% if (product.pictures.length < 2) { %>
                                             <label for="">New Image3</label><br>
-                                            <input type="file" name="newimage3" id="newimage3">
+                                            <input type="file" id="newimage3" name="images" class="form-control" required  >
                                             <div id="image-preview3"></div>
                                         <% } %>
                                     </div>
                                     <div class="newimg">
                                         <% if (product.pictures.length < 1) { %>
                                             <label for="">New Image4</label><br>
-                                            <input type="file" name="newimage4" id="newimage4">
+                                            <input type="file" id="newimage4" name="images" class="form-control" required  >
                                             <div id="image-preview4"></div>
                                         <% } %>
     
@@ -108,7 +108,7 @@
 
 
                                 <div class="text-center mt-4">
-                                    <button type="button" class="btn btn-primary" onclick="validate()">Edit  Product</button>
+                                    <button type="submit" name="submit" class="btn btn-primary">Edit  Product</button>
                                     <a href="/admin/products" class="btn btn-primary ml-2">Back</a>
                                 </div>  
                             </form>
@@ -127,7 +127,7 @@
     </div>
 </footer>
 
-
+<!-- 
 <script>
     function validate() {
         var name = document.getElementById("name").value.trim();
@@ -244,7 +244,7 @@
             console.error('Error:', error);
         });
     }
-</script>
+</script> -->
 
 <!--images Deleting-->
 <script>
