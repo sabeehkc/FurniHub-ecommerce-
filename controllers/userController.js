@@ -386,7 +386,69 @@ const loadProfile = async (req,res) => {
             console.log("user not found");
         }
 
-        res.render('profile',{userName:userName,isLoggedIn:isLoggedIn,user:user});
+        res.render('profile',{userName:userName,isLoggedIn:isLoggedIn,user:user,message:"",message1:""});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const editProfile = async (req,res) => {
+    try {
+        const id = req.params.id 
+        const {name, email, mobile} = req.body;
+
+        console.log(id);
+        const user = await User.findById(id);
+
+        console.log(user);
+
+        if(!user){
+            console.log("User not found");
+        }
+
+        user.name = name
+        user.email = email
+        user.mobile = mobile
+
+        await user.save();
+
+        res.redirect('/profile')
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const changePassword = async (req, res) => {
+    try {
+        const {currentPassword,newPassword,confirmPassword} = req.body;
+
+        // if(newPassword !== confirmPassword){
+
+        // }
+
+        const user = await User.findById(req.session.user._id) 
+
+        if(!user){
+            console.log("User not found");
+        }
+
+        const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
+
+        if (!isPasswordMatch) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        const hashedPassword = await securePassword(newPassword);
+
+        user.password = hashedPassword;
+
+        await user.save();
+        
+        console.log(currentPassword);
+
+        res.redirect('/profile');
+
     } catch (error) {
         console.log(error.message);
     }
@@ -419,5 +481,7 @@ module.exports = {
     failureGoogleLogin,
     loadAbout,
     loadProfile,
+    editProfile,
+    changePassword,
     loadAddress
 };

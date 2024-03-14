@@ -23,7 +23,20 @@ const isBlock = async (req, res, next) => {
   }
 };
 
+const checkuser = async (req,res,next) => {
+  try {
+    if(req.session.user){
+      next()
+    }else{
+      res.redirect('/')
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 module.exports = {
   isBlock,
+  checkuser
     
 }

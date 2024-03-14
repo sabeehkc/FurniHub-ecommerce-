@@ -62,8 +62,11 @@ user_route.get('/logout',userController.logOut);
 //----------------- About page -----------------//
 user_route.get('/about',auth.isBlock,userController.loadAbout);
 
-user_route.get('/profile',auth.isBlock,userController.loadProfile);
-user_route.get('/address',auth.isBlock,userController.loadAddress);
+user_route.get('/profile',auth.checkuser,auth.isBlock,userController.loadProfile);
+user_route.post('/profile/:id',userController.editProfile);
+user_route.post('/profile',userController.changePassword);
+
+user_route.get('/address',auth.checkuser,auth.isBlock,userController.loadAddress);
 
 //----------------- export user route -----------------//
 module.exports = user_route;

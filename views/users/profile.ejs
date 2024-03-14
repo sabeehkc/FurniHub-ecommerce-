@@ -45,65 +45,108 @@
                     <div class="col-md-8 col-lg-9">
                         <div class="tab-content">
                             <div class="tab-pane fade show active d-flex" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
-                                <div class="w-25 text-center ml-5" style="background: linear-gradient(to right, #ff8a00, #da1b60);">
-                                    <div class="text-center text-white pt-2">
-                                        <img src="/assets/images/profilepic.jpg" alt="" style="border-radius: 50%;">
-                                        <h5 class="text-white pt-2 pb-6"><%= userName %></h5>
+                                <div class="w-25 text-center ml-5" style="background: linear-gradient(to right, #ff8a00, #c6225e); height: 300px;">
+                                    <div class=" text-white pt-3 pb-4 ">
+                                      <img src="/assets/images/profilepic.jpg" alt="user profile pic" class="w-50 bg-warning" style="border-radius: 100%;margin-left: 50px;margin-top: 35px;">
+                                      <p class="text-white  w-100"><%= user.name %></p>
                                     </div>
+                                  </div>
+                                <div class=" ml-5 w-50 " >
+                                    <div class="d-flex" style="justify-content: space-between;">
+                                        <div>
+                                            <h6>Name</h6>
+                                            <p class=""><%= user.name %></p>
+                                        </div>
+                                        <div>
+                                            <h6>Contact</h6>
+                                            <p class=""><%= user.mobile %></p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div>
+                                        <h6>Email</h6>
+                                        <p><%= user.email %></p>
+                                    </div>
+                                    <div class="pt-4">
+                                        <button class="btn-primary" style="border: none;" data-toggle="modal" data-target="#changePasswordModal">Change Password</button>
+                                        <button class="btn-primary" style="border: none;" data-toggle="modal" data-target="#editProfileModal">Edit profile</button>
+                                    </div>
+
+                                   
                                 </div>
-                                <div>
-                                    <p class=""><%= user.name %></p>
-                                    <p class=""><%= user.email %></p>
-                                </div>
-                            </div><!-- .End .tab-pane -->
 
-                            <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
-                                <p>No order has been made yet.</p>
-                                <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-                            </div><!-- .End .tab-pane -->
+                                <!-- Edit Profile Modal -->
+                                <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="modal-body">
+                                        <form action="/profile/<%= user._id %>" method="post" id="editProfileForm">
+                                            <div class="form-group">
+                                            <label for="editName">Name</label>
+                                            <input type="text" name="name" class="form-control" id="editName" value="<%= user.name %>">
+                                            </div>
+                                            <div class="form-group">
+                                            <label for="editEmail">Email address</label>
+                                            <input type="email" name="email" class="form-control" id="editEmail" value="<%= user.email %>">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="editEmail">Mobile No</label>
+                                                <input type="text" name="mobile" class="form-control" id="editEmail" value="<%= user.mobile %>">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" name="submit" class="btn btn-primary" >Save changes</button>
+                                            </div>
+                                        </form>
+                                        </div>
+                                       
+                                    </div>
+                                    </div>
+                                </div><!--End Modal-->
 
-                            <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
-                                <p>No downloads available yet.</p>
-                                <a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
-                            </div><!-- .End .tab-pane -->
+                                <!-- Change Password Modal -->
+                                <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="/profile" method="post" id="changePasswordForm">
+                                                    <div class="form-group">
+                                                        <label for="currentPassword">Current Password</label>
+                                                        <input type="password" name="currentPassword" class="form-control" id="currentPassword" placeholder="Enter current password" required>
+                                                        <small><%= message %></small>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="newPassword">New Password</label>
+                                                        <input type="password" name="newPassword" class="form-control" id="newPassword" placeholder="Enter new password" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="confirmPassword">Confirm New Password</label>
+                                                        <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm new password" required>
+                                                        <small><%= message1 %></small>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" name="submit" class="btn btn-primary">Save Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- End Change Password Modal -->
 
-                            
 
-                            <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-                                <form action="#">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <label>First Name *</label>
-                                            <input type="text" class="form-control" required>
-                                        </div><!-- End .col-sm-6 -->
-
-                                        <div class="col-sm-6">
-                                            <label>Last Name *</label>
-                                            <input type="text" class="form-control" required>
-                                        </div><!-- End .col-sm-6 -->
-                                    </div><!-- End .row -->
-
-                                    <label>Display Name *</label>
-                                    <input type="text" class="form-control" required>
-                                    <small class="form-text">This will be how your name will be displayed in the account section and in reviews</small>
-
-                                    <label>Email address *</label>
-                                    <input type="email" class="form-control" required>
-
-                                    <label>Current password (leave blank to leave unchanged)</label>
-                                    <input type="password" class="form-control">
-
-                                    <label>New password (leave blank to leave unchanged)</label>
-                                    <input type="password" class="form-control">
-
-                                    <label>Confirm new password</label>
-                                    <input type="password" class="form-control mb-2">
-
-                                    <button type="submit" class="btn btn-outline-primary-2">
-                                        <span>SAVE CHANGES</span>
-                                        <i class="icon-long-arrow-right"></i>
-                                    </button>
-                                </form>
                             </div><!-- .End .tab-pane -->
                         </div>
                     </div><!-- End .col-lg-9 -->
@@ -118,6 +161,9 @@
 <%- include('../layout/allfooter.ejs') %>
 </div><!-- End .page-wrapper -->
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+
+
 
 <!-- Plugins JS File -->
 <script src="assets/js/jquery.min.js"></script>
