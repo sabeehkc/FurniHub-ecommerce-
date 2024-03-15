@@ -423,9 +423,6 @@ const changePassword = async (req, res) => {
     try {
         const {currentPassword,newPassword,confirmPassword} = req.body;
 
-        // if(newPassword !== confirmPassword){
-
-        // }
 
         const user = await User.findById(req.session.user._id) 
 
@@ -436,7 +433,7 @@ const changePassword = async (req, res) => {
         const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
 
         if (!isPasswordMatch) {
-            return res.status(401).json({ error: 'Current password is incorrect' });
+            return res.render('profile', { message: 'Current password is incorrect' });
         }
 
         const hashedPassword = await securePassword(newPassword);
@@ -445,8 +442,6 @@ const changePassword = async (req, res) => {
 
         await user.save();
         
-        console.log(currentPassword);
-
         res.redirect('/profile');
 
     } catch (error) {

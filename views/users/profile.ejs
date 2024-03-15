@@ -121,20 +121,23 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <form action="/profile" method="post" id="changePasswordForm">
+                                                <form action="/profile" method="post" id="changePasswordForm" onsubmit="return validate()">
                                                     <div class="form-group">
                                                         <label for="currentPassword">Current Password</label>
-                                                        <input type="password" name="currentPassword" class="form-control" id="currentPassword" placeholder="Enter current password" required>
+                                                        <input type="password" name="currentPassword" class="form-control" id="currentPassword" placeholder="Enter current password" >
                                                         <small><%= message %></small>
+                                                        <small id="currentPasswordError" class="text-danger"></small>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="newPassword">New Password</label>
-                                                        <input type="password" name="newPassword" class="form-control" id="newPassword" placeholder="Enter new password" required>
+                                                        <input type="password" name="newPassword" class="form-control" id="newPassword" placeholder="Enter new password" >
+                                                        <small id="newPasswordError" class="text-danger"></small>
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="confirmPassword">Confirm New Password</label>
-                                                        <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm new password" required>
-                                                        <small><%= message1 %></small>
+                                                        <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm new password" >
+                                                        <small id="confirmPasswordError" class="text-danger"></small>
+                                                        
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -162,7 +165,43 @@
 </div><!-- End .page-wrapper -->
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
+<script>
+    function validate() {
+        const currentPassword = document.getElementById('currentPassword').value.trim();
+        const newPassword = document.getElementById('newPassword').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
+        const currentPasswordError = document.getElementById('currentPasswordError');
+        const newPasswordError = document.getElementById('newPasswordError');
+        const confirmPasswordError = document.getElementById('confirmPasswordError')
+
+        currentPasswordError.textContent = '';
+        newPasswordError.textContent = '';
+        confirmPasswordError.textContent = '';
+
+        let isValid = true;
+
+
+        if(currentPassword == ''){
+            currentPasswordError.textContent = "Please Enter your current Password"
+            isValid = false
+        }
+
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(newPassword)) {
+                newPasswordError.textContent = 'Password must be at least 6 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.';
+                isValid = false;
+            }
+
+        if(newPassword !== confirmPassword) {
+            confirmPasswordError.textContent = 'Password do not match.';
+            isValid = false
+        }
+
+       
+        return isValid;
+
+    }
+</script>
 
 
 <!-- Plugins JS File -->
