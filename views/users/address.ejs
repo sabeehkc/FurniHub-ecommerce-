@@ -44,39 +44,82 @@
                     </ul>
                 </aside><!-- End .col-lg-3 -->
 
-                <div class="col-md-8 col-lg-9">
+                <div class="ml-5 ">
                     <div class="tab-content">
                         <div class="">
-                            <p>The following addresses will be used on the checkout page by default.</p>
-
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="card card-dashboard">
-                                        <div class="card-body">
-                                            <h3 class="card-title">Billing Address</h3><!-- End .card-title -->
-
-                                            <p>User Name<br>
-                                            User Company<br>
-                                            John str<br>
-                                            New York, NY 10001<br>
-                                            1-234-987-6543<br>
-                                            yourmail@mail.com<br>
-                                            <a  href="#">Edit <i class="icon-edit"></i></a></p>
-                                        </div><!-- End .card-body -->
-                                    </div><!-- End .card-dashboard -->
+                            
+                            <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#addAddressModal">
+                                Add Address<i class="icon-edit"></i></button>
+                       
+                            <% if(addresses.length == 0) { %>
+                                <p class='text-primary text-center'>No Address</p>
+                            <% }else {%>
+                                    <p>The following addresses will be used on the checkout page by default.</p>
+                              
+                                     <div class="d-flex " style="justify-content: space-around;">
+                                        <% addresses.forEach((address) => {%>
+                                            <div class="card card-dashboard">
+                                                <div class="card-body">
+                                                    <h3 class="card-title">Billing Address</h3><!-- End .card-title -->
+                                            
+                                                    <p><span class="text-primary">Name:</span> <%= address.user.name %></p>
+                                                    <p><span class="text-primary">BuildingName:</span> <%= address.buildingName %></p>
+                                                    <p><span class="text-primary">Mobile No:</span> <%= address.mobile %></p>
+                                                    <p><span class="text-primary">District:</span> <%= address.district %></p>
+                                                    <p><span class="text-primary">City:</span> <%= address.city %></p>
+                                                    <p><span class="text-primary">State:</span> <%= address.state %></p>
+                                                    <p><span class="text-primary">Pin Code:</span> <%= address.pincode %></p>
+                                                    <br>
+                                                    <p><a href="/edit-address/<%= address._id %>" >Edit Address <i class="icon-edit"></i></a></p> 
+                                                </div><!-- End .card-body -->
+                                            </div><!-- End .card-dashboard -->
+                                        <%}); %>
                                 </div><!-- End .col-lg-6 -->
-
-                                <div class="col-lg-6">
-                                    <div class="card card-dashboard">
-                                        <div class="card-body">
-                                            <h3 class="card-title">Shipping Address</h3><!-- End .card-title -->
-
-                                            <p>You have not set up this type of address yet.<br>
-                                            <a href="#">Edit <i class="icon-edit"></i></a></p>
-                                        </div><!-- End .card-body -->
-                                    </div><!-- End .card-dashboard -->
-                                </div><!-- End .col-lg-6 -->
-                            </div><!-- End .row -->
+                                <% } %>
+                               
+                                                                
+                                <!-- New Address Modal -->
+                                <div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                        <h5 class="modal-title" id="addAddressModalLabel">Add New Address</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                        </div>
+                                        <div class="modal-body">
+                                        <form id="addAddressForm" action="/address" method="POST">
+                                            <div class="form-group">
+                                            <label for="buildingName">Building Name</label>
+                                            <input type="text" class="form-control" id="buildingName" name="buildingName" required>
+                                            </div>
+                                            <div class="form-group">
+                                            <label for="mobile">Mobile</label>
+                                            <input type="text" class="form-control" id="mobile" name="mobile" required>
+                                            </div>
+                                            <div class="form-group">
+                                            <label for="district">District</label>
+                                            <input type="text" class="form-control" id="district" name="district" required>
+                                            </div>
+                                            <div class="form-group">
+                                            <label for="city">City</label>
+                                            <input type="text" class="form-control" id="city" name="city" required>
+                                            </div>
+                                            <div class="form-group">
+                                            <label for="state">State</label>
+                                            <input type="text" class="form-control" id="state" name="state" required>
+                                            </div>
+                                            <div class="form-group">
+                                            <label for="pincode">Pincode</label>
+                                            <input type="text" class="form-control" id="pincode" name="pincode" required>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Add Address</button>
+                                        </form>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div><!--End Modal-->
                         </div><!-- .End .tab-pane -->
                     </div>    
                 </div>    

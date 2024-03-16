@@ -2,8 +2,7 @@ const User = require('../models/userModel.js');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const Otp = require('../models/otpModel.js');
-const Product = require('../models/productModel.js');
-const Category = require('../models/categoryModel.js')
+
 
 //-----------------  hash password -----------------//
 
@@ -374,90 +373,6 @@ const loadAbout = async(req,res) => {
     }
 }
 
-const loadProfile = async (req,res) => {
-    try {
-        const userName = req.session.user ? req.session.user.name : null;
-        const isLoggedIn = req.session.user ? true : false;
-        const userEmail = req.session.user ? req.session.user.email :null;
-        
-        const user = await User.findOne({email:userEmail})
-
-        if(!user){
-            console.log("user not found");
-        }
-
-        res.render('profile',{userName:userName,isLoggedIn:isLoggedIn,user:user,message:"",message1:""});
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
-const editProfile = async (req,res) => {
-    try {
-        const id = req.params.id 
-        const {name, email, mobile} = req.body;
-
-        console.log(id);
-        const user = await User.findById(id);
-
-        console.log(user);
-
-        if(!user){
-            console.log("User not found");
-        }
-
-        user.name = name
-        user.email = email
-        user.mobile = mobile
-
-        await user.save();
-
-        res.redirect('/profile')
-
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
-const changePassword = async (req, res) => {
-    try {
-        const {currentPassword,newPassword,confirmPassword} = req.body;
-
-
-        const user = await User.findById(req.session.user._id) 
-
-        if(!user){
-            console.log("User not found");
-        }
-
-        const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
-
-        if (!isPasswordMatch) {
-            return res.render('profile', { message: 'Current password is incorrect' });
-        }
-
-        const hashedPassword = await securePassword(newPassword);
-
-        user.password = hashedPassword;
-
-        await user.save();
-        
-        res.redirect('/profile');
-
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
-const loadAddress = async (req,res) => {
-    try {
-        const userName = req.session.user ? req.session.user.name : null;
-        const isLoggedIn = req.session.user ? true : false;
-        res.render('address',{userName:userName,isLoggedIn:isLoggedIn})
-    } catch (error) {
-        console.log(error.message);
-    }
-}
 
 
 // Exporting functions
@@ -475,8 +390,5 @@ module.exports = {
     successGoogleLogin,
     failureGoogleLogin,
     loadAbout,
-    loadProfile,
-    editProfile,
-    changePassword,
-    loadAddress
+   
 };
