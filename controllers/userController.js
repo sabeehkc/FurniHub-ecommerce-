@@ -2,6 +2,8 @@ const User = require('../models/userModel.js');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const Otp = require('../models/otpModel.js');
+const Cart = require('../models/cartModel.js');
+const Product = require('../models/productModel.js');
 
 
 //-----------------  hash password -----------------//
@@ -71,7 +73,10 @@ const loadHome = async (req, res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        res.render('home', { userName: userName, isLoggedIn: isLoggedIn });
+        const products1 = await Product.find().limit(6).sort({ _id: -1 });
+        const products2 = await Product.find().limit(8);
+
+        res.render('home', { userName: userName, isLoggedIn: isLoggedIn, products1,products2});
 
     } catch (error) {
         console.log(error.message);
@@ -372,8 +377,140 @@ const loadAbout = async(req,res) => {
         console.log(error.message);
     }
 }
+const addProductsCart = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findOne({ _id: productId });
+
+        if (!product) {
+            console.log("Product not found");
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        const userId = req.session.user ? req.session.user._id : null;
+
+        if (!userId) {
+            console.log("User not found");
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        let cart = await Cart.findOne({ user: userId });
+
+        if (!cart) {
+            cart = new Cart({
+                user: userId,
+                Products: []
+            });
+        }
+
+        // Check if the product already exists in the cart
+        const existingProduct = cart.Products.find(item => item.products.toString() === productId);
+
+        if (existingProduct) {
+            // Increase quantity and update total
+            existingProduct.quantity++;
+            existingProduct.total += product.discount;
+        } else {
+            // Add new product to the cart
+            cart.Products.push({
+                products: productId,
+                price: product.price,
+                name: product.name,
+                quantity: 1,
+                total: product.discount,
+                images: product.pictures
+            });
+        }
+
+        // Update the grand total of the cart
+        cart.grandTotal += product.discount;
+
+        await cart.save();
+
+        res.redirect(req.headers.referer);
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
 
 
+const LoadCart = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const userId = req.session.user ? req.session.user._id : '';
+        // console.log(userId);
+        const cartProducts = await Cart.find({user:userId}).populate({ path: 'Products.products', model: 'products'});
+
+        res.render('cart',{userName:userName,isLoggedIn:isLoggedIn,cartProducts});
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const deleteCartProduct = async (req, res) => {
+    try {
+        const productId = req.query.productId;
+        console.log("Product ID:", productId);
+
+        const userId = req.session.user ? req.session.user._id : null;
+        console.log("User ID:", userId);
+
+        if (!userId) {
+            console.log("User Not Found");
+        }
+
+        let cart = await Cart.findOne({ user: userId });
+        console.log("Cart:", cart);
+
+        if (!cart) {
+            console.log("Cart not Found");
+        }
+
+        // Check if the cart only contains one product
+        if (cart.Products.length === 1) {
+            const deletedCart = await Cart.deleteOne({ _id: cart._id });
+            console.log("Deleted Cart:", deletedCart);
+            return res.redirect('/cart');
+        } else {
+            const updatedCart = await Cart.updateOne({ _id: cart._id }, { $pull: { Products: { _id: productId } } });
+            console.log("Updated Cart:", updatedCart);
+        }
+
+        const updatedCartData = await Cart.findById(cart._id);
+
+        // Recalculate grand total
+        let grandTotal = 0;
+        updatedCartData.Products.forEach(product => {
+            grandTotal += product.total;
+        });
+
+        // Update grand total 
+        updatedCartData.grandTotal = grandTotal;
+        await updatedCartData.save();
+
+        res.redirect('/cart'); 
+
+    } catch (error) {
+        console.error(error.message);
+    }
+};
+
+const LoadCheckOut = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn});
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 // Exporting functions
 module.exports = {
@@ -390,5 +527,8 @@ module.exports = {
     successGoogleLogin,
     failureGoogleLogin,
     loadAbout,
-   
+    LoadCart,
+    addProductsCart,
+    deleteCartProduct,
+    LoadCheckOut
 };

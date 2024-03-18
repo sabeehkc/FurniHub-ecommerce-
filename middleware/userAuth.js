@@ -1,4 +1,4 @@
-const User = require('../models/userModel');
+const User = require ('../models/userModel');
 
 const isBlock = async (req, res, next) => {
   try {

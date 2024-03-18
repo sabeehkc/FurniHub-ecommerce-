@@ -74,5 +74,11 @@ user_route.post('/address',profileController.addAddress);
 user_route.get('/edit-address/:id',auth.checkuser,auth.isBlock,profileController.loadEditAddress);
 user_route.post('/edit-address/:id',profileController.editAddress);
 
+user_route.get('/cart',auth.checkuser,auth.isBlock,userController.LoadCart);
+user_route.get('/cart-Products/:id',userController.addProductsCart);
+user_route.get('/cart/remove',userController.deleteCartProduct);
+
+user_route.get('/check-out',auth.checkuser,auth.isBlock,userController.LoadCheckOut);
+
 //----------------- export user route -----------------//
 module.exports = user_route;
