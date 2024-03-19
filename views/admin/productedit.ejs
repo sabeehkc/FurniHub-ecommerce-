@@ -144,28 +144,10 @@
         console.log(category);
 
         var newImage1Input = document.getElementById('newimage1');
-        if (newImage1Input) {
-            var newImage1File = newImage1Input.files[0];
-            console.log(newImage1File);
-        }
-
         var newImage2Input = document.getElementById('newimage2');
-        if (newImage2Input) {
-            var newImage2File = newImage2Input.files[0];
-            console.log(newImage2File);
-        }
-
         var newImage3Input = document.getElementById('newimage3');
-        if (newImage3Input) {
-            var newImage3File = newImage3Input.files[0];
-            console.log(newImage3File);
-        }
-
         var newImage4Input = document.getElementById('newimage4');
-        if (newImage4Input) {
-            var newImage4File = newImage4Input.files[0];
-            console.log(newImage4File);
-        }
+        
 
         var nameError = document.getElementById("nameError");
         var descriptionError = document.getElementById("descriptionError");
@@ -208,41 +190,7 @@
             isValid = false;
         }
 
-        if (!isValid) {
-            return;
-        }
-
-        let formData = {
-            name,
-            category,
-            description,
-            price,
-            quantity,
-            discount,
-            newImage1Input: newImage1File,
-            newImage2Input: newImage2File,
-            newImage3Input: newImage3File,
-            newImage4Input: newImage4File
-        };
-        console.log(formData);
-
-        fetch('/admin/products/edit/<%= product._id %>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        }).then(data => {
-            console.log('Success:', data);
-            window.location.href = '/admin/products';
-        }).catch(error => {
-            console.error('Error:', error);
-        });
+        return isValied;
     }
 </script> -->
 

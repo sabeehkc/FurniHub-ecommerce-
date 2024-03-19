@@ -96,13 +96,8 @@ const blockUser = async (req, res) => {
             res.render('userlist');
             alert("user not found");
         }
-        if(user.is_blocked == false){
-            user.is_blocked = true
-            console.log('user blocked successfully');
-        }else if(user.is_blocked == true){
-            user.is_blocked = false
-            console.log('user unblocked successfully');
-        }
+        user.is_blocked = !user.is_blocked
+        
         
         await user.save();
 

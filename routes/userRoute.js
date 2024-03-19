@@ -43,9 +43,9 @@ user_route.post('/register', auth.logUser,userController.insertUser);
 
 
 //----------------- OTP -----------------//
-user_route.get('/otp-verification',auth.logUser, userController.loadOtp);
-user_route.post('/verify-otp',auth.logUser, userController.verifyOtp);
-user_route.get('/resend-otp',auth.logUser,userController.resendOtp);
+user_route.get('/otp-verification', userController.loadOtp);
+user_route.post('/verify-otp', userController.verifyOtp);
+user_route.get('/resend-otp',userController.resendOtp);
 
 //----------------- Back Register page -----------------//
 user_route.get('/back-register',auth.logUser,userController.backRegister);

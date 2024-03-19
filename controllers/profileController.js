@@ -1,6 +1,17 @@
 const User = require('../models/userModel.js');
 const Address = require('../models/addressModel.js'); 
+const bcrypt = require('bcrypt');
 
+
+
+const securePassword = async (password) => {
+    try {
+        const passwordHash = await bcrypt.hash(password, 10);
+        return passwordHash;
+    } catch (error) {
+       console.log(error.message);
+    }
+};
 
 
 const loadProfile = async (req,res) => {
@@ -24,7 +35,7 @@ const loadProfile = async (req,res) => {
 const editProfile = async (req,res) => {
     try {
         const id = req.params.id 
-        const {name, email, mobile} = req.body;
+        const {name,  mobile} = req.body;
 
         console.log(id);
         const user = await User.findById(id);
@@ -36,7 +47,6 @@ const editProfile = async (req,res) => {
         }
 
         user.name = name
-        user.email = email
         user.mobile = mobile
 
         await user.save();
