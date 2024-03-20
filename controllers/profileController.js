@@ -180,6 +180,19 @@ const editAddress = async (req,res) => {
     }
 }
 
+const deleteAddress = async(req,res) => {
+    try {
+        const id = req.params.id
+
+        const address = await Address.findByIdAndDelete(id);
+
+        res.redirect('/address');
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 module.exports = {
     loadProfile,
@@ -188,5 +201,6 @@ module.exports = {
     loadAddress,
     addAddress,
     loadEditAddress,
-    editAddress
+    editAddress,
+    deleteAddress
 }

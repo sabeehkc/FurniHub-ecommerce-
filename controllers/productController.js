@@ -67,8 +67,8 @@ const addProduct = async (req, res) => {
         console.log("Processed images:", productImages);
 
         //calculate discount price
-        const calculatedDiscount = price - price * discount / 100;
-        console.log(discount);
+        const calculatedDiscount = Math.floor(price - price * discount / 100)
+        console.log(calculatedDiscount);
 
         // Create new product with image paths
         const product = new Product({
@@ -103,7 +103,7 @@ const loadEditProduct = async (req,res) => {
         let productDicountPrice = productData.price - productData.discount;
         productDicountPrice = productDicountPrice*100 
 
-        const discountPercentage = productDicountPrice/productData.price;
+        const discountPercentage = Math.floor(productDicountPrice/productData.price) 
 
         res.render('productedit',{categories, product:productData, discountPercentage});
         
@@ -126,7 +126,7 @@ const editProduct = async (req, res) => {
         }
 
         // Calculate the discounted price
-        const discountedPrice = price - price * discount / 100;
+        const discountedPrice = Math.floor(price - price * discount / 100) 
 
         // Update the product details
         product.name = name;

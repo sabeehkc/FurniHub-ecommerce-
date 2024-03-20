@@ -29,68 +29,28 @@
                 <form action="#">
                     <div class="row">
                         <div class="col-lg-9">
-                            <h2 class="checkout-title">Billing Details</h2><!-- End .checkout-title -->
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <label>First Name *</label>
-                                        <input type="text" class="form-control" required>
-                                    </div><!-- End .col-sm-6 -->
+                            <% addresses.forEach((address) => {%>
+                                <div class="card card-dashboard">
+                                    <!-- <div class="d-flex" style="justify-content: end;">
+                                        <a class="pr-3" href="/delete-address/<%= address._id %>"><i class="icon-close"></i></a>
+                                    </div> -->
+                                    <div class="card-body">
+                                        
+                                        <h3 class="card-title">Billing Address</h3><!-- End .card-title -->
+                                
+                                        <p><span class="text-primary">Name:</span> <%= address.user.name %></p>
+                                        <p><span class="text-primary">BuildingName:</span> <%= address.buildingName %></p>
+                                        <p><span class="text-primary">Mobile No:</span> <%= address.mobile %></p>
+                                        <p><span class="text-primary">District:</span> <%= address.district %></p>
+                                        <p><span class="text-primary">City:</span> <%= address.city %></p>
+                                        <p><span class="text-primary">State:</span> <%= address.state %></p>
+                                        <p><span class="text-primary">Pin Code:</span> <%= address.pincode %></p>
+                                        <br>
+                                        <p><a href="/edit-address/<%= address._id %>" >Edit Address <i class="icon-edit"></i></a></p> 
+                                    </div><!-- End .card-body -->
+                                </div><!-- End .card-dashboard -->
+                            <%}); %>
 
-                                    <div class="col-sm-6">
-                                        <label>Last Name *</label>
-                                        <input type="text" class="form-control" required>
-                                    </div><!-- End .col-sm-6 -->
-                                </div><!-- End .row -->
-
-                                <label>Company Name (Optional)</label>
-                                <input type="text" class="form-control">
-
-                                <label>Country *</label>
-                                <input type="text" class="form-control" required>
-
-                                <label>Street address *</label>
-                                <input type="text" class="form-control" placeholder="House number and Street name" required>
-                                <input type="text" class="form-control" placeholder="Appartments, suite, unit etc ..." required>
-
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <label>Town / City *</label>
-                                        <input type="text" class="form-control" required>
-                                    </div><!-- End .col-sm-6 -->
-
-                                    <div class="col-sm-6">
-                                        <label>State / County *</label>
-                                        <input type="text" class="form-control" required>
-                                    </div><!-- End .col-sm-6 -->
-                                </div><!-- End .row -->
-
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <label>Postcode / ZIP *</label>
-                                        <input type="text" class="form-control" required>
-                                    </div><!-- End .col-sm-6 -->
-
-                                    <div class="col-sm-6">
-                                        <label>Phone *</label>
-                                        <input type="tel" class="form-control" required>
-                                    </div><!-- End .col-sm-6 -->
-                                </div><!-- End .row -->
-
-                                <label>Email address *</label>
-                                <input type="email" class="form-control" required>
-
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="checkout-create-acc">
-                                    <label class="custom-control-label" for="checkout-create-acc">Create an account?</label>
-                                </div><!-- End .custom-checkbox -->
-
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="checkout-diff-address">
-                                    <label class="custom-control-label" for="checkout-diff-address">Ship to a different address?</label>
-                                </div><!-- End .custom-checkbox -->
-
-                                <label>Order notes (optional)</label>
-                                <textarea class="form-control" cols="30" rows="4" placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
                         </div><!-- End .col-lg-9 -->
                         <aside class="col-lg-3">
                             <div class="summary">

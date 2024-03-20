@@ -73,10 +73,16 @@
                             <div class="details-filter-row details-row-size">
                                 <label for="qty">Qty:</label>
                                 <div class="product-details-quantity">
-                                    <input type="number" id="qty" class="form-control" value="1" min="1" max="10" step="1" data-decimals="0" required>
+                                    <input type="number" id="qty" name="quantity" class="form-control" value="1" min="1" max="<%= product.quantity %>" step="1" data-decimals="0" required>
                                 </div><!-- End .product-details-quantity -->
-                                <div class="ml-5">
-                                    <p><%= product.quantity %> In Stock</p>
+                                <div class="ml-5 ">
+                                    <% if (product.quantity <= 3) { %>
+                                        <% if (product.quantity === 0) { %>
+                                            <p class="text-danger">Out of stock</p>
+                                        <% } else { %>
+                                            <p class="text-danger">Only <%= product.quantity %> products left</p>
+                                        <% } %>
+                                    <% } %>
                                 </div>
                             </div><!-- End .details-filter-row -->
                            

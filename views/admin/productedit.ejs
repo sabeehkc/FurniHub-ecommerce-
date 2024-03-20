@@ -12,7 +12,7 @@
                     <h2 class="text-center mb-0">Edit Product</h2>
                 </div>
                     <div class="card-body">
-                        <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" >
+                        <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" onsubmit="return validate()">
                                 <div class="form-group">
                                     <label >Product Name</label>
                                     <input type="text" name="name" id="name" class="form-control" value="<%= product.name %>" >
@@ -68,7 +68,7 @@
                                                         </div>
                                                     <% }) %>
                                                 <% } else { %>
-                                                    <p>No images available to delete.</p>
+                                                    <h4>No images available to delete.</h4>
                                                 <% } %>
                                             </div>
                                         </div>
@@ -80,6 +80,7 @@
                                         <label for="">New Image1</label><br>
                                         <input type="file" id="newimage1" name="images" class="form-control" required  >
                                         <div id="image-preview1"></div>
+                                        <div id="imagesError1" class="text-danger"></div>
                                         <% } %>
                                     </div>
                                     <div class="newimg">
@@ -87,6 +88,7 @@
                                             <label for="">New Image2</label><br>
                                             <input type="file" id="newimage2" name="images" class="form-control" required  >
                                             <div id="image-preview2"></div>
+                                            <div id="imagesError2" class="text-danger"></div>
                                         <% } %>
                                     </div>
                                     <div class="newimg">
@@ -94,6 +96,7 @@
                                             <label for="">New Image3</label><br>
                                             <input type="file" id="newimage3" name="images" class="form-control" required  >
                                             <div id="image-preview3"></div>
+                                            <div id="imagesError3" class="text-danger"></div>
                                         <% } %>
                                     </div>
                                     <div class="newimg">
@@ -101,6 +104,7 @@
                                             <label for="">New Image4</label><br>
                                             <input type="file" id="newimage4" name="images" class="form-control" required  >
                                             <div id="image-preview4"></div>
+                                            <div id="imagesError4" class="text-danger"></div>
                                         <% } %>
     
                                     </div>
@@ -127,33 +131,26 @@
     </div>
 </footer>
 
-<!-- 
+
 <script>
     function validate() {
         var name = document.getElementById("name").value.trim();
-        console.log(name);
         var description = document.getElementById("description").value.trim();
-        console.log(description);
         var price = document.getElementById("price").value.trim();
-        console.log(price);
         var quantity = document.getElementById("quantity").value.trim();
-        console.log(quantity);
         var discount = document.getElementById("discountPrice").value.trim();
-        console.log(discount);
         var category = document.getElementById("category").value;
-        console.log(category);
-
-        var newImage1Input = document.getElementById('newimage1');
-        var newImage2Input = document.getElementById('newimage2');
-        var newImage3Input = document.getElementById('newimage3');
-        var newImage4Input = document.getElementById('newimage4');
-        
 
         var nameError = document.getElementById("nameError");
         var descriptionError = document.getElementById("descriptionError");
         var priceError = document.getElementById("priceError");
         var quantityError = document.getElementById("quantityError");
         var discountError = document.getElementById("discountError");
+
+        var imagesError1 = document.getElementById('imagesError1');
+        var imagesError2 = document.getElementById('imagesError2');
+        var imagesError3 = document.getElementById('imagesError3');
+        var imagesError4 = document.getElementById('imagesError4');
 
 
         // Reset errors
@@ -162,6 +159,11 @@
         priceError.textContent = "";
         quantityError.textContent = "";
         discountError.textContent = "";
+        imagesError1.textContent = "";
+        imagesError2.textContent = "";
+        imagesError3.textContent = "";
+        imagesError4.textContent = "";
+
 
         var isValid = true;
 
@@ -190,9 +192,36 @@
             isValid = false;
         }
 
-        return isValied;
+        // Allowing file type
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.webp)$/i;
+
+        var newImage1Input = document.getElementById('newimage1').files[0];
+        if (newImage1Input && !allowedExtensions.test(newImage1Input.name)) {
+            imagesError1.textContent = "Please upload image";
+            isValid = false;
+        }
+        var newImage2Input = document.getElementById('newimage2').files[0];
+        if (newImage2Input && !allowedExtensions.test(newImage2Input.name)) {
+            imagesError2.textContent = "Please upload image";
+            isValid = false;
+        }
+
+        var newImage3Input = document.getElementById('newimage3').files[0];
+        if (newImage3Input && !allowedExtensions.test(newImage3Input.name)) {
+            imagesError3.textContent = "Please upload image";
+            isValid = false;
+        }
+
+        var newImage4Input = document.getElementById('newimage4').files[0];
+        if (newImage4Input && !allowedExtensions.test(newImage4Input.name)) {
+            imagesError4.textContent = "Please upload image";
+            isValid = false;
+        }
+
+
+        return isValid;
     }
-</script> -->
+</script>
 
 <!--images Deleting-->
 <script>
@@ -220,10 +249,6 @@
                 console.log(data.message);
                 button.parentElement.remove();
                 location.reload()
-                // document.querySelector("body > div > div > div > div > div > div > div.card-body > form > div.container > div > div > div > div:nth-child(1) > button").innerHTML = "Testing"
-                // document.querySelector("body > div > div > div > div > div > div > div.card-body > form > div.container > div > div > div > div:nth-child(2) > button").innerHTML = "Testing"
-                // document.querySelector("body > div > div > div > div > div > div > div.card-body > form > div.container > div > div > div > div:nth-child(3) > button").innerHTML = "Testing"
-                // document.querySelector("body > div > div > div > div > div > div > div.card-body > form > div.container > div > div > div > div:nth-child(4) > button").innerHTML = "Testing"
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
@@ -235,32 +260,41 @@
 
 <!--Previe new images-->
 <script>
-    function previewImage(input,previewId) {
-        const preview = document.getElementById(previewId);
-        if(input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" alt="New Image Preview" style="max-width: 50%; max-hight: 200px;">`;
-            }
-            reader.readAsDataURL(input.files[0]);
-        }else{
-            preview.innerHTML = '';
+
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="New Image Preview" style="max-width: 50%; max-height: 200px;">`;
         }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.innerHTML = '';
     }
+}
 
-
-    document.getElementById('newimage1').addEventListener('change', function() {
-        previewImage(this,'image-preview1');
-    });
-    document.getElementById('newimage2').addEventListener('change', function() {
-        previewImage(this,'image-preview2');
-    });
-    document.getElementById('newimage3').addEventListener('change', function() {
-        previewImage(this,'image-preview3');
-    });
-    document.getElementById('newimage4').addEventListener('change', function() {
-        previewImage(this,'image-preview4');
-    });
+    // Check if the input element exists before attaching the event listener
+    if (document.getElementById('newimage1')) {
+        document.getElementById('newimage1').addEventListener('change', function() {
+            previewImage(this, 'image-preview1');
+        });
+    }
+    if (document.getElementById('newimage2')) {
+        document.getElementById('newimage2').addEventListener('change', function() {
+            previewImage(this, 'image-preview2');
+        });
+    }
+    if (document.getElementById('newimage3')) {
+        document.getElementById('newimage3').addEventListener('change', function() {
+            previewImage(this, 'image-preview3');
+        });
+    }
+    if (document.getElementById('newimage4')) {
+        document.getElementById('newimage4').addEventListener('change', function() {
+            previewImage(this, 'image-preview4');
+        });
+    }    
 
 </script>
 

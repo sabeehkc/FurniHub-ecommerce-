@@ -49,46 +49,50 @@
                     <div class="ml-5">
                         <div class="tab-content">
                             <div class="">
-                                <form id="editAddressForm" action="/edit-address/<%= address._id %>" method="POST">
+                                <form id="editAddressForm" action="/edit-address/<%= address._id %>" method="POST" onsubmit="return validateForm()">
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="buildingName">Building Name</label>
                                             <input type="text" class="form-control" id="buildingName" name="buildingName" value="<%= address.buildingName %>" required>
+                                            <div id="buildingNameError" class="text-danger"></div>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="mobile">Mobile</label>
-                                            <input type="text" class="form-control" id="mobile" name="mobile" value="<%= address.mobile %>" required>
+                                            <input type="text" class="form-control" id="mobile" name="mobile" value="<%= address.mobile %>" required >
+                                            <div id="mobilenoError" class="text-danger"></div>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="district">District</label>
                                             <input type="text" class="form-control" id="district" name="district" value="<%= address.district %>" required>
+                                            <div id="districtError" class="text-danger"></div>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="city">City</label>
                                             <input type="text" class="form-control" id="city" name="city" value="<%= address.city %>" required>
+                                            <div id="cityError" class="text-danger"></div>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="state">State</label>
-                                            <input type="text" class="form-control" id="state" name="state" value="<%= address.state %>" required>
+                                            <input type="text" class="form-control" id="state" name="state" value="<%= address.state %>"required >
+                                            <div id="stateError" class="text-danger"></div>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="pincode">Pincode</label>
                                             <input type="text" class="form-control" id="pincode" name="pincode" value="<%= address.pincode %>" required>
+                                            <div id="stateError" class="text-danger"></div>
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save Address</button>
-                                    <button type="button"  class="btn btn-primary"> <a href="/address" class="text-white">Back to Address</a> </button>
+                                    <!-- <button type="button"  class="btn btn-primary"> <a href="/address" class="text-white">Back to Address</a> </button> -->
                                 </form>
                             </div><!-- .End .tab-pane -->
                         </div>
                     </div>
                     <!-- End Edit Address Form -->
-
-
 
                 </div>
             </div>      
@@ -101,6 +105,68 @@
 <%- include('../layout/allfooter.ejs') %>
 </div><!-- End .page-wrapper -->
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+<%- include('../layout/mobile.ejs') %>
+
+<script>
+    function validateForm() {
+        let buildingName = document.getElementById('buildingName').value.trim();
+        let mobile = document.getElementById('mobile').value.trim();
+        let district = document.getElementById('district').value.trim();
+        let city = document.getElementById('city').value.trim();
+        let state = document.getElementById('state').value.trim();
+        let pincode = document.getElementById('pincode').value.trim();
+
+
+        let buildingNameError = document.getElementById('buildingNameError');
+        let mobilenoError = document.getElementById('mobilenoError');
+        let districtError = document.getElementById('districtError');
+        let cityError = document.getElementById('cityError');
+        let stateError = document.getElementById('stateError');
+        let pincodeError = document.getElementById('pincodeError');
+
+        buildingNameError.textContent = '';
+        mobilenoError.textContent = '';
+        districtError.textContent = '';
+        cityError.textContent = '';
+        stateError.textContent = '';
+        pincodeError.textContent = '';
+
+        let isValid = true;
+
+        if(buildingName === ''){
+            buildingNameError.textContent = "Please Enter Your BuildingName"
+            isValid = false
+        }
+
+        if (!/^\d{10}$/.test(mobile)) {
+            mobilenoError.textContent = 'Please enter a valid 10-digit mobile number.';
+            isValid = false;
+        }
+
+        if(district === ''){
+            districtError.textContent = "Please Enter Your District"
+            isValid = false
+        }
+
+        if(city === ''){
+            cityError.textContent = "Please Enter Your City"
+            isValid = false
+        }
+
+        if(state === ''){
+            stateError.textContent = "Please Enter Your State"
+            isValid = false
+        }
+        if (!/^\d{6}$/.test(pincode)) {
+            pincodeError.textContent = 'Please enter a valid 6-digit  Pincode.';
+            isValid = false;
+        }
+
+        return isValid;
+
+    }
+</script>
 
 <!-- Plugins JS File -->
 <script src="assets/js/jquery.min.js"></script>

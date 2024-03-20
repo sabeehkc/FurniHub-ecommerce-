@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const Otp = require('../models/otpModel.js');
 const Cart = require('../models/cartModel.js');
 const Product = require('../models/productModel.js');
+const Address = require('../models/addressModel.js');
 
 
 //-----------------  hash password -----------------//
@@ -377,6 +378,7 @@ const loadAbout = async(req,res) => {
         console.log(error.message);
     }
 }
+
 const addProductsCart = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -399,31 +401,30 @@ const addProductsCart = async (req, res) => {
         if (!cart) {
             cart = new Cart({
                 user: userId,
-                Products: []
+                products: []
             });
         }
 
         // Check if the product already exists in the cart
-        const existingProduct = cart.Products.find(item => item.products.toString() === productId);
+        const existingProduct = cart.products.find(item => item.product.toString() === productId);
 
         if (existingProduct) {
-            // Increase quantity and update total
             existingProduct.quantity++;
-            existingProduct.total += product.discount;
+            existingProduct.subtotal = existingProduct.quantity * product.discount;
         } else {
             // Add new product to the cart
-            cart.Products.push({
-                products: productId,
+            cart.products.push({
+                product: productId,
                 price: product.price,
                 name: product.name,
+                discount:product.discount,
                 quantity: 1,
-                total: product.discount,
-                images: product.pictures
+                subtotal: product.discount,
+                images: product.pictures 
             });
         }
 
-        // Update the grand total of the cart
-        cart.grandTotal += product.discount;
+        cart.grandTotal = cart.products.reduce((total, item) => total + item.subtotal, 0);
 
         await cart.save();
 
@@ -436,67 +437,99 @@ const addProductsCart = async (req, res) => {
 };
 
 
-const LoadCart = async(req,res) => {
+
+
+
+const LoadCart = async (req, res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
-        const isLoggedIn = req.session.user ? true : false; //hide login button
+        const isLoggedIn = req.session.user ? true : false;
 
         const userId = req.session.user ? req.session.user._id : '';
-        // console.log(userId);
-        const cartProducts = await Cart.find({user:userId}).populate({ path: 'Products.products', model: 'products'});
-
-        res.render('cart',{userName:userName,isLoggedIn:isLoggedIn,cartProducts});
+        
+        const cartProducts = await Cart.find({ user: userId }).populate({ path: 'products.product', model: Product });
+        
+        res.render('cart', { userName: userName, isLoggedIn: isLoggedIn, cartProducts: cartProducts });
 
     } catch (error) {
         console.log(error.message);
     }
 }
+const updateProductQuantity = async (req, res) => {
+    try {
+        const { productId, quantity } = req.query;
+
+        // Find the cart and update the quantity for the specified product
+        let cart = await Cart.findOneAndUpdate(
+            { user: req.session.user._id, 'products.product': productId },
+            { $set: { 'products.$.quantity': quantity } },
+            { new: true }
+        );
+
+        if (!cart) {
+            console.log("Cart Product not found");
+        }
+
+        const updatedProductIndex = cart.products.findIndex(item => item.product.toString() === productId);
+        const updatedProduct = cart.products[updatedProductIndex];
+        updatedProduct.subtotal = updatedProduct.quantity * updatedProduct.discount;
+
+
+        // Recalculate the grand total of the cart
+        cart.grandTotal = cart.products.reduce((total, item) => total + item.subtotal, 0);
+        // Save the changes to the cart
+        await cart.save();
+
+        res.json({ subtotal: updatedProduct.subtotal, grandTotal: cart.grandTotal });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
 
 const deleteCartProduct = async (req, res) => {
     try {
         const productId = req.query.productId;
-        console.log("Product ID:", productId);
 
         const userId = req.session.user ? req.session.user._id : null;
-        console.log("User ID:", userId);
 
         if (!userId) {
             console.log("User Not Found");
+            return res.redirect('/cart');
         }
 
         let cart = await Cart.findOne({ user: userId });
-        console.log("Cart:", cart);
 
         if (!cart) {
             console.log("Cart not Found");
-        }
-
-        // Check if the cart only contains one product
-        if (cart.Products.length === 1) {
-            const deletedCart = await Cart.deleteOne({ _id: cart._id });
-            console.log("Deleted Cart:", deletedCart);
             return res.redirect('/cart');
-        } else {
-            const updatedCart = await Cart.updateOne({ _id: cart._id }, { $pull: { Products: { _id: productId } } });
-            console.log("Updated Cart:", updatedCart);
         }
 
-        const updatedCartData = await Cart.findById(cart._id);
+        if (cart.products.length === 1) {
+            await Cart.findByIdAndDelete(cart._id);
+            return res.redirect('/cart');
+        }
+
+        await Cart.findOneAndUpdate(
+            { _id: cart._id },
+            { $pull: { products: { _id: productId } } }
+        );
 
         // Recalculate grand total
-        let grandTotal = 0;
-        updatedCartData.Products.forEach(product => {
-            grandTotal += product.total;
-        });
+        const updatedCart = await Cart.findById(cart._id);
+        const grandTotal = updatedCart.products.reduce((total, item) => total + item.subtotal, 0);
 
         // Update grand total 
-        updatedCartData.grandTotal = grandTotal;
-        await updatedCartData.save();
+        updatedCart.grandTotal = grandTotal;
+        await updatedCart.save();
 
         res.redirect('/cart'); 
 
     } catch (error) {
         console.error(error.message);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
@@ -505,7 +538,11 @@ const LoadCheckOut = async (req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn});
+        const userId = req.session.user ? req.session.user._id : null;
+        
+        const addresses = await Address.find({user:userId})
+
+        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn,addresses});
         
     } catch (error) {
         console.log(error.message);
@@ -530,5 +567,6 @@ module.exports = {
     LoadCart,
     addProductsCart,
     deleteCartProduct,
+    updateProductQuantity,
     LoadCheckOut
 };
