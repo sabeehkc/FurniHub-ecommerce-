@@ -1,0 +1,117 @@
+<%- include('./layout/adheader.ejs') %>
+<div class="container-scroller text-center">
+    <%- include('./layout/sidenav.ejs') %>
+        <div class="container-fluid page-body-wrapper">
+
+            <%- include('./layout/topnav.ejs') %>
+
+                <div class="w-100 container-fluid bg-dark mt-5">
+
+                    <div class="container mt-5">
+                        <h2>Order Management</h2>
+                        <% if (orders && orders.length > 0 ) { %>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Address</th>
+                                        <th>Price</th>
+                                        <th>Order Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% orders.forEach((order, orderIndex) => { %>
+                                        <% order.products.forEach((product, index) => { %>
+                                            <tr>
+                                                <td><%= orderIndex * order.products.length + index + 1 %></td>
+                                                <td class="product-col">
+                                                    <div class="product d-flex align-items-center">
+                                                        <figure class="product-media mr-2">
+                                                            <% if (product.images && product.images.length > 0) { %>
+                                                                <img src="<%= product.images[0] %>" alt="Product image">
+                                                            <% } %>
+                                                        </figure>
+                                                        <h6 class="product-title">
+                                                            <%= product.name %>
+                                                        </h6>
+                                                    </div>
+                                                </td>
+                                                <td class="quantity-col"><%= product.quantity %></td>
+                                                <td>
+                                                    <%= order.address.user.name %>
+                                                    <br>
+                                                    <%= order.address.buildingName %> 
+                                                    <br> 
+                                                    <%= order.address.city %>
+                                                    <br> 
+                                                    <%= order.address.state %> 
+                                                    <br> 
+                                                    <%= order.address.pincode %>
+                                                </td>
+                                                <td class="price-col">₹<%= product.subtotal %></td>
+                                                <% if(product.orderStatus == 'placed') { %>
+                                                    <td  style="text-align: center; color: rgb(129, 129, 235);"><%= product.orderStatus %></td>
+                                                <% }else if(product.orderStatus == 'shipped') { %>
+                                                    <td  style="text-align: center; color: rgb(23, 23, 238);"><%= product.orderStatus %></td>
+                                                <% }else if(product.orderStatus == 'delivered') { %> 
+                                                    <td  style="text-align: center; color: rgb(13, 197, 13);"><%= product.orderStatus %></td>
+                                                <% }else { %> 
+                                                    <td  style="text-align: center; color: red;"><%= product.orderStatus %></td>
+                                                <% } %>   
+                                                <td><div class="dropdown">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        Change Status
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                        <% if (product.orderStatus !== 'shipped') { %>
+                                                            <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'shipped')">Shipped</a>
+                                                        <% } %>
+                                                        <% if (product.orderStatus !== 'delivered') { %>
+                                                        <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
+                                                        <% } %>
+                                                    </div>
+                                                </div></td>
+                                            
+                                            </tr>
+                                        <% }) %>
+                                        
+                                    <% }) %>
+                                </tbody>                                    
+                            </table>
+                        <% }else { %> 
+                            <span style="font-size: x-large;">No Orders</span>
+                        <% } %>
+                    </div>
+                </div>
+        </div>
+</div>
+
+
+<script>
+    function changeProductStatus(orderId, productId, newStatus) {
+
+    fetch(`/admin/change-product-status/${orderId}/${productId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newStatus })
+    })
+    .then(response => {
+        if (response.ok) {
+            location.reload(); // Reload the page 
+        } else {
+            console.error('Failed to change product status');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+ 
+    
+<%- include('./layout/adfooter.ejs') %>    

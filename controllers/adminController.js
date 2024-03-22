@@ -1,7 +1,9 @@
 const User = require("../models/userModel");
 const Category = require("../models/categoryModel")
 const bcrypt = require('bcrypt');
-const { product } = require("./userController");
+const Product = require("../models/productModel");
+const Order = require("../models/orderModel");
+const Address = require("../models/addressModel");
 
 
 //----------------- Admin login page -----------------//
@@ -107,6 +109,49 @@ const blockUser = async (req, res) => {
     }
 };
 
+const loadOrders = async (req,res) => {
+    try {
+
+        const orders = await Order.find().populate({
+            path: 'address',
+            model: Address,
+            populate: {
+                path: 'user',
+                model: User
+            }
+        });
+
+
+        res.render('orders',{orders})
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const ChangeOrderStatus = async (req, res) => {
+    try {
+        const { orderId, productId } = req.params;
+        const { newStatus } = req.body;
+
+        const order = await Order.findById(orderId);
+
+        const product = order.products.find(p => p._id.toString() === productId);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        product.orderStatus = newStatus;
+
+        await order.save();
+
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
 const logout = async(req,res) => {
     try {
         req.session.destroy();
@@ -115,7 +160,9 @@ const logout = async(req,res) => {
     } catch (error) {
         console.log(error.message);
     }
-}
+};
+
+
 
 
 module.exports = {
@@ -124,5 +171,7 @@ module.exports = {
     loadDashboard,
     loadCustomer,
     blockUser, 
+    loadOrders,
+    ChangeOrderStatus,
     logout
 }

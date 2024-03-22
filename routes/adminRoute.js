@@ -71,6 +71,8 @@ admin_route.delete('/productsdelete', productController.deleteImage);
 
 admin_route.post('/products/toggle/:id',productController.toggleProductStatus);
 
+admin_route.get('/orders',adminController.loadOrders);
+admin_route.post('/change-product-status/:orderId/:productId',adminController.ChangeOrderStatus)
 
 admin_route.get('/logout',adminController.logout);
 

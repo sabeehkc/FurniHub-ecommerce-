@@ -5,6 +5,8 @@ const Otp = require('../models/otpModel.js');
 const Cart = require('../models/cartModel.js');
 const Product = require('../models/productModel.js');
 const Address = require('../models/addressModel.js');
+const Order = require('../models/orderModel.js');
+const { product } = require('./productController.js');
 
 
 //-----------------  hash password -----------------//
@@ -386,14 +388,12 @@ const addProductsCart = async (req, res) => {
 
         if (!product) {
             console.log("Product not found");
-            return res.status(404).json({ message: "Product not found" });
         }
 
         const userId = req.session.user ? req.session.user._id : null;
 
         if (!userId) {
             console.log("User not found");
-            return res.status(404).json({ message: "User not found" });
         }
 
         let cart = await Cart.findOne({ user: userId });
@@ -454,12 +454,13 @@ const LoadCart = async (req, res) => {
     } catch (error) {
         console.log(error.message);
     }
-}
+};
+
 const updateProductQuantity = async (req, res) => {
     try {
         const { productId, quantity } = req.query;
 
-        // Find the cart and update the quantity for the specified product
+        // Find the cart and update the quantity 
         let cart = await Cart.findOneAndUpdate(
             { user: req.session.user._id, 'products.product': productId },
             { $set: { 'products.$.quantity': quantity } },
@@ -477,7 +478,6 @@ const updateProductQuantity = async (req, res) => {
 
         // Recalculate the grand total of the cart
         cart.grandTotal = cart.products.reduce((total, item) => total + item.subtotal, 0);
-        // Save the changes to the cart
         await cart.save();
 
         res.json({ subtotal: updatedProduct.subtotal, grandTotal: cart.grandTotal });
@@ -497,21 +497,21 @@ const deleteCartProduct = async (req, res) => {
 
         if (!userId) {
             console.log("User Not Found");
-            return res.redirect('/cart');
         }
 
         let cart = await Cart.findOne({ user: userId });
 
         if (!cart) {
             console.log("Cart not Found");
-            return res.redirect('/cart');
         }
 
+        // if only one product in cart delete all document
         if (cart.products.length === 1) {
             await Cart.findByIdAndDelete(cart._id);
             return res.redirect('/cart');
         }
 
+        //pull the product 
         await Cart.findOneAndUpdate(
             { _id: cart._id },
             { $pull: { products: { _id: productId } } }
@@ -539,11 +539,102 @@ const LoadCheckOut = async (req,res) => {
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
         const userId = req.session.user ? req.session.user._id : null;
-        
-        const addresses = await Address.find({user:userId})
 
-        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn,addresses});
+        const addresses = await Address.find({user:userId}).populate({path:'user',model:User});
+        const cart = await Cart.find({ user: userId }).populate({ path: 'products.product', model: Product });
+
+        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn,addresses,cart});
         
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const placeOrder = async (req, res) => {
+    try {
+        const userId = req.session.user ? req.session.user._id : null;
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+           console.log("User not found!");
+        }
+
+        const cart = await Cart.findOne({ user: userId }).populate({ path: 'products.product', model: Product });
+
+        if (!cart || !cart.products.length) {
+           console.log("Cart is empty");
+        }
+
+        const { addressId, paymentMethod } = req.body;
+
+        console.log("cart product",cart);
+
+        const newOrder = new Order({
+            user: user._id,
+            products: cart.products.map(product => ({
+                product: product.product._id,
+                name: product.product.name,
+                price: product.product.discount,
+                quantity: product.quantity,
+                subtotal: product.subtotal,
+                orderStatus: 'placed',
+                images: product.product.pictures
+            })),
+            address: addressId,
+            paymentStatus: 'pending',
+            paymentMethod: paymentMethod,
+            total: cart.grandTotal
+        });
+
+        await newOrder.save();
+
+        // change product quantity
+        for (const product of cart.products) {
+            await Product.findByIdAndUpdate(product.product._id, {
+                $inc: { quantity: -product.quantity }
+            });
+        }
+
+        // Clear the user's cart after placing order
+        await Cart.findOneAndDelete({ user: userId });
+
+        // Send success response
+        res.status(201).json({ message: 'Order placed successfully', order: newOrder });
+
+    } catch (error) {
+        console.error('Error placing order:', error);
+    }
+};
+
+
+const loadOrders = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const userId = req.session.user ? req.session.user._id : null;
+        const orders = await Order.find({user: userId}).populate({
+            path: 'address',
+            model: Address,
+            populate: {
+                path: 'user',
+                model: User
+            }
+        });
+
+        res.render('orders',{userName:userName,isLoggedIn:isLoggedIn,orders});
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const ThankYou = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        res.render('thankyou',{userName:userName,isLoggedIn:isLoggedIn})
     } catch (error) {
         console.log(error.message);
     }
@@ -568,5 +659,8 @@ module.exports = {
     addProductsCart,
     deleteCartProduct,
     updateProductQuantity,
-    LoadCheckOut
+    LoadCheckOut,
+    placeOrder,
+    loadOrders,
+    ThankYou
 };
