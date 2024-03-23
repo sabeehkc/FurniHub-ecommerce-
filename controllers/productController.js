@@ -285,7 +285,41 @@ const product = async(req,res) => {
     } catch (error) {
         console.log(error.message);
     }
-}
+};
+
+const FilterCategory = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const page = parseInt(req.query.page) || 1; 
+        const pageSize = 9;
+
+        const skip = (page - 1) * pageSize;
+
+        const id = req.params.id;
+
+
+        const products = await Product.find({status: 'active',category:id}).limit(pageSize).skip(skip).populate({path:'category',model:Category});
+        console.log(products);
+
+        const totalCount = await Product.countDocuments({status: 'active'});
+
+        const totalPages = Math.ceil(totalCount / pageSize);
+        const categories = await Category.find()
+
+        res.render('allproducts',{
+            userName:userName,
+            isLoggedIn:isLoggedIn,
+            products:products,
+            categories:categories,
+            currentPage: page,
+            totalPages: totalPages
+        });
+    } catch (error) {
+        console.log(error.message);
+    }
+};
 
 
 module.exports = {
@@ -297,5 +331,6 @@ module.exports = {
     deleteImage,
     toggleProductStatus,
     loadAllProduct,
-    product
+    product,
+    FilterCategory
 }

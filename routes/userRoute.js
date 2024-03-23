@@ -83,8 +83,10 @@ user_route.put('/updateQuantity', userController.updateProductQuantity);
 user_route.get('/check-out',auth.checkuser,auth.isBlock,userController.LoadCheckOut);
 
 user_route.post('/order-placed',userController.placeOrder);
-user_route.get('thank-you',auth.checkuser,auth.isBlock,userController.ThankYou);
+user_route.get('/thank-you',auth.checkuser,auth.isBlock,userController.ThankYou);
 user_route.get('/orders',auth.checkuser,auth.isBlock,userController.loadOrders);
+
+user_route.get('/filter-category/:id',auth.isBlock,productController.FilterCategory);
 
 
 //----------------- export user route -----------------//

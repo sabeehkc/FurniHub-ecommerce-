@@ -93,40 +93,41 @@
                                         </button>
                                         </div>
                                         <div class="modal-body">
-                                        <form id="addAddressForm" action="/address" method="POST" onsubmit="return validate()">
-                                            <div class="form-group">
-                                                <label for="buildingName">Building Name</label>
-                                                <input type="text" class="form-control" id="buildingName" name="buildingName">
-                                                <div id="buildingNameError" class="text-danger"></div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="mobile">Mobile</label>
-                                                <input type="text" class="form-control" id="mobile" name="mobile">
-                                                <div id="mobilenoError" class="text-danger"></div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="district">District</label>
-                                                <input type="text" class="form-control" id="district" name="district">
-                                                <div id="districtError" class="text-danger"></div>
-                                            </div>
+                                            <form id="addAddressForm" action="/address" method="POST" onsubmit="return validate()">
                                                 <div class="form-group">
-                                                <label for="city">City</label>
-                                                <input type="text" class="form-control" id="city" name="city">
-                                            <div id="cityError" class="text-danger"></div>
-                                            </div>
+                                                    <label for="buildingName" class="pl-2">Building Name:</label>
+                                                    <input type="text" class="form-control" id="buildingName" name="buildingName">
+                                                    <div id="buildingNameError" class="text-danger"></div>
+                                                </div>
                                                 <div class="form-group">
-                                                <label for="state">State</label>
-                                                <input type="text" class="form-control" id="state" name="state">
-                                                <div id="stateError" class="text-danger"></div>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="pincode">Pincode</label>
-                                                <input type="text" class="form-control" id="pincode" name="pincode">
-                                            <div id="pincodeError" class="text-danger"></div>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">Add Address</button>
-                                        </form>
+                                                    <label for="mobile" class="pl-2">Mobile:</label>
+                                                    <input type="text" class="form-control" id="mobile" name="mobile">
+                                                    <div id="mobilenoError" class="text-danger"></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="district" class="pl-2">District:</label>
+                                                    <input type="text" class="form-control" id="district" name="district">
+                                                    <div id="districtError" class="text-danger"></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="city" class="pl-2">City:</label>
+                                                    <input type="text" class="form-control" id="city" name="city">
+                                                    <div id="cityError" class="text-danger"></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="state" class="pl-2">State:</label>
+                                                    <input type="text" class="form-control" id="state" name="state">
+                                                    <div id="stateError" class="text-danger"></div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="pincode" class="pl-2">Pincode:</label>
+                                                    <input type="text" class="form-control" id="pincode" name="pincode">
+                                                    <div id="pincodeError" class="text-danger"></div>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Add Address</button>
+                                            </form>
                                         </div>
+                                        
                                     </div>
                                     </div>
                                 </div><!--End Modal-->
