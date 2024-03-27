@@ -103,7 +103,7 @@
                                                 <td  style="text-align: center; color: red;"><%= product.orderStatus %></td>
                                             <% } %>   
                                             <td class="action-column" style="text-align: center;">
-                                                <button class="btn-primary">Cancell</button>
+                                                <button class="btn-primary" style="border: none;">Cancell</button>
                                             </td>
                                         </tr>
                                     <% }) %>
@@ -114,8 +114,8 @@
                         </div>
                     </div><!-- .End .tab-pane -->   
                     <% }else {%>
+                        <button class="btn-primary text-center" style="border: none;"><a class="text-white" href="/all-products">Order new product</a></button>
                         <h3 class="text-primary text-center ">No Orders</h3>
-                        <button class="btn-primary text-centerk"><a class="text-white" href="/all-products">Order new product</a></button>
                     <% } %> 
                 </div>    
 

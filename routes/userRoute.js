@@ -6,6 +6,8 @@ const userController = require("../controllers/userController");
 const productController = require("../controllers/productController");
 
 const profileController = require("../controllers/profileController");
+const cartController = require("../controllers/cartController");
+const orderController = require("../controllers/orderController");
 
 //----------------- Login With Google -----------------//
 const passport = require("passport");
@@ -65,63 +67,31 @@ user_route.get("/logout", userController.logOut);
 //----------------- About page -----------------//
 user_route.get("/about", auth.isBlock, userController.loadAbout);
 
-user_route.get(
-  "/profile/",
-  auth.checkuser,
-  auth.isBlock,
-  profileController.loadProfile
-);
+user_route.get("/profile/",auth.checkuser,auth.isBlock,profileController.loadProfile);
 user_route.post("/profile/:id", profileController.editProfile);
 user_route.post("/profile", profileController.changePassword);
 
-user_route.get(
-  "/address",
-  auth.checkuser,
-  auth.isBlock,
-  profileController.loadAddress
-);
+user_route.get("/address",auth.checkuser,auth.isBlock,profileController.loadAddress);
 user_route.post("/address", profileController.addAddress);
 
-user_route.get(
-  "/edit-address/:id",
-  auth.checkuser,
-  auth.isBlock,
-  profileController.loadEditAddress
-);
+user_route.get("/edit-address/:id",auth.checkuser,auth.isBlock,profileController.loadEditAddress);
 user_route.post("/edit-address/:id", profileController.editAddress);
 user_route.get("/delete-address/:id", profileController.deleteAddress);
 
-user_route.get("/cart", auth.checkuser, auth.isBlock, userController.LoadCart);
-user_route.get("/cart-Products/:id", userController.addProductsCart);
-user_route.get("/cart/remove", userController.deleteCartProduct);
-user_route.put("/updateQuantity", userController.updateProductQuantity);
+user_route.get("/cart", auth.checkuser, auth.isBlock, cartController.LoadCart);
+user_route.get("/cart-Products/:id", cartController.addProductsCart);
+user_route.get("/cart/remove", cartController.deleteCartProduct);
+user_route.put("/updateQuantity", cartController.updateProductQuantity);
 
-user_route.get(
-  "/check-out",
-  auth.checkuser,
-  auth.isBlock,
-  userController.LoadCheckOut
-);
+user_route.get("/check-out",auth.checkuser,auth.isBlock,orderController.LoadCheckOut);
 
-user_route.post("/order-placed", userController.placeOrder);
-user_route.get(
-  "/thank-you",
-  auth.checkuser,
-  auth.isBlock,
-  userController.ThankYou
-);
-user_route.get(
-  "/orders",
-  auth.checkuser,
-  auth.isBlock,
-  userController.loadOrders
-);
+user_route.post("/order-placed", orderController.placeOrder);
+user_route.get("/thank-you",auth.checkuser,auth.isBlock,orderController.ThankYou);
+user_route.get("/orders",auth.checkuser,auth.isBlock,orderController.loadOrders);
 
-user_route.get(
-  "/filter-category/:id",
-  auth.isBlock,
-  productController.FilterCategory
-);
+user_route.post('/cancel-order/:orderId', orderController.cancelOrder);
+
+user_route.get("/filter-category/:id",auth.isBlock,productController.FilterCategory);
 
 //----------------- export user route -----------------//
 module.exports = user_route;

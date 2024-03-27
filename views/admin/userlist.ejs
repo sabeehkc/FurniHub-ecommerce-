@@ -24,7 +24,7 @@
                             <td><%= users[i].email %></td>
                             <td><%= users[i].mobile %></td>
                             <td>
-                                <button class="block-btn <%= users[i].is_blocked ? 'btn-success' : 'btn-danger' %>" onclick="toggleBlock('<%= users[i].email %>','<%= users[i].is_blocked %>')">
+                                <button class="block-btn <%= users[i].is_blocked ? 'btn-success' : 'btn-danger' %>" onclick="toggleBlock(this,'<%= users[i].email %>','<%= users[i].is_blocked %>')">
                                     <% if (users[i].is_blocked) { %>                       
                                         Unblock
                                     <% } else { %>
@@ -80,9 +80,10 @@
 </footer>
 
 <script>
-    function toggleBlock(email, isBlocked) {
+    function toggleBlock(button,email, isBlocked) {
         const url = '/admin/block-user';
         let action = isBlocked=='true'? 'unblock' : 'block';
+        let buttonText = isBlocked == 'true' ? 'Unblocking' : 'Blocking';
         console.log(isBlocked,action);
         Swal.fire({
             title: 'Are you sure?',
@@ -108,7 +109,8 @@
                         icon: 'success'
                     }).then(() => {
                         // location.reload();
-                        document.querySelector("body > div > div > div > table > tbody > tr:nth-child(3) > td:nth-child(5) > button").innerText = 'Testing'
+                        // document.querySelector("body > div > div > div > table > tbody > tr:nth-child(3) > td:nth-child(5) > button").innerText = buttonText;
+                        button.innerText = buttonText;
                     });
                 })
                 .catch(error => {

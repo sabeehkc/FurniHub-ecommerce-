@@ -28,7 +28,13 @@
                 </div><!-- End .checkout-discount -->
                 <form id="checkout-form" >
                     <div class="row">
+                        <div class="col-lg-8 d-flex">
+                            <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#addAddressModal">
+                                Add Address<i class="icon-edit"></i></button>
+                        </div>
                         <div class="col-lg-8 d-flex ">
+                            <% if(addresses.length !== 0){ %> 
+
                                 <% addresses.forEach((address) => {%>
                                     <div class="col-lg-4">
                                     <div class="card card-dashboard ">   
@@ -49,6 +55,9 @@
                                     </div><!-- End .card-dashboard -->
                                 </div>
                                 <%}); %>
+                            <% }else { %> 
+                                <h4 class='text-primary text-center'>No Address, Please add a Address</h4>
+                            <% } %>
                         </div><!-- End .col-lg-8 -->
                         <aside class="col-lg-4">
                             <div class="summary">
@@ -152,6 +161,57 @@
     </div><!-- End .page-content -->
 </main><!-- End .main -->
 
+<!-- New Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title text-center" id="addAddressModalLabel">Add New Address</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="addAddressForm" action="/address" method="POST" onsubmit="return validate()">
+                <div class="form-group">
+                    <label for="buildingName" class="pl-2">Building Name:</label>
+                    <input type="text" class="form-control" id="buildingName" name="buildingName">
+                    <small id="buildingNameError" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="mobile" class="pl-2">Mobile:</label>
+                    <input type="text" class="form-control" id="mobile" name="mobile">
+                    <small id="mobilenoError" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="district" class="pl-2">District:</label>
+                    <input type="text" class="form-control" id="district" name="district">
+                    <small id="districtError" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="city" class="pl-2">City:</label>
+                    <input type="text" class="form-control" id="city" name="city">
+                    <small id="cityError" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="state" class="pl-2">State:</label>
+                    <input type="text" class="form-control" id="state" name="state">
+                    <small id="stateError" class="text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="pincode" class="pl-2">Pincode:</label>
+                    <input type="text" class="form-control" id="pincode" name="pincode">
+                    <small id="pincodeError" class="text-danger"></small>
+                </div>
+                <button type="submit" class="btn btn-primary d-flex justify-content-center mx-auto mb-2">Add Address</button>
+            </form>
+        </div>
+        
+    </div>
+    </div>
+</div><!--End Modal-->
+
+
 
 <%- include('../layout/allfooter.ejs') %>
 </div><!-- End .page-wrapper -->
@@ -196,6 +256,68 @@
         });
     };
 </script>
+
+
+<script>
+    function validate(){
+        let buildingName = document.getElementById('buildingName').value.trim();
+        let mobile = document.getElementById('mobile').value.trim();
+        let district = document.getElementById('district').value.trim();
+        let city = document.getElementById('city').value.trim();
+        let state = document.getElementById('state').value.trim();
+        let pincode = document.getElementById('pincode').value.trim();
+
+
+        let buildingNameError = document.getElementById('buildingNameError');
+        let mobilenoError = document.getElementById('mobilenoError');
+        let districtError = document.getElementById('districtError');
+        let cityError = document.getElementById('cityError');
+        let stateError = document.getElementById('stateError');
+        let pincodeError = document.getElementById('pincodeError');
+
+        buildingNameError.textContent = '';
+        mobilenoError.textContent = '';
+        districtError.textContent = '';
+        cityError.textContent = '';
+        stateError.textContent = '';
+        pincodeError.textContent = '';
+
+        let isValid = true;
+
+        if(buildingName === ''){
+            buildingNameError.textContent = "Please Enter Your BuildingName"
+            isValid = false
+        }
+
+        if (!/^\d{10}$/.test(mobile)) {
+            mobilenoError.textContent = 'Please enter a valid 10-digit mobile number.';
+            isValid = false;
+        }
+
+        if(district === ''){
+            districtError.textContent = "Please Enter Your District"
+            isValid = false
+        }
+
+        if(city === ''){
+            cityError.textContent = "Please Enter Your City"
+            isValid = false
+        }
+
+        if(state === ''){
+            stateError.textContent = "Please Enter Your State"
+            isValid = false
+        }
+        if (!/^\d{6}$/.test(pincode)) {
+            pincodeError.textContent = 'Please enter a valid 6-digit  Pincode.';
+            isValid = false;
+        }
+
+        return isValid;
+
+    }
+</script>
+
 
  <!-- Plugins JS File -->
  <script src="assets/js/jquery.min.js"></script>

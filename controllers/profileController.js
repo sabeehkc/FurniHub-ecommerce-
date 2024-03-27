@@ -129,7 +129,7 @@ const addAddress = async (req,res) => {
 
         await address.save()
 
-        res.redirect('/address')
+        res.redirect(req.headers.referer)
 
 
     } catch (error) {
@@ -173,7 +173,7 @@ const editAddress = async (req,res) => {
         
         await address.save();
 
-        res.redirect('/address')
+        res.redirect(req.headers.referer)
         
     } catch (error) {
         console.log(error.message);

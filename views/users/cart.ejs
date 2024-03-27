@@ -176,6 +176,7 @@
                     const data = await response.json();
                     const subtotalCell = document.querySelector(`.subtotal-cell-${productId}`);
                     subtotalCell.textContent = `₹${data.subtotal}`;
+
                 } else {
                     console.error('Failed to update quantity');
                 }
