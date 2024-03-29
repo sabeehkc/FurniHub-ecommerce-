@@ -113,25 +113,16 @@ const ThankYou = async (req,res) => {
 
 const cancelOrder = async (req,res) => {
     try {
-       
-        const cancellationReason = req.body.reason; 
-        console.log(reason);
 
-        // // Update the order status and reason for cancellation
-        // const updatedOrder = await Order.findByIdAndUpdate(orderId, {
-        //     $set: {
-        //         'products.$.orderStatus': 'cancelled',
-        //         'products.$.reason': reason
-        //     }
-        // }, { new: true });
-
-        // if (!updatedOrder) {
-        //     return res.status(404).json({ error: 'Order not found' });
-        // }
-
-        // // Respond with updated order
-        // res.json(updatedOrder);
-
+      
+        const result = await Order.updateOne(
+            { _id: req.body.orderId, 'products._id': req.body.productId },
+            { $set: { 'products.$.orderStatus': req.body.newStatus,'products.$.reason': req.body.reason} }
+        );
+        console.log(req.body.orderId);
+        console.log(req.body.productId);    
+  
+        res.json({success:true});
     } catch (error) {
         console.log(error.message);
     }

@@ -382,6 +382,26 @@ const loadAbout = async(req,res) => {
     }
 }
 
+const Error404 = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+        res.render('404',{userName:userName,isLoggedIn:isLoggedIn})
+    } catch (error) {
+        console.log(Error.message);
+    }
+};
+
+const wishlist = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+        res.render('wishlist',{userName:userName,isLoggedIn:isLoggedIn})
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 
 // Exporting functions
 module.exports = {
@@ -398,4 +418,6 @@ module.exports = {
     successGoogleLogin,
     failureGoogleLogin,
     loadAbout,
+    Error404,
+    wishlist
 };

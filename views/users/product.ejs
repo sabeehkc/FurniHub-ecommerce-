@@ -88,7 +88,8 @@
                            
                             <% if (product.quantity === 0) { %>
                                 <div class="product-details-action">
-                                    <button style="border: none; background-color: #ccc; color: #666; padding: 8px 16px; border-radius: 4px; cursor: not-allowed;">Out of Stock</button>
+                                    <!-- <button style="border: none; background-color: #ccc; color: #666; padding: 8px 16px; border-radius: 4px; cursor: not-allowed;">Out of Stock</button> -->
+                                    <button class="btn btn-block btn-outline-primary-2 disabled" style="cursor: not-allowed; color: #666; background-color: #ccc; border: none;">Out of Stock</button>
                                 </div>
                             <% } else { %>
                                 <div class="product-details-action">

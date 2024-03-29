@@ -60,20 +60,24 @@
                                                     <td  style="text-align: center; color: rgb(13, 197, 13);"><%= product.orderStatus %></td>
                                                 <% }else { %> 
                                                     <td  style="text-align: center; color: red;"><%= product.orderStatus %></td>
-                                                <% } %>   
-                                                <td><div class="dropdown">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        Change Status
-                                                    </button>
-                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                        <% if (product.orderStatus !== 'shipped') { %>
-                                                            <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'shipped')">Shipped</a>
-                                                        <% } %>
-                                                        <% if (product.orderStatus !== 'delivered') { %>
-                                                        <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
-                                                        <% } %>
-                                                    </div>
-                                                </div></td>
+                                                <% } %> 
+                                                <% if( product.orderStatus !== 'delivered' ){ %>
+                                                    <% if(product.orderStatus !== 'cancelled') { %> 
+                                                        <td><div class="dropdown">
+                                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                Change Status
+                                                            </button>
+                                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                <% if (product.orderStatus !== 'shipped') { %>
+                                                                    <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'shipped')">Shipped</a>
+                                                                <% } %>
+                                                                <% if (product.orderStatus !== 'delivered') { %>
+                                                                <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
+                                                                <% } %>
+                                                            </div>
+                                                        </div></td>
+                                                    <% } %>
+                                                <% } %> 
                                             
                                             </tr>
                                         <% }) %>
