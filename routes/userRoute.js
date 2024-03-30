@@ -92,7 +92,11 @@ user_route.get("/orders",auth.checkuser,auth.isBlock,orderController.loadOrders)
 user_route.put('/orders/status',orderController.cancelOrder);
 
 user_route.get("/filter-category/:id",auth.isBlock,productController.FilterCategory);
+
 user_route.get("/wishlist",auth.checkuser,auth.isBlock,userController.wishlist);
+user_route.get("/add-wishlist/:id",userController.addProductWishlist);
+user_route.get("/wishlist/remove",userController.deleteWishlistProduct);
+
 user_route.get('*',userController.Error404);
 
 //----------------- export user route -----------------//

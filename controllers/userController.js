@@ -7,6 +7,7 @@ const Product = require('../models/productModel.js');
 const Address = require('../models/addressModel.js');
 const Order = require('../models/orderModel.js');
 const { product } = require('./productController.js');
+const Wishlist = require('../models/wishlistModel.js');
 
 
 //-----------------  hash password -----------------//
@@ -392,11 +393,91 @@ const Error404 = async(req,res) => {
     }
 };
 
+const addProductWishlist = async (req,res) => {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findOne({_id:productId});
+
+        if(!product){
+            console.log("Product not Found");
+        }
+
+        const userId = req.session.user ? req.session.user._id : null;
+         
+        if(!userId){
+            // alert("Your not Loged, Please Login")
+            console.log("User not found");
+        }
+
+        let wishlist = await Wishlist.findOne({user: userId});
+
+        if(!wishlist){
+            wishlist = new Wishlist({
+                user:userId,
+                products: []
+            });
+        }
+
+        const existingProduct = wishlist.products.find(item => item.product.toString() === productId);
+
+        if(existingProduct){
+            alert("Product already in Your Wishlist")
+            console.log("user already selected this product");
+        }else {
+            wishlist.products.push({
+                product:productId,
+                price:product.discount,
+                name: product.name
+            });
+        }
+        await wishlist.save();
+        res.redirect(req.headers.referer);
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 const wishlist = async(req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
-        res.render('wishlist',{userName:userName,isLoggedIn:isLoggedIn})
+
+        const userId = req.session.user ? req.session.user._id : null
+        const wishlistProducts = await Wishlist.find({ user: userId }).populate({ path: 'products.product', model: Product });
+        res.render('wishlist',{userName:userName,isLoggedIn:isLoggedIn,wishlistProducts:wishlistProducts});
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const deleteWishlistProduct = async (req,res) => {
+    try {
+        const productId =req.query.productId;
+
+        const userId = req.session.user ? req.session.user._id : null;
+        if(!userId){
+            console.log("User not found");
+        }
+
+        let wishlist = await Wishlist.findOne({user:userId});
+        if(!wishlist){
+            console.log("Wishlist Product not found");
+        }
+
+        //if only 1 product in wishlist delete  document
+        if(wishlist.products === 1) {
+            await Wishlist.findByIdAndDelete(wishlist._id);
+            return res.redirect('/wishlist');
+        }
+
+        await Wishlist.findByIdAndUpdate(
+            {_id:wishlist._id},
+            {$pull: {products: {_id:productId}}}
+        );
+
+        res.redirect('/wishlist');
+        
     } catch (error) {
         console.log(error.message);
     }
@@ -419,5 +500,7 @@ module.exports = {
     failureGoogleLogin,
     loadAbout,
     Error404,
-    wishlist
+    wishlist,
+    addProductWishlist,
+    deleteWishlistProduct
 };

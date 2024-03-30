@@ -2,9 +2,9 @@
 <%- include('../layout/navbar.ejs') %>
 
 <main class="main">
-    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+    <div class="page-header text-center" style="background-image: url('assets/images/wishlistbck.jpg')">
         <div class="container">
-            <h1 class="page-title">Wishlist<span>Shop</span></h1>
+            <h1 class="page-title " style="color: rgb(79, 76, 76); padding-left: 80px; font-family:Georgia, 'Times New Roman', Times, serif ">Wishlist</h1>
         </div><!-- End .container -->
     </div><!-- End .page-header -->
     <nav aria-label="breadcrumb" class="breadcrumb-nav">
@@ -16,95 +16,58 @@
         </div><!-- End .container -->
     </nav><!-- End .breadcrumb-nav -->
 
-    <div class="page-content">
-        <div class="container">
+
+    <% if(wishlistProducts && wishlistProducts.length > 0) { %>
+    <div class="page-content"> 
+        <div class="container"> 
             <table class="table table-wishlist table-mobile">
                 <thead>
                     <tr>
                         <th>Product</th>
                         <th>Price</th>
                         <th>Stock Status</th>
-                        <th></th>
-                        <th></th>
                     </tr>
                 </thead>
 
                 <tbody>
+                    <% wishlistProducts[0].products.forEach(product => { %>
                     <tr>
                         <td class="product-col">
                             <div class="product">
                                 <figure class="product-media">
                                     <a href="#">
-                                        <img src="assets/images/products/table/product-1.jpg" alt="Product image">
+                                        <img src="<%= product.product.pictures[0] %>" alt="Product image">
                                     </a>
                                 </figure>
 
                                 <h3 class="product-title">
-                                    <a href="#">Beige knitted elastic runner shoes</a>
+                                    <a href="/product/<%= product.product._id %>"><%= product.name %></a>
                                 </h3><!-- End .product-title -->
                             </div><!-- End .product -->
                         </td>
-                        <td class="price-col">$84.00</td>
-                        <td class="stock-col"><span class="in-stock">In stock</span></td>
+                        <td class="price-col"><%= product.price %></td>
+                        <td class="stock-col">
+                            <% if(product.product.quantity > 0) { %> 
+                                <span class="in-stock">In stock</span>    
+                            <% }else { %> 
+                                <span class="out-of-stock">Out of stock</span>
+                            <% } %>
+                            
+                        </td>
                         <td class="action-col">
-                            <div class="dropdown">
-                            <button class="btn btn-block btn-outline-primary-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="icon-list-alt"></i>Select Options
-                            </button>
-
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">First option</a>
-                                <a class="dropdown-item" href="#">Another option</a>
-                                <a class="dropdown-item" href="#">The best option</a>
-                              </div>
-                            </div>
+                            <% if(product.product.quantity > 0){ %> 
+                                <button class="btn  btn-primary"> <a class="text-white" href="/cart-Products/<%= product.product._id %>"><i class="icon-cart-plus"></i>Add to Cart</a></button>     
+                            <% }else { %> 
+                                <button class="btn btn-block btn-outline-primary-2 disabled">Out of Stock</button>    
+                            <% } %>
+                           
                         </td>
-                        <td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
+                        <td class="remove-col"><a href="/wishlist/remove?productId=<%= product._id %>"><i class="icon-close text-muted"></i></a></td>
                     </tr>
-                    <tr>
-                        <td class="product-col">
-                            <div class="product">
-                                <figure class="product-media">
-                                    <a href="#">
-                                        <img src="assets/images/products/table/product-2.jpg" alt="Product image">
-                                    </a>
-                                </figure>
-
-                                <h3 class="product-title">
-                                    <a href="#">Blue utility pinafore denim dress</a>
-                                </h3><!-- End .product-title -->
-                            </div><!-- End .product -->
-                        </td>
-                        <td class="price-col">$76.00</td>
-                        <td class="stock-col"><span class="in-stock">In stock</span></td>
-                        <td class="action-col">
-                            <button class="btn btn-block btn-outline-primary-2"><i class="icon-cart-plus"></i>Add to Cart</button>
-                        </td>
-                        <td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td class="product-col">
-                            <div class="product">
-                                <figure class="product-media">
-                                    <a href="#">
-                                        <img src="assets/images/products/table/product-3.jpg" alt="Product image">
-                                    </a>
-                                </figure>
-
-                                <h3 class="product-title">
-                                    <a href="#">Orange saddle lock front chain cross body bag</a>
-                                </h3><!-- End .product-title -->
-                            </div><!-- End .product -->
-                        </td>
-                        <td class="price-col">$52.00</td>
-                        <td class="stock-col"><span class="out-of-stock">Out of stock</span></td>
-                        <td class="action-col">
-                            <button class="btn btn-block btn-outline-primary-2 disabled">Out of Stock</button>
-                        </td>
-                        <td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
-                    </tr>
+                    <% }) %>
                 </tbody>
             </table><!-- End .table table-wishlist -->
+            
             <div class="wishlist-share">
                 <div class="social-icons social-icons-sm mb-2">
                     <label class="social-label">Share on:</label>
@@ -117,6 +80,9 @@
             </div><!-- End .wishlist-share -->
         </div><!-- End .container -->
     </div><!-- End .page-content -->
+    <% }else { %> 
+        <h3 class="text-primary text-center ">No Products In Wishlist</h3>
+    <% } %>
 </main><!-- End .main -->
 
 
