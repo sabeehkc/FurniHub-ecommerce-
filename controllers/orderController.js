@@ -3,6 +3,15 @@ const Cart = require("../models/cartModel");
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
+const Razorpay = require("razorpay");
+
+var instance = new Razorpay({
+    key_id : process.env.RAZORPAY_ID_KEY,
+    key_secret: process.env.RAZORPAY_SECRET_KEY
+});
+
+
+
 
 const LoadCheckOut = async (req,res) => {
     try {
@@ -37,6 +46,7 @@ const placeOrder = async (req, res) => {
         }
 
         const { addressId, paymentMethod } = req.body;
+        console.log(paymentMethod);
 
         console.log("cart product",cart);
 
@@ -98,6 +108,50 @@ const loadOrders = async (req,res) => {
     } catch (error) {
         console.log(error.message);
     }
+};
+
+const orderDetails = async (req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+        
+
+        const orderId = req.query.orderId;
+        console.log(orderId);
+        const productId = req.query.productId;
+        console.log(productId);
+
+        const myorder = await Order.findOne(
+            { _id:orderId, 'products._id': productId }
+           ).populate({
+            path: 'products.product', 
+            model: Product
+        }).populate({
+          path: 'user',
+          model: User
+        }).populate({
+            path: 'address',
+            model: Address
+        })
+        console.log("myorder:",myorder);
+
+
+        let i=0
+      
+        for( i=0;i<myorder.products.length;i++)
+        {
+          
+          if (myorder.products[i]._id==productId)
+          {
+            break;
+          }
+        }
+  
+        res.render('orderdetails',{userName:userName,isLoggedIn:isLoggedIn,myorder,i})
+
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
 const ThankYou = async (req,res) => {
@@ -110,22 +164,53 @@ const ThankYou = async (req,res) => {
         console.log(error.message);
     }
 }
-
-const cancelOrder = async (req,res) => {
+const cancelOrder = async (req, res) => {
     try {
+        const orderId = req.body.orderId;
+        const productId = req.body.productId;
+        const newStatus = req.body.newStatus;
+        const reason = req.body.reason;
 
-      
-        const result = await Order.updateOne(
-            { _id: req.body.orderId, 'products._id': req.body.productId },
-            { $set: { 'products.$.orderStatus': req.body.newStatus,'products.$.reason': req.body.reason} }
-        );
-        console.log(req.body.orderId);
-        console.log(req.body.productId);    
-  
-        res.json({success:true});
+        // Find the order
+        const order = await Order.findOne({ _id: orderId });
+
+        // Find the product to be canceled
+        const productIndex = order.products.findIndex(product => product._id.toString() === productId);
+
+        if (productIndex !== -1) {
+            // Update the product's orderStatus and reason
+            order.products[productIndex].orderStatus = newStatus;
+            order.products[productIndex].reason = reason;
+
+            // Recalculate total price
+            order.total -= order.products[productIndex].subtotal;
+
+            // Save the updated order
+            await order.save();
+
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, message: "Product not found in order" });
+        }
+
     } catch (error) {
         console.log(error.message);
+        res.json({ success: false, message: error.message });
     }
+};
+
+function generateRazorpay(orderId,total){
+    return new Promise((resolve,reject)=> {
+        var option = {
+            amount: total,
+            currency: "INR",
+            receipt: orderId
+        };
+        instance.orders.create(option, function(err,order){
+            console.log("new order",order)
+            resolve(order)
+        })
+    })
 }
 
 module.exports = {
@@ -133,5 +218,6 @@ module.exports = {
     placeOrder,
     loadOrders,
     ThankYou,
-    cancelOrder
+    cancelOrder,
+    orderDetails
 }

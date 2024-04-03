@@ -1,0 +1,120 @@
+<%- include('../layout/header.ejs') %>
+
+<%- include('../layout/navbar.ejs') %>
+
+
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">My Account</h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/profile">Profile</a></li>
+                <li class="breadcrumb-item"><a href="/orders">Orders</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+<div class="page-content">
+    <div class="dashboard">
+        <div class="container">
+            <div class="row">
+                <aside class="col-md-4 col-lg-3">
+                    <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link " href="/profile"  >Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/orders">Orders</a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link "   href="/address"  >Adresses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"  href="" >Wallet</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Sign Out</a>
+                        </li>
+                    </ul>
+                </aside><!-- End .col-lg-3 -->
+                <div class=" col-lg-9 col-lg-8 ">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Order Date: <%= new Date(myorder.createdAt).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></h5>
+                                    <p class="card-text">Total: <%= myorder.total %></p>
+                                    <div class="media mb-3">
+                                        
+                                        <img src="<%= myorder.products[i].images[0] %>" class="mr-3" alt="<%= myorder.products[i].name  %>" style="width: 30vh;">
+                                        <div class="media-body ml-5 d-flex" style="justify-content: space-evenly;">
+                                            <div>
+                                            <h5 class="mt-0"><%= myorder.products[i].name %></h5>
+                                            <h6>Price: <%= myorder.products[i].price %></h6>
+                                            <h6>Quantity: <%= myorder.products[i].quantity %></h6>
+                                            <h6>Total: <%= myorder.products[i].subtotal %></h6>
+                                            <h6>Status: 
+                                                <% const orderStatus = myorder.products[i].orderStatus; %>
+                                                <span class="badge badge-danger"><%= orderStatus %></span>
+                                            </h6>
+                                            </div> 
+                                            <div>   
+                                            <h6 class="address">
+                                                <strong>Address:</strong><br>
+                                                <div class="address-details">
+                                                  <p class="name"><%= myorder.user.name %></p>
+                                                  <p class="buildingName"><%= myorder.address.buildingName %></p>
+                                                  <p class="phone"><%= myorder.address.mobile %></p>
+                                                  <p class="district"><%= myorder.address.district %></p>
+                                                  <p class="city"><%= myorder.address.city %></p>
+                                                  <p class="state"><%= myorder.address.state %></p>
+                                                  <p class="pincode"><%= myorder.address.pincode %></p>
+                                                </div>
+                                               
+                                            </h6>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                </div><!-- .End .tab-pane -->
+            
+            </div><!-- End .col-lg-9 -->
+                
+                </div>
+
+
+            </div>
+        </div>      
+    </div>
+</div>     
+</main>
+
+<%- include('../layout/allfooter.ejs') %>
+</div><!-- End .page-wrapper -->
+<button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+
+<%- include('../layout/mobile.ejs') %>
+
+
+<!-- Plugins JS File -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/jquery.hoverIntent.min.js"></script>
+<script src="assets/js/jquery.waypoints.min.js"></script>
+<script src="assets/js/superfish.min.js"></script>
+<script src="assets/js/owl.carousel.min.js"></script>
+<!-- Main JS File -->
+<script src="assets/js/main.js"></script>
+
+<%- include('../layout/footer.ejs') %>

@@ -74,6 +74,9 @@
                                                                 <% if (product.orderStatus !== 'delivered') { %>
                                                                 <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
                                                                 <% } %>
+                                                                <% if(product.orderStatus === 'request return'){ %> 
+                                                                    <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'returned')">Return</a>
+                                                                <% } %>
                                                             </div>
                                                         </div></td>
                                                     <% } %>
