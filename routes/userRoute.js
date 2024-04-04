@@ -88,8 +88,9 @@ user_route.get("/check-out",auth.checkuser,auth.isBlock,orderController.LoadChec
 user_route.post("/order-placed", orderController.placeOrder);
 user_route.get("/thank-you",auth.checkuser,auth.isBlock,orderController.ThankYou);
 user_route.get("/orders",auth.checkuser,auth.isBlock,orderController.loadOrders);
+user_route.post('/verify-payment',orderController.verifyrazorpayment)
 
-user_route.put('/orders/status',orderController.cancelOrder);
+user_route.put('/orders/status',orderController.cancelandReturnOrder);
 user_route.get('/orderdetails',orderController.orderDetails);
 
 user_route.get("/filter-category/:id",auth.isBlock,productController.FilterCategory);

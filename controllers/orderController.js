@@ -4,6 +4,7 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const Razorpay = require("razorpay");
+const crypto = require('crypto');//to use SHA256 algorithm
 
 var instance = new Razorpay({
     key_id : process.env.RAZORPAY_ID_KEY,
@@ -30,25 +31,43 @@ const LoadCheckOut = async (req,res) => {
     }
 };
 
-const placeOrder = async (req, res) => {
+
+function generateRazorpay(orderId,total){
+    return new Promise((resolve,reject)=> {
+        var option = {
+            amount: total*100,
+            currency: "INR",
+            receipt: orderId
+        };
+        instance.orders.create(option, function(err,order){
+            if(err){
+                console.log(err);
+                reject(err);
+            }else {
+                console.log("new order",order)
+                resolve(order)
+            }
+        })
+    })
+}
+
+const placeOrder =  async (req, res) => {
     try {
         const userId = req.session.user ? req.session.user._id : null;
         const user = await User.findOne({ _id: userId });
 
         if (!user) {
-           console.log("User not found!");
+            return res.status(404).json({ message: "User not found!" });
         }
 
         const cart = await Cart.findOne({ user: userId }).populate({ path: 'products.product', model: Product });
 
         if (!cart || !cart.products.length) {
-           console.log("Cart is empty");
+            return res.status(400).json({ message: "Cart is empty" });
         }
 
         const { addressId, paymentMethod } = req.body;
         console.log(paymentMethod);
-
-        console.log("cart product",cart);
 
         const newOrder = new Order({
             user: user._id,
@@ -62,12 +81,24 @@ const placeOrder = async (req, res) => {
                 images: product.product.pictures
             })),
             address: addressId,
-            paymentStatus: 'pending',
             paymentMethod: paymentMethod,
             total: cart.grandTotal
         });
 
         await newOrder.save();
+
+        if (paymentMethod === 'COD') {
+            await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'pending' } });
+            return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
+        } else if (paymentMethod === 'Wallet') {
+            console.log("Wallet is not completed");
+        } else if(paymentMethod === 'Razorpay') {
+            const razorpayOrder = await generateRazorpay(newOrder._id, newOrder.total);
+            res.json({razorpayOrder});
+        }else {
+            console.log("Unsupported payment methos:",paymentMethod);
+            res.status(400).json({error: 'Unsupported payment method'});
+        }
 
         // change product quantity
         for (const product of cart.products) {
@@ -87,6 +118,33 @@ const placeOrder = async (req, res) => {
     }
 };
 
+const verifyrazorpayment = async(req,res) => {
+    try {
+       const {order:{receipt},payment:{ razorpay_payment_id, razorpay_order_id,razorpay_signature }} = req.body;
+
+       const key_secret = process.env.RAZORPAY_SECRET_KEY;
+        
+       // Creating hmac object  
+       let hmac =  crypto.createHmac('sha256',key_secret);
+
+       // Passing the data to be hashed 
+       hmac.update(razorpay_order_id + "|" + razorpay_payment_id); 
+        
+       // Creating the hmac in the required format 
+       hmac = hmac.digest('hex'); 
+       if(razorpay_signature==hmac){ 
+
+        await Order.updateOne({ _id: receipt }, { $set: { paymentStatus: 'paid' } });
+
+        res.json({ success: true,orderid:receipt})
+      }else{
+        res.json({ success: false, message: 'Payment verification failed' });
+      }
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 const loadOrders = async (req,res) => {
     try {
@@ -164,7 +222,7 @@ const ThankYou = async (req,res) => {
         console.log(error.message);
     }
 }
-const cancelOrder = async (req, res) => {
+const cancelandReturnOrder = async (req, res) => {
     try {
         const orderId = req.body.orderId;
         const productId = req.body.productId;
@@ -199,25 +257,13 @@ const cancelOrder = async (req, res) => {
     }
 };
 
-function generateRazorpay(orderId,total){
-    return new Promise((resolve,reject)=> {
-        var option = {
-            amount: total,
-            currency: "INR",
-            receipt: orderId
-        };
-        instance.orders.create(option, function(err,order){
-            console.log("new order",order)
-            resolve(order)
-        })
-    })
-}
 
 module.exports = {
     LoadCheckOut,
     placeOrder,
     loadOrders,
     ThankYou,
-    cancelOrder,
-    orderDetails
+    cancelandReturnOrder,
+    orderDetails,
+    verifyrazorpayment
 }

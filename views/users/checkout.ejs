@@ -182,28 +182,89 @@
 
 
 <%- include('../layout/mobile.ejs') %>
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function placeclick() {
-       console.log('inside')
+       console.log('inside');
         // Get the selected address ID
         var selectedAddressId = document.querySelector('input[name="address"]:checked').value;
 
-        
         var paymentMethod = document.getElementById('paymentOption').value;
         
+                var grandTotalElement = document.querySelector('.summary-total td:last-child');
+        var grandTotalText = grandTotalElement.textContent.trim(); // Remove any leading/trailing whitespace
+        var grandTotal = parseFloat(grandTotalText.replace('₹', ''));
+
+        // Create the data object with the addressId, paymentMethod, and grandTotal
         var data = {
             addressId: selectedAddressId,
-            paymentMethod: paymentMethod
+            paymentMethod: paymentMethod,
+            amount: grandTotal
         };
         console.log(data);
 
-        fetch('/order-placed', {
+        if (paymentMethod === 'Razorpay') {
+            razorpayPayment(data);
+        } else {
+            fetch('/order-placed', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                window.location.href = "/thank-you";
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+            });
+        }
+    };
+
+    function razorpayPayment(order) {
+        var options = {
+            "key": "rzp_test_PFPeHk6DFR6c5M", 
+            "amount": (order.amount), // Convert total amount to paise
+            "currency": "INR",
+            "name": "FurniHub", 
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",
+            "order_id": order.id, 
+            "handler": function(response) {
+                verifyPayment(response, order);
+            },
+            "prefill": { 
+                "name": "Gaurav Kumar", 
+                "email": "gaurav.kumar@example.com",
+                "contact": "9000090000" 
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+
+    function verifyPayment(payment, order) {
+        console.log('inside');
+        fetch('/verify-payment', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({ payment, order }),
         })
         .then(response => {
             if (!response.ok) {
@@ -212,12 +273,38 @@
             return response.json();
         })
         .then(data => {
-            window.location.href="/thank-you"
+            console.log(data.success)
+            if (data.success == true) {
+                // Show success alert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful',
+                    showConfirmButton: false,
+                    timer: 1500,
+                }).then(() => {
+                    window.location.href = '/thank-you';
+                });
+            } else {
+                // Show error alert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment has failed',
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+            }
         })
         .catch(error => {
-            console.error('There was a problem with your fetch operation:', error);
+            console.error('Error:', error);
+            // Show error alert in case of network or server error
+            Swal.fire({
+                icon: 'error',
+                title: 'An error occurred',
+                text: 'Please try again later.',
+            });
         });
-    };
+    }
+
 </script>
 
 

@@ -50,7 +50,7 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">No</th>
+                                        <!-- <th style="text-align: center;">No</th> -->
                                         <th style="text-align: center;">Product</th>
                                         <th style="text-align: center;">Quantity</th>
                                         <th style="text-align: center;">Price</th>
@@ -60,9 +60,8 @@
                                 </thead>
                                 <tbody>
                                     <% orders?.forEach(order => { %>
-                                    <% order?.products.forEach((product,index) => { %>
+                                    <% order?.products.forEach(product => { %>
                                         <tr>
-                                            <td><%= index+1  %></td>
                                             <td class="product-col">
                                                 <div class="product">
                                                     <figure class="product-media">
