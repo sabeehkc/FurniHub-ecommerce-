@@ -185,15 +185,16 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    
     function placeclick() {
-       console.log('inside');
+       console.log('firstinside');
         // Get the selected address ID
         var selectedAddressId = document.querySelector('input[name="address"]:checked').value;
 
         var paymentMethod = document.getElementById('paymentOption').value;
         
-                var grandTotalElement = document.querySelector('.summary-total td:last-child');
-        var grandTotalText = grandTotalElement.textContent.trim(); // Remove any leading/trailing whitespace
+        var grandTotalElement = document.querySelector('.summary-total td:last-child');
+        var grandTotalText = grandTotalElement.textContent.trim(); 
         var grandTotal = parseFloat(grandTotalText.replace('₹', ''));
 
         // Create the data object with the addressId, paymentMethod, and grandTotal
@@ -204,9 +205,9 @@
         };
         console.log(data);
 
-        if (paymentMethod === 'Razorpay') {
-            razorpayPayment(data);
-        } else {
+        // if (paymentMethod === 'Razorpay') {
+        //     razorpayPayment(data);
+        // } else {
             fetch('/order-placed', {
                 method: 'POST',
                 headers: {
@@ -221,44 +222,49 @@
                 return response.json();
             })
             .then(data => {
+                if(data.pay=='razor'){
+                    razorpayPayment(data.razorpayOrder)
+                }else {
                 window.location.href = "/thank-you";
+                }
             })
             .catch(error => {
                 console.error('There was a problem with your fetch operation:', error);
             });
         }
-    };
+    // };
 
     function razorpayPayment(order) {
-        var options = {
-            "key": "rzp_test_PFPeHk6DFR6c5M", 
-            "amount": (order.amount), // Convert total amount to paise
-            "currency": "INR",
-            "name": "FurniHub", 
-            "description": "Test Transaction",
-            "image": "https://example.com/your_logo",
-            "order_id": order.id, 
-            "handler": function(response) {
-                verifyPayment(response, order);
-            },
-            "prefill": { 
-                "name": "Gaurav Kumar", 
-                "email": "gaurav.kumar@example.com",
-                "contact": "9000090000" 
-            },
-            "notes": {
-                "address": "Razorpay Corporate Office"
-            },
-            "theme": {
-                "color": "#3399cc"
-            }
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    }
+    var options = {
+        "key": "rzp_test_PFPeHk6DFR6c5M", 
+        "amount": order.amount , 
+        "currency": "INR",
+        "name": "FurniHub",
+        "description": "Test Transaction",
+        "image": "https://example.com/your_logo",
+        "order_id": order.id, 
+        "callback_url": "https://eneqd3r9zrjok.x.pipedream.net/",
+        "handler": function (response) {
+            verifyPayment(response, order);
+        },
+        "prefill": {
+            "name": "Gaurav Kumar",
+            "email": "gaurav.kumar@example.com",
+            "contact": "9000090000"
+        },
+        "notes": {
+            "address": "Razorpay Corporate Office"
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+}
 
     function verifyPayment(payment, order) {
-        console.log('inside');
+        console.log("payment",payment);
         fetch('/verify-payment', {
             method: 'POST',
             headers: {
@@ -273,7 +279,7 @@
             return response.json();
         })
         .then(data => {
-            console.log(data.success)
+            console.log("data",data.success)
             if (data.success == true) {
                 // Show success alert
                 Swal.fire({

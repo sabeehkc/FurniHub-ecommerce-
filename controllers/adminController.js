@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const Address = require("../models/addressModel");
-
+const Offer = require("../models/offerModal");
 
 //----------------- Admin login page -----------------//
 
@@ -25,10 +25,10 @@ const Loginverifying = async(req,res) => {
     
         
         const userData = await User.findOne({email:email});
-        console.log(userData);
+        console.log("Admin",userData);
         if(userData){
             const passwordMatch = await bcrypt.compare(password,userData.password);
-            console.log(passwordMatch);
+            console.log("checkPassword",passwordMatch);
             if(passwordMatch){
                 if(userData.is_admin === 0 ){
                     res.render('login',{message:"Your not Admin"});
@@ -162,8 +162,49 @@ const logout = async(req,res) => {
     }
 };
 
+const Error404 = async(req,res)=> {
+    try {
+        res.render('404')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
+const loadOffers = async(req,res) => {
+    try {
+        const offers = await Offer.find();
+        res.render('offer',{offers})
+    } catch (error) {
+        console.log(error.message);
+    }
+};
 
+const loadAddOffer = async(req,res) => {
+    try {
+        res.render('offerAdd')
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const addOffer = async (req,res) => {
+    try {
+        const {name , discount,startingDate, expiryDate} = req.body;
+
+        const offer = new Offer({
+            name:name,
+            discount: discount,
+            startingDate : startingDate,
+            expiryDate:expiryDate
+        })
+        await offer.save();
+
+        res.redirect('/admin/offers');
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
 
 module.exports = {
     loginload,
@@ -173,5 +214,9 @@ module.exports = {
     blockUser, 
     loadOrders,
     ChangeOrderStatus,
-    logout
+    logout,
+    Error404,
+    loadOffers,
+    loadAddOffer,
+    addOffer
 }

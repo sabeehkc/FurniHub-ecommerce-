@@ -1,0 +1,65 @@
+<%- include('./layout/adheader.ejs') %>
+
+<div class="container-scroller text-center">
+    <%- include('./layout/sidenav.ejs') %>
+    <div class="container-fluid page-body-wrapper">
+        <%- include('./layout/topnav.ejs') %>
+        <div class="w-100 container-fluid bg-dark mt-5">
+            <div class="container mt-5">
+                <h2>Offer Management</h2>
+                <% if (offers.length === 0) { %>
+                    <span style="font-size:x-large">No Products</span>
+                <% } else { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Offer Name</th>
+                                <th>Discount Persentage</th>
+                                <th>Starting Date</th>
+                                <th>expiry Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% offers.forEach((offer, index) => { %>
+                                <tr>
+                                    <td><%= index + 1 %></td>
+                                    <td><%= offer.name %></td>
+                                    <td><%= offer.discount %></td>
+                                    <td><%= new Date(offer.startingDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                    <td><%= new Date(offer.expiryDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                    <td class="<%= offer.status === true ? 'text-success' : 'text-danger' %>"><%= offer.status %></td>
+                                    <td>
+                                        <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="">Edit</a></button>
+                                        <button type="button" class="btn <%= offer.status === true ? 'btn-danger' : 'btn-success' %>"  onclick="toggleProduct('', '')">
+                                            <%= offer.status === true ? false : true %>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% } %>
+            </div>
+
+            <div class="container mt-3">
+                <a href="/admin/offers/add" class="btn btn-outline-danger">Add New Offers</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+        
+<footer class="footer">
+    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © FurniHub.com 2024</span>
+        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
+    </div>
+</footer>
+
+
+<%- include('./layout/adfooter.ejs') %>

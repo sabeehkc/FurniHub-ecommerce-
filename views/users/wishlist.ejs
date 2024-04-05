@@ -17,15 +17,17 @@
     </nav><!-- End .breadcrumb-nav -->
 
 
-    <% if(wishlistProducts && wishlistProducts.length > 0) { %>
+    <% if(wishlistProducts && wishlistProducts.length >= 0) { %>
     <div class="page-content"> 
         <div class="container"> 
-            <table class="table table-wishlist table-mobile">
+            <table class="table table-wishlist table-mobile text-center">
                 <thead>
                     <tr>
                         <th>Product</th>
                         <th>Price</th>
+                        <th>Discount Price</th>
                         <th>Stock Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
@@ -45,7 +47,8 @@
                                 </h3><!-- End .product-title -->
                             </div><!-- End .product -->
                         </td>
-                        <td class="price-col"><%= product.price %></td>
+                        <td class="price-col text-muted"><del>₹<%= product.price %></del></td>
+                        <td class="price-col">₹<%= product.product.discount %></td>
                         <td class="stock-col">
                             <% if(product.product.quantity > 0) { %> 
                                 <span class="in-stock">In stock</span>    

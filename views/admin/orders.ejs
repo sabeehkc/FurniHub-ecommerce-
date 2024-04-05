@@ -64,18 +64,18 @@
                                                 <% if( product.orderStatus !== 'delivered' ){ %>
                                                     <% if(product.orderStatus !== 'cancelled') { %> 
                                                         <td><div class="dropdown">
-                                                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <button class="btn btn-outline-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                 Change Status
                                                             </button>
-                                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                            <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
                                                                 <% if (product.orderStatus !== 'shipped') { %>
-                                                                    <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'shipped')">Shipped</a>
+                                                                    <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'shipped')">Shipped</a>
                                                                 <% } %>
                                                                 <% if (product.orderStatus !== 'delivered') { %>
-                                                                <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
+                                                                <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
                                                                 <% } %>
                                                                 <% if(product.orderStatus === 'request return'){ %> 
-                                                                    <a class="dropdown-item" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'returned')">Return</a>
+                                                                    <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'returned')">Return</a>
                                                                 <% } %>
                                                             </div>
                                                         </div></td>
@@ -110,7 +110,7 @@
     })
     .then(response => {
         if (response.ok) {
-            location.reload(); // Reload the page 
+            window.location.reload(); // Reload the page 
         } else {
             console.error('Failed to change product status');
         }

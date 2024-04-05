@@ -24,7 +24,7 @@ const productSchema =  mongoose.Schema({
         type: Number,
         default:0,
     },
-    description: { 
+    description: {  
         type: String,
         required: true,
     },
@@ -37,6 +37,15 @@ const productSchema =  mongoose.Schema({
         enum: ['active', 'blocked'],
         default: 'active',
     },
+    offerPrice:{
+        type: Number,
+        default: 0,
+    },
+    offername: {
+      type: String,
+      default:"",
+    }
+
 }, {
     timestamps: true,
 })

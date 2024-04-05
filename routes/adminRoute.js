@@ -76,7 +76,13 @@ admin_route.post("/products/toggle/:id", productController.toggleProductStatus);
 admin_route.get("/orders", adminController.loadOrders);
 admin_route.post("/change-product-status/:orderId/:productId",adminController.ChangeOrderStatus);
 
+admin_route.get("/offers",adminController.loadOffers);
+admin_route.get("/offers/add",adminController.loadAddOffer);
+admin_route.post("/offers/addpost",adminController.addOffer);
+
 admin_route.get("/logout", adminController.logout);
+
+admin_route.get('*',adminController.Error404);
 
 //----------------- export admin route -----------------//
 module.exports = admin_route;

@@ -31,25 +31,24 @@ const LoadCheckOut = async (req,res) => {
     }
 };
 
-
-function generateRazorpay(orderId,total){
-    return new Promise((resolve,reject)=> {
-        var option = {
-            amount: total*100,
-            currency: "INR",
-            receipt: orderId
-        };
-        instance.orders.create(option, function(err,order){
-            if(err){
-                console.log(err);
-                reject(err);
-            }else {
-                console.log("new order",order)
-                resolve(order)
-            }
-        })
-    })
+async function generateRazorpay(orderId, total) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            var option = {
+                amount: total , // Amount in paise
+                currency: "INR",
+                receipt: orderId,
+            };
+            const response = await instance.orders.create(option);
+            resolve(response);
+            console.log("response",response);
+        } catch (error) {
+            console.error('Error creating Razorpay order:', error);
+            reject(error);
+        }
+    });
 }
+
 
 const placeOrder =  async (req, res) => {
     try {
@@ -94,7 +93,7 @@ const placeOrder =  async (req, res) => {
             console.log("Wallet is not completed");
         } else if(paymentMethod === 'Razorpay') {
             const razorpayOrder = await generateRazorpay(newOrder._id, newOrder.total);
-            res.json({razorpayOrder});
+            res.json({razorpayOrder,pay:'razor'});
         }else {
             console.log("Unsupported payment methos:",paymentMethod);
             res.status(400).json({error: 'Unsupported payment method'});
@@ -117,34 +116,36 @@ const placeOrder =  async (req, res) => {
         console.error('Error placing order:', error);
     }
 };
-
-const verifyrazorpayment = async(req,res) => {
+const verifyrazorpayment = async (req, res) => {
+    console.log(req.body);
     try {
-       const {order:{receipt},payment:{ razorpay_payment_id, razorpay_order_id,razorpay_signature }} = req.body;
+        const { order: { receipt }, payment: { razorpay_payment_id, razorpay_order_id, razorpay_signature } } = req.body;
+        console.log("payment_id", razorpay_payment_id);
+        console.log("razopy", razorpay_order_id);
+        console.log("signature", razorpay_signature);
+        console.log("order", receipt);
 
-       const key_secret = process.env.RAZORPAY_SECRET_KEY;
-        
-       // Creating hmac object  
-       let hmac =  crypto.createHmac('sha256',key_secret);
+        const key_secret = process.env.RAZORPAY_SECRET_KEY;
 
-       // Passing the data to be hashed 
-       hmac.update(razorpay_order_id + "|" + razorpay_payment_id); 
-        
-       // Creating the hmac in the required format 
-       hmac = hmac.digest('hex'); 
-       if(razorpay_signature==hmac){ 
+        // Create HMAC for verification
+        let hmac = crypto.createHmac('sha256', key_secret);
+        hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+        hmac = hmac.digest('hex');
 
-        await Order.updateOne({ _id: receipt }, { $set: { paymentStatus: 'paid' } });
-
-        res.json({ success: true,orderid:receipt})
-      }else{
-        res.json({ success: false, message: 'Payment verification failed' });
-      }
+        if (razorpay_signature === hmac) {
+            // Signature matched, update payment status
+            await Order.updateOne({ _id: receipt }, { $set: { paymentStatus: 'paid' } });
+            res.json({ success: true, orderid: receipt });
+        } else {
+            res.json({ success: false, message: 'Payment verification failed' });
+        }
 
     } catch (error) {
-        console.log(error.message);
+        console.error('Error verifying payment:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
+
 
 const loadOrders = async (req,res) => {
     try {
@@ -257,7 +258,7 @@ const cancelandReturnOrder = async (req, res) => {
     }
 };
 
-
+ 
 module.exports = {
     LoadCheckOut,
     placeOrder,
