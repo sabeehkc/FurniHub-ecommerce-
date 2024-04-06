@@ -25,7 +25,13 @@
                     <tr>
                         <th>Product</th>
                         <th>Price</th>
-                        <th>Discount Price</th>
+                        <th>
+                            <% if (wishlistProducts.length > 0 && wishlistProducts[0].products[0].product.offer) { %>
+                                Offer Price   
+                            <% } else { %> 
+                                Discount Price
+                            <% } %>
+                        </th>
                         <th>Stock Status</th>
                         <th>Action</th>
                     </tr>
@@ -48,7 +54,13 @@
                             </div><!-- End .product -->
                         </td>
                         <td class="price-col text-muted"><del>₹<%= product.price %></del></td>
-                        <td class="price-col">₹<%= product.product.discount %></td>
+                        <td class="price-col">
+                            <% if(product.product.offer) { %>
+                                ₹<%= product.product.offerPrice %>    
+                            <% }else { %> 
+                                ₹<%= product.product.discount %></td>    
+                            <% } %>
+                        </td>
                         <td class="stock-col">
                             <% if(product.product.quantity > 0) { %> 
                                 <span class="in-stock">In stock</span>    

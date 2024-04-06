@@ -37,13 +37,14 @@ const productSchema =  mongoose.Schema({
         enum: ['active', 'blocked'],
         default: 'active',
     },
-    offerPrice:{
-        type: Number,
-        default: 0,
+    offer:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Offer',
+        require: true
     },
-    offername: {
-      type: String,
-      default:"",
+    offerPrice: {
+        type: Number,
+        require: true
     }
 
 }, {

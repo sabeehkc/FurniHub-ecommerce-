@@ -10,34 +10,36 @@
                     <div class="col-lg-8">
                         <div class="card">
                             <div class="card-header bg-dark text-white">
-                                <h2 class="text-center mb-0">Add Offer</h2>
+                                <h2 class="text-center mb-0">Edit Offer</h2>
                             </div>
                             <div class="card-body">
-                                <form action="/admin/offers/addpost" method="POST">
+                                <form action="/admin/offers/edit/<%= offer._id %>" method="POST">
                                     <div class="form-group">
                                         <label for="o-name">Offer Name</label>
-                                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter Offer Name" >
+                                        <input type="text" name="name" id="name" class="form-control" value="<%= offer.name %>" >
                                         <div id="nameError" class="text-danger"></div>
                                     </div>
                                     <div class="form-group">
                                         <label for="discount">Discount Percentage</label>
-                                        <input type="number" name="discount" id="discountPrice" class="form-control" placeholder="Enter Discount Percentage"  pattern="[1-9][0-9]?">
+                                        <input type="number" name="discount" id="discountPrice" class="form-control" value="<%= offer.discount %>" pattern="[1-9][0-9]?">
                                         <div id="discountError" class="text-danger"></div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-6">
                                             <label for="startingDate">Starting Date</label>
-                                            <input type="date" name="startingDate" id="startingDate" class="form-control" >
+                                            <% const formattedStartingDate = new Date(offer.startingDate).toISOString().split('T')[0]; %>
+                                            <input type="date" name="startingDate" id="startingDate" class="form-control" value="<%= formattedStartingDate %>">
                                             <div id="startingDateError" class="text-danger"></div>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="expiryDate">Expiry Date</label>
-                                            <input type="date" name="expiryDate" id="expiryDate" class="form-control">
+                                            <% const formattedExpiryDate = new Date(offer.expiryDate).toISOString().split('T')[0]; %>
+                                            <input type="date" name="expiryDate" id="expiryDate" class="form-control" value="<%= formattedExpiryDate %>">
                                             <div id="expiryDateError" class="text-danger"></div>
                                         </div>
                                     </div>
                                     <div class="text-center">
-                                        <button type="submit" name="submit" class="btn btn-primary">Add Offer</button>
+                                        <button type="submit" name="submit" class="btn btn-primary">Edit  Offer</button>
                                         <a href="/admin/offers" class="btn btn-primary ml-2">Back</a>
                                     </div>
                                 </form>
@@ -58,4 +60,4 @@
 </footer>
                 
                 
-<%- include('./layout/adfooter.ejs') %>               
+<%- include('./layout/adfooter.ejs') %>           

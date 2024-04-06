@@ -6,8 +6,11 @@
         <%- include('./layout/topnav.ejs') %>
 
         <div class="w-100 container-fluid bg-dark mt-5">
-            <div class="container mt-5">
+            <div class="mt-5">
                 <h2>Product Management</h2>
+            </div>
+            <div class="container mt-2 "style="overflow-x: auto;">
+                
                 <% if (products.length === 0) { %>
                     <span style="font-size:x-large">No Products</span>
                 <% } else { %>
@@ -20,6 +23,9 @@
                                 <th>Price</th>
                                 <th>Discount Price</th>
                                 <th>Quantity</th>
+                                <th>Offer Name</th>
+                                <th>Offer Price</th>
+                                <th>Add Offer</th>
                                 <th>Image</th>
                                 <th>Action</th>
                             </tr>
@@ -33,6 +39,30 @@
                                     <td>₹<%= product.price %></td>
                                     <td>₹<%= product.discount %></td>
                                     <td><%= product.quantity %></td>
+                                    <td>
+                                        <% if (product.offer) { %>
+                                            <%= product.offer.name %>
+                                        <% } else { %>
+                                            No Offer
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (product.offerPrice) { %> 
+                                            <%= product.offerPrice %>  
+                                        <% }else { %> 
+                                            No Offer    
+                                        <% } %>
+                                    </td>      
+                                    <td><div class="dropdown">
+                                        <button class="btn btn-outline-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Add Offer
+                                        </button>
+                                        <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
+                                            <% offers.forEach(offer => { %>
+                                                <a class="dropdown-item text-danger" onclick="addOffer('<%= offer._id %>','<%= product._id %>')"><%= offer.name %></a>
+                                            <% }) %>
+                                        </div>
+                                    </div></td>
                                     <td><%for(let i=0;i<product.pictures.length;i++){%>
                                         <img src="<%=product.pictures[i]%>" alt="Product Images">
                                         <%}%>
@@ -51,7 +81,7 @@
             </div>
 
             <div class="container mt-3">
-                <a href="/admin/products/add" class="btn btn-outline-danger">Add New Product</a>
+                <a href="/admin/products/add" class="btn btn-danger">Add New Product</a>
             </div>
 
             <!-- Pagination -->
@@ -133,6 +163,27 @@
         }
     });
     
+}
+
+
+function addOffer(offerId,productId){
+    fetch('/admin/addOffer-product', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ offerId,productId })
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.reload(); // Reload the page 
+        } else {
+            console.error('Failed to change product status');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
 </script>
 

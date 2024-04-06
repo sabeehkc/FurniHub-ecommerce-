@@ -32,9 +32,9 @@
                                     <td><%= new Date(offer.expiryDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
                                     <td class="<%= offer.status === true ? 'text-success' : 'text-danger' %>"><%= offer.status %></td>
                                     <td>
-                                        <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="">Edit</a></button>
+                                        <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/offers/edit/<%= offer._id %>">Edit</a></button>
                                         <button type="button" class="btn <%= offer.status === true ? 'btn-danger' : 'btn-success' %>"  onclick="toggleProduct('', '')">
-                                            <%= offer.status === true ? false : true %>
+                                            <%= offer.status === true ? 'Block' : 'Activate' %>
                                         </button>
                                     </td>
                                 </tr>

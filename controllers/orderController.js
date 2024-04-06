@@ -258,6 +258,57 @@ const cancelandReturnOrder = async (req, res) => {
     }
 };
 
+const loadOrdersAd = async (req,res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = 5;
+
+        const skip = (page-1)* pageSize;
+
+        const orders = await Order.find().limit(pageSize).skip(skip).populate({
+            path: 'address',
+            model: Address,
+            populate: {
+                path: 'user',
+                model: User
+            }
+        });
+
+        const totalCount = await Order.countDocuments();
+
+        const totalPages = Math.ceil(totalCount/pageSize);
+
+
+        res.render('orders',{orders,currentPage:page,totalPages:totalPages});
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const ChangeOrderStatus = async (req, res) => {
+    try {
+        const { orderId, productId } = req.params;
+        const { newStatus } = req.body;
+
+        const order = await Order.findById(orderId);
+
+        const product = order.products.find(p => p._id.toString() === productId);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        product.orderStatus = newStatus;
+
+        await order.save();
+
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
  
 module.exports = {
     LoadCheckOut,
@@ -266,5 +317,7 @@ module.exports = {
     ThankYou,
     cancelandReturnOrder,
     orderDetails,
-    verifyrazorpayment
+    verifyrazorpayment,
+    loadOrdersAd,
+    ChangeOrderStatus
 }

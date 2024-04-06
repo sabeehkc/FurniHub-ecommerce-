@@ -27,7 +27,13 @@
                                     <tr>
                                         <th>Product</th>
                                         <th>Price</th>
-                                        <th>Discount Price</th>
+                                        <th>
+                                            <% if (cartProducts.length > 0 && cartProducts[0].products[0].product.offer) { %>
+                                                Offer Price   
+                                            <% } else { %> 
+                                                Discount Price
+                                            <% } %>
+                                        </th>
                                         <th>Quantity</th>
                                         <th>Total</th>
                                         <th></th>
@@ -49,7 +55,13 @@
                                                 </div>
                                             </td>
                                             <td class="price-col"><del>₹<%= product.product.price %></del></td>
-                                            <td class="price-col">₹<%= product.product.discount %></td>
+                                            <td class="price-col">
+                                                <% if(product.product.offer) { %>
+                                                    ₹<%= product.product.offerPrice %>    
+                                                <% }else { %> 
+                                                    ₹<%= product.product.discount %></td>    
+                                                <% } %>
+                                                
                                             <td class="quantity-col">
                                                 <div class="cart-product-quantity">
                                                     <input type="number" class="form-control quantity-input" value="<%= product.quantity %>" data-product-id="<%= product.product._id %>" name="quantity" min="1" max="10" step="1" data-decimals="0" required>

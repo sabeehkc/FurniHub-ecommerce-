@@ -1,7 +1,8 @@
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Sharp = require("sharp");
-const path = require("path")
+const path = require("path");
+const Offer = require("../models/offerModal");
 
 //-----------------  load Product Mangement page -----------------//
 const loadProducts = async(req,res) => {
@@ -11,16 +12,23 @@ const loadProducts = async(req,res) => {
 
         const skip = (page - 1) * pageSize;
 
-        const products = await Product.find().limit(pageSize).skip(skip).populate({path:'category',model:Category});
+        const products = await Product.find()
+        .limit(pageSize)
+        .skip(skip)
+        .populate({path:'category',model:Category})
+        .populate({ path: 'offer', model: Offer });
 
         const totalCount = await Product.countDocuments();
 
         const totalPages = Math.ceil(totalCount/ pageSize);
+        
+        const offers = await Offer.find();
 
         res.render('product', {
             products,
             currentPage: page,
-            totalPages: totalPages
+            totalPages: totalPages,
+            offers:offers
         });
     } catch (error) {
         console.log(error.message);
@@ -224,7 +232,12 @@ const loadAllProduct = async (req,res) => {
 
         const skip = (page - 1) * pageSize;
 
-        const products = await Product.find({status: 'active'}).limit(pageSize).skip(skip).populate({path:'category',model:Category});
+        const products = await Product.find({status: 'active'})
+        .limit(pageSize)
+        .skip(skip)
+        .populate({path:'category',model:Category})
+        .populate({ path: 'offer', model: Offer });
+
         console.log(products);
 
         const totalCount = await Product.countDocuments({status: 'active'});
@@ -254,7 +267,10 @@ const product = async(req,res) => {
 
         const id = req.params.id;
 
-        const productData = await Product.findById(id).populate({path:'category',model:Category});
+        const productData = await Product.findById(id)
+        .populate({path:'category',model:Category})
+        .populate({ path: 'offer', model: Offer });
+        
         console.log(productData);
 
         const loocate = productData.category.name
@@ -321,6 +337,39 @@ const FilterCategory = async (req,res) => {
     }
 };
 
+const addOfferProduct = async (req, res) => {
+    try {
+        const offerId = req.body.offerId;
+        const productId = req.body.productId;
+    
+        // Find the offer
+        const offer = await Offer.findOne({ _id: offerId });
+
+        // Find the product to add the offer
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.json({ success: false, message: "Product not found" });
+        }
+
+        //calculate discount price
+        const calculatedDiscount = Math.floor(product.price - product.price * offer.discount / 100)
+        console.log(calculatedDiscount);
+        
+        // Update the product's offer field with the offer's ObjectId
+        product.offer = offer._id;
+        product.offerPrice = calculatedDiscount ;
+
+        // Save the updated product
+        await product.save();
+
+        res.json({ success: true, message: "Offer added to product successfully" });
+    } catch (error) {
+        console.log(error.message);
+        res.json({ success: false, message: error.message });
+    }
+};
+
 
 module.exports = {
     loadProducts,
@@ -332,5 +381,6 @@ module.exports = {
     toggleProductStatus,
     loadAllProduct,
     product,
-    FilterCategory
+    FilterCategory,
+    addOfferProduct
 }

@@ -109,48 +109,6 @@ const blockUser = async (req, res) => {
     }
 };
 
-const loadOrders = async (req,res) => {
-    try {
-
-        const orders = await Order.find().populate({
-            path: 'address',
-            model: Address,
-            populate: {
-                path: 'user',
-                model: User
-            }
-        });
-
-
-        res.render('orders',{orders})
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-const ChangeOrderStatus = async (req, res) => {
-    try {
-        const { orderId, productId } = req.params;
-        const { newStatus } = req.body;
-
-        const order = await Order.findById(orderId);
-
-        const product = order.products.find(p => p._id.toString() === productId);
-
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
-        }
-
-        product.orderStatus = newStatus;
-
-        await order.save();
-
-
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
 
 const logout = async(req,res) => {
     try {
@@ -205,6 +163,57 @@ const addOffer = async (req,res) => {
         console.log(error.message);
     }
 };
+const editOffer = async(req,res) => {
+    try {
+        const offerId = req.params.id;
+        const offer = await Offer.findById(offerId);
+
+        res.render('offerEdit',{offer})
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const editOfferPost = async (req, res) => {
+    try {
+        const offerId = req.params.id;
+        const { name, discount, startingDate, expiryDate } = req.body;
+
+        const offer = await Offer.findById(offerId);
+
+        if (!offer) {
+            throw new Error("Offer not found");
+        }
+
+        offer.name = name;
+        offer.discount = discount;
+        offer.startingDate = startingDate;
+        offer.expiryDate = expiryDate;
+
+        await offer.save();
+
+        const product = await Product.findOne({ offer: offer._id });
+
+        if (!product) {
+            throw new Error("Product not found for the offer");
+        }
+
+        const calculatedDiscount = Math.floor(product.price - product.price * discount / 100);
+        console.log(calculatedDiscount);
+
+        product.offer = offer._id;
+        product.offerPrice = calculatedDiscount;
+
+        await product.save();
+
+        res.redirect("/admin/offers");
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+};
+
+
 
 module.exports = {
     loginload,
@@ -212,11 +221,11 @@ module.exports = {
     loadDashboard,
     loadCustomer,
     blockUser, 
-    loadOrders,
-    ChangeOrderStatus,
     logout,
     Error404,
     loadOffers,
     loadAddOffer,
-    addOffer
+    addOffer,
+    editOffer,
+    editOfferPost
 }

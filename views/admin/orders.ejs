@@ -6,18 +6,22 @@
             <%- include('./layout/topnav.ejs') %>
 
                 <div class="w-100 container-fluid bg-dark mt-5">
-
-                    <div class="container mt-5">
-                        <h2>Order Management</h2>
+                        <div class="mt-5">
+                            <h2>Order Management</h2>
+                        </div>
+                    <div class="container mt-2" style="overflow-x: auto;">
+                       
                         <% if (orders && orders.length > 0 ) { %>
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <!-- <th>#</th> -->
                                         <th>Product</th>
                                         <th>Quantity</th>
                                         <th>Address</th>
                                         <th>Price</th>
+                                        <th>Payment status</th>
+                                        <th>Payment Method</th>
                                         <th>Order Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -26,7 +30,7 @@
                                     <% orders.forEach((order, orderIndex) => { %>
                                         <% order.products.forEach((product, index) => { %>
                                             <tr>
-                                                <td><%= orderIndex * order.products.length + index + 1 %></td>
+                                                <!-- <td><%= orderIndex * order.products.length + index + 1 %></td> -->
                                                 <td class="product-col">
                                                     <div class="product d-flex align-items-center">
                                                         <figure class="product-media mr-2">
@@ -52,6 +56,8 @@
                                                     <%= order.address.pincode %>
                                                 </td>
                                                 <td class="price-col">₹<%= product.subtotal %></td>
+                                                <td><%= order.paymentStatus  %></td>
+                                                <td><%= order.paymentMethod %></td>
                                                 <% if(product.orderStatus == 'placed') { %>
                                                     <td  style="text-align: center; color: rgb(129, 129, 235);"><%= product.orderStatus %></td>
                                                 <% }else if(product.orderStatus == 'shipped') { %>
@@ -92,6 +98,31 @@
                             <span style="font-size: x-large;">No Orders</span>
                         <% } %>
                     </div>
+                     <!-- Pagination -->
+                    <nav aria-label="Page navigation ">
+                        <ul class="pagination justify-content-center mt-4">
+                            <% if (currentPage > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li> 
+                            <% } %>
+                            <% for (let i = 1; i <= totalPages; i++) { %> 
+                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                </li>
+                            <% } %>
+                            <% if (currentPage < totalPages) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                                        <span aria-label="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                    <!-- End Pagination -->
                 </div>
         </div>
 </div>

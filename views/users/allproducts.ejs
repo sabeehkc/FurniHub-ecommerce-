@@ -53,6 +53,8 @@
                                             <% if (product.status === 'active') { %>
                                                 <% if(product.quantity === 0) { %> 
                                                     <span class="product-label label-out">Out of Stock</span>
+                                                <% }else if(product.offer && product.offer.status === true) { %> 
+                                                    <span class="product-label bg-danger label-new"><%= product.offer.name%> off <%= product.offer.discount %>%</span>    
                                                 <% } %>
                                                 <a href="/product/<%= product._id %>">
                                                     <img src="<%=product.pictures[0] %>" alt="Product image" class="product-image">
@@ -77,8 +79,12 @@
                                                 <a href=""><%= product.category.name %></a>
                                             </div><!-- End .product-cat -->
                                             <h3 class="product-title"><a href="/product/<%= product._id %>"><%= product.name %></a></h3><!-- End .product-title -->
-                                            <div class="product-price">₹
-                                               <%= product.discount %>
+                                            <div class="product-price">
+                                                <% if(product.offer && product.offer.status === true) { %>
+                                                    ₹<%= product.offerPrice %>
+                                                <% }else { %>  
+                                                    ₹<%= product.discount %>
+                                                <% } %>
                                                <div class="text-muted ml-2">
                                                <small><del>₹<%= product.price %></del></small>
                                                </div>

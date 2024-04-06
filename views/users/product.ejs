@@ -59,8 +59,12 @@
                                 <a class="ratings-text" href="#product-review-link" id="review-link">( 2 Reviews )</a>
                             </div><!-- End .rating-container -->
 
-                            <div class="product-price">₹
-                                <%= product.discount %>
+                            <div class="product-price">
+                                <% if(product.offer && product.offer.status === true) { %> 
+                                    ₹<%= product.offerPrice %>      
+                                <% }else { %> 
+                                    ₹<%= product.discount %>     
+                                <% } %>
                                 <div class="text-muted ml-3">
                                 <small><del>₹<%= product.price %></del></small>
                                 </div>

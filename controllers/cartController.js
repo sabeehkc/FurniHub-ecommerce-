@@ -32,9 +32,16 @@ const addProductsCart = async (req, res) => {
         const existingProduct = cart.products.find(item => item.product.toString() === productId);
 
         if (existingProduct) {
-            existingProduct.quantity++;
-            existingProduct.subtotal = existingProduct.quantity * product.discount;
+            if(existingProduct.offerPrice){
+                existingProduct.quantity++;
+                existingProduct.subtotal = existingProduct.quantity * product.offerPrice;
+            }else {
+                existingProduct.quantity++;
+                existingProduct.subtotal = existingProduct.quantity * product.discount;
+            }
+            
         } else {
+            const subtotal = product.offerPrice ? product.offerPrice : product.discount;
             // Add new product to the cart
             cart.products.push({
                 product: productId,
@@ -42,7 +49,7 @@ const addProductsCart = async (req, res) => {
                 name: product.name,
                 discount:product.discount,
                 quantity: 1,
-                subtotal: product.discount,
+                subtotal: subtotal,
                 images: product.pictures 
             });
         }
@@ -96,8 +103,11 @@ const updateProductQuantity = async (req, res) => {
 
         const updatedProductIndex = cart.products.findIndex(item => item.product.toString() === productId);
         const updatedProduct = cart.products[updatedProductIndex];
+        if( updatedProduct.offerPrice){
+            updatedProduct.subtotal = updatedProduct.quantity * updatedProduct.offerPrice;    
+        }else {
         updatedProduct.subtotal = updatedProduct.quantity * updatedProduct.discount;
-
+        }
 
         // Recalculate the grand total of the cart
         cart.grandTotal = cart.products.reduce((total, item) => total + item.subtotal, 0);
