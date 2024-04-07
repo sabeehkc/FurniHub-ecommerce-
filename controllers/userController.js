@@ -383,6 +383,7 @@ const loadAbout = async(req,res) => {
     }
 }
 
+//----------------- Render(404) Page -----------------//
 const Error404 = async(req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
@@ -393,6 +394,7 @@ const Error404 = async(req,res) => {
     }
 };
 
+//----------------- Add products in Wishlist -----------------//
 const addProductWishlist = async (req,res) => {
     try {
         const productId = req.params.id;
@@ -438,6 +440,7 @@ const addProductWishlist = async (req,res) => {
     }
 }
 
+//----------------- Load Wishlist Page -----------------//
 const wishlist = async(req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
@@ -451,6 +454,7 @@ const wishlist = async(req,res) => {
     }
 };
 
+//----------------- Delete Products from wishlist -----------------//
 const deleteWishlistProduct = async (req,res) => {
     try {
         const productId =req.query.productId;

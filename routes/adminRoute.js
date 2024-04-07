@@ -62,18 +62,20 @@ admin_route.get("/products/edit/:id", productController.loadEditProduct);
 admin_route.post("/products/edit/:id",upload.array("images", 4),productController.editProduct);
 admin_route.delete("/productsdelete", productController.deleteImage);
 admin_route.post("/products/toggle/:id", productController.toggleProductStatus);
+admin_route.post("/addOffer-product",productController.addOfferProduct);
+admin_route.post("/products/remove-offer",productController.removeOfferProduct);
 
-
-admin_route.get("/orders", orderController.loadOrders);
+admin_route.get("/orders", orderController.loadOrdersAd);
 admin_route.post("/change-product-status/:orderId/:productId",orderController.ChangeOrderStatus);
 
 
 admin_route.get("/offers",adminController.loadOffers);
 admin_route.get("/offers/add",adminController.loadAddOffer);
 admin_route.post("/offers/addpost",adminController.addOffer);
-admin_route.post("/addOffer-product",productController.addOfferProduct);
-admin_route.get("/offers/edit/:id",adminController.editOffer);
+admin_route.get("/offers/edit/:id",adminController.loadeditOffer);
 admin_route.post("/offers/edit/:id",adminController.editOfferPost);
+admin_route.post("/offers/delete/:id",adminController.deleteOffer);
+
 
 admin_route.get("/logout", adminController.logout);
 

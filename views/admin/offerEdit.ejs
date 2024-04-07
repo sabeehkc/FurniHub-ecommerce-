@@ -13,7 +13,7 @@
                                 <h2 class="text-center mb-0">Edit Offer</h2>
                             </div>
                             <div class="card-body">
-                                <form action="/admin/offers/edit/<%= offer._id %>" method="POST">
+                                <form action="/admin/offers/edit/<%= offer._id %>" method="POST" onsubmit="return validate()">
                                     <div class="form-group">
                                         <label for="o-name">Offer Name</label>
                                         <input type="text" name="name" id="name" class="form-control" value="<%= offer.name %>" >
@@ -58,6 +58,49 @@
         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
     </div>
 </footer>
-                
+  
+<script>
+      function validate(){
+        var name = document.getElementById('name').value.trim();
+        var discount = document.getElementById('discountPrice').value.trim();
+        var startingDate = document.getElementById('startingDate').value.trim();
+        var expiryDate = document.getElementById('expiryDate').value.trim();
+
+        var nameError = document.getElementById('nameError');
+        var discountError = document.getElementById('discountError');
+        var startingDateError = document.getElementById('startingDateError');
+        var expiryDateError = document.getElementById('expiryDateError');
+
+        nameError.textContent = '';
+        discountError.textContent = '';
+        startingDateError.textContent = '';
+        expiryDateError.textContent = '';
+
+        var isValid = true;
+
+        if(name === ''){
+            nameError.textContent = 'Enter Offer Name'
+            isValid = false
+        };
+
+        if(isNaN(parseFloat(discount)) || discount <= 0 || discount >=100 ) {
+            discountError.textContent = "Check Discount Percentage"
+            isValid = false;
+        };
+
+        if(startingDate === ''){
+            startingDateError.textContent = 'Please select any date'
+            isValid = false
+        };
+
+        if(expiryDate === ''){
+            expiryDateError.textContent = 'Please select any date'
+            isValid = false
+        };
+
+        return isValid
+ 
+    }
+</script>
                 
 <%- include('./layout/adfooter.ejs') %>           

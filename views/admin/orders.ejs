@@ -15,7 +15,7 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <!-- <th>#</th> -->
+                                        <th>Date</th>
                                         <th>Product</th>
                                         <th>Quantity</th>
                                         <th>Address</th>
@@ -23,6 +23,7 @@
                                         <th>Payment status</th>
                                         <th>Payment Method</th>
                                         <th>Order Status</th>
+                                        <th>Reason</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -30,7 +31,7 @@
                                     <% orders.forEach((order, orderIndex) => { %>
                                         <% order.products.forEach((product, index) => { %>
                                             <tr>
-                                                <!-- <td><%= orderIndex * order.products.length + index + 1 %></td> -->
+                                                <td><%= new Date(order.createdAt).toLocaleDateString('en-US', {  year: 'numeric', month: 'short', day: 'numeric' }) %></td>
                                                 <td class="product-col">
                                                     <div class="product d-flex align-items-center">
                                                         <figure class="product-media mr-2">
@@ -67,6 +68,13 @@
                                                 <% }else { %> 
                                                     <td  style="text-align: center; color: red;"><%= product.orderStatus %></td>
                                                 <% } %> 
+
+                                                <% if(product.reason){ %> 
+                                                <td><%= product.reason %></td>    
+                                                <% }else { %> 
+                                                    <td>   </td>
+                                                <% } %>
+
                                                 <% if( product.orderStatus !== 'delivered' ){ %>
                                                     <% if(product.orderStatus !== 'cancelled') { %> 
                                                         <td><div class="dropdown">

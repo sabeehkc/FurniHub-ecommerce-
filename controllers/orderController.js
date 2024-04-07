@@ -6,6 +6,8 @@ const Order = require("../models/orderModel");
 const Razorpay = require("razorpay");
 const crypto = require('crypto');//to use SHA256 algorithm
 
+
+//----------------- Razorpay instance -----------------//
 var instance = new Razorpay({
     key_id : process.env.RAZORPAY_ID_KEY,
     key_secret: process.env.RAZORPAY_SECRET_KEY
@@ -13,7 +15,7 @@ var instance = new Razorpay({
 
 
 
-
+//----------------- Load CheckOut page -----------------//
 const LoadCheckOut = async (req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
@@ -31,6 +33,7 @@ const LoadCheckOut = async (req,res) => {
     }
 };
 
+//----------------- Genarate Razorpay -----------------//
 async function generateRazorpay(orderId, total) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -49,7 +52,7 @@ async function generateRazorpay(orderId, total) {
     });
 }
 
-
+//----------------- Place Order (order saved) -----------------//
 const placeOrder =  async (req, res) => {
     try {
         const userId = req.session.user ? req.session.user._id : null;
@@ -116,6 +119,9 @@ const placeOrder =  async (req, res) => {
         console.error('Error placing order:', error);
     }
 };
+
+//----------------- Razorpay payment verfication -----------------//
+
 const verifyrazorpayment = async (req, res) => {
     console.log(req.body);
     try {
@@ -146,6 +152,7 @@ const verifyrazorpayment = async (req, res) => {
     }
 };
 
+//----------------- Load Order Page (user side) -----------------//
 
 const loadOrders = async (req,res) => {
     try {
@@ -168,6 +175,8 @@ const loadOrders = async (req,res) => {
         console.log(error.message);
     }
 };
+
+//----------------- Ordered Product Details -----------------//
 
 const orderDetails = async (req,res) => {
     try {
@@ -213,6 +222,7 @@ const orderDetails = async (req,res) => {
     }
 }
 
+//----------------- Order conformation -----------------//
 const ThankYou = async (req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
@@ -223,6 +233,8 @@ const ThankYou = async (req,res) => {
         console.log(error.message);
     }
 }
+
+//----------------- Cancell and Return order Product -----------------//
 const cancelandReturnOrder = async (req, res) => {
     try {
         const orderId = req.body.orderId;
@@ -258,6 +270,7 @@ const cancelandReturnOrder = async (req, res) => {
     }
 };
 
+//----------------- Load Order (admin side) -----------------//
 const loadOrdersAd = async (req,res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -284,6 +297,8 @@ const loadOrdersAd = async (req,res) => {
         console.log(error.message);
     }
 };
+
+//----------------- Change order status (admin) -----------------//
 
 const ChangeOrderStatus = async (req, res) => {
     try {

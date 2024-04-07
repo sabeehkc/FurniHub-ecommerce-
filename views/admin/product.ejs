@@ -61,6 +61,9 @@
                                             <% offers.forEach(offer => { %>
                                                 <a class="dropdown-item text-danger" onclick="addOffer('<%= offer._id %>','<%= product._id %>')"><%= offer.name %></a>
                                             <% }) %>
+                                            <% if (product.offer) { %>
+                                            <a class="dropdown-item text-white" onclick="removeOffer('<%= product._id %>')" >Remove offer</a>
+                                            <% } %>
                                         </div>
                                     </div></td>
                                     <td><%for(let i=0;i<product.pictures.length;i++){%>
@@ -183,6 +186,27 @@ function addOffer(offerId,productId){
     })
     .catch(error => {
         console.error('Error:', error);
+    });
+}
+
+function removeOffer(productId){
+    console.log("Inside");
+    fetch('/admin/products/remove-offer',{
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json'
+        },
+        body: JSON.stringify({productId})
+    })
+    .then(response => {
+        if(response.ok){
+            window.location.reload();
+        }else {
+            console.error('Failed to remove Offer');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
     });
 }
 </script>

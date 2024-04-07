@@ -337,6 +337,7 @@ const FilterCategory = async (req,res) => {
     }
 };
 
+//----------------- Add offer Products -----------------//
 const addOfferProduct = async (req, res) => {
     try {
         const offerId = req.body.offerId;
@@ -370,6 +371,21 @@ const addOfferProduct = async (req, res) => {
     }
 };
 
+//----------------- remove Offer Products -----------------//
+const removeOfferProduct = async(req,res) => {
+    try {
+        const productId = req.body.productId;
+        const product = await Product.findById(productId);
+        console.log(product);
+
+        await Product.updateOne({ _id: product._id }, { $unset: { offer: '', offerPrice: '' } });
+
+        res.redirect('/admin/products');
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 module.exports = {
     loadProducts,
@@ -382,5 +398,6 @@ module.exports = {
     loadAllProduct,
     product,
     FilterCategory,
-    addOfferProduct
+    addOfferProduct,
+    removeOfferProduct
 }

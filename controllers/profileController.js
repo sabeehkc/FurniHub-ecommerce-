@@ -3,7 +3,7 @@ const Address = require('../models/addressModel.js');
 const bcrypt = require('bcrypt');
 
 
-
+//----------------- Hash Password -----------------//
 const securePassword = async (password) => {
     try {
         const passwordHash = await bcrypt.hash(password, 10);
@@ -13,7 +13,7 @@ const securePassword = async (password) => {
     }
 };
 
-
+//----------------- Load Profile  -----------------//
 const loadProfile = async (req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
@@ -32,6 +32,7 @@ const loadProfile = async (req,res) => {
     }
 }
 
+//----------------- Edit Profile  -----------------//
 const editProfile = async (req,res) => {
     try {
         const id = req.params.id 
@@ -57,6 +58,8 @@ const editProfile = async (req,res) => {
         console.log(error.message);
     }
 }
+
+//----------------- Change Password -----------------//
 
 const changePassword = async (req, res) => {
     try {
@@ -88,6 +91,7 @@ const changePassword = async (req, res) => {
     }
 }
 
+//----------------- Load user Address -----------------//
 const loadAddress = async (req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
@@ -107,6 +111,7 @@ const loadAddress = async (req,res) => {
     }
 }
 
+//----------------- Add new Address -----------------//
 const addAddress = async (req,res) => {
     try {
         const {buildingName, mobile, district, city, state, pincode} = req.body;
@@ -137,7 +142,7 @@ const addAddress = async (req,res) => {
     }
 }
 
-
+//----------------- Load Edit Address Page -----------------//
 const loadEditAddress = async (req,res) => {
     try {
 
@@ -156,6 +161,7 @@ const loadEditAddress = async (req,res) => {
     }
 }
 
+//----------------- Edit Address (post) -----------------//
 const editAddress = async (req,res) => {
     try {
         const id = req.params.id
@@ -180,6 +186,7 @@ const editAddress = async (req,res) => {
     }
 }
 
+//----------------- Delete address -----------------//
 const deleteAddress = async(req,res) => {
     try {
         const id = req.params.id

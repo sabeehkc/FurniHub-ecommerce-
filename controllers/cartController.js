@@ -2,7 +2,7 @@ const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 
 
-
+//----------------- Add Cart Products -----------------//
 const addProductsCart = async (req, res) => {
     try {
         const productId = req.params.id;
@@ -68,7 +68,7 @@ const addProductsCart = async (req, res) => {
 
 
 
-
+//----------------- load cart page (user side) -----------------//
 
 const LoadCart = async (req, res) => {
     try {
@@ -85,6 +85,8 @@ const LoadCart = async (req, res) => {
         console.log(error.message);
     }
 };
+
+//----------------- Update cart product Quantity -----------------//
 
 const updateProductQuantity = async (req, res) => {
     try {
@@ -121,8 +123,7 @@ const updateProductQuantity = async (req, res) => {
     }
 };
 
-
-
+//----------------- Delete product from cart -----------------//
 const deleteCartProduct = async (req, res) => {
     try {
         const productId = req.query.productId;

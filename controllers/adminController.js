@@ -109,6 +109,7 @@ const blockUser = async (req, res) => {
     }
 };
 
+//----------------- Admin logout -----------------//
 
 const logout = async(req,res) => {
     try {
@@ -120,6 +121,7 @@ const logout = async(req,res) => {
     }
 };
 
+//----------------- Render(404) Page -----------------//
 const Error404 = async(req,res)=> {
     try {
         res.render('404')
@@ -128,6 +130,7 @@ const Error404 = async(req,res)=> {
     }
 }
 
+//----------------- Load Offer (Admin side) -----------------//
 const loadOffers = async(req,res) => {
     try {
         const offers = await Offer.find();
@@ -137,6 +140,7 @@ const loadOffers = async(req,res) => {
     }
 };
 
+//----------------- Load Add Offer Page -----------------//
 const loadAddOffer = async(req,res) => {
     try {
         res.render('offerAdd')
@@ -145,6 +149,7 @@ const loadAddOffer = async(req,res) => {
     }
 };
 
+//----------------- Add Offer (post) -----------------//
 const addOffer = async (req,res) => {
     try {
         const {name , discount,startingDate, expiryDate} = req.body;
@@ -163,7 +168,10 @@ const addOffer = async (req,res) => {
         console.log(error.message);
     }
 };
-const editOffer = async(req,res) => {
+
+//-----------------  Load Edit Offer page -----------------//
+
+const loadeditOffer = async(req,res) => {
     try {
         const offerId = req.params.id;
         const offer = await Offer.findById(offerId);
@@ -174,6 +182,7 @@ const editOffer = async(req,res) => {
     }
 };
 
+//----------------- Edit offer (post) -----------------//
 const editOfferPost = async (req, res) => {
     try {
         const offerId = req.params.id;
@@ -213,6 +222,26 @@ const editOfferPost = async (req, res) => {
     }
 };
 
+//----------------- Delete Offer -----------------//
+
+const deleteOffer = async(req,res) => {
+    try {
+        const offerId =  req.params.id;
+
+        const offer = await Offer.findByIdAndDelete(offerId);
+
+        if (!offer) {
+            return res.status(404).json({ message: 'Offer not found' });
+        }
+      
+        await Product.updateMany({ offer: offer._id }, { $unset: { offer: '', offerPrice: '' } });
+      
+        return res.status(200).json({ message: 'Offer deleted successfully' });
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 
 module.exports = {
@@ -226,6 +255,7 @@ module.exports = {
     loadOffers,
     loadAddOffer,
     addOffer,
-    editOffer,
-    editOfferPost
+    loadeditOffer,
+    editOfferPost,
+    deleteOffer
 }
