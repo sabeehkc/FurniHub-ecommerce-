@@ -1,0 +1,82 @@
+<%- include('../layout/header.ejs') %>
+
+<%- include('../layout/navbar.ejs') %>
+
+
+<main class="main">
+    <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        <div class="container">
+            <h1 class="page-title">My Account</h1>
+        </div><!-- End .container -->
+    </div><!-- End .page-header -->
+    <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/profile">Profile</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Wallet</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="page-content">
+        <div class="dashboard">
+            <div class="container">
+                <div class="row">
+                    <aside class="col-md-4 col-lg-3">
+                        <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
+                            <li class="nav-item">
+                                <a class="nav-link " href="/profile" role="tab" >Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/orders" role="tab" >Orders</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link "   href="/address"  >Adresses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active " href="/wallet" >Wallet</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/logout">Sign Out</a>
+                            </li>
+                        </ul>
+                    </aside><!-- End .col-lg-3 -->
+
+                    <div class="ml-5 ">
+                        <div class="tab-content">
+                            <div class="" >
+
+                                <h1>Wallet</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>               
+    </div>     
+</main>
+                    
+                    
+                    
+<%- include('../layout/allfooter.ejs') %>
+</div><!-- End .page-wrapper -->
+<button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+                    
+                    
+<%- include('../layout/mobile.ejs') %>
+                    
+ 
+<!-- Plugins JS File -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/jquery.hoverIntent.min.js"></script>
+<script src="assets/js/jquery.waypoints.min.js"></script>
+<script src="assets/js/superfish.min.js"></script>
+<script src="assets/js/owl.carousel.min.js"></script>
+<!-- Main JS File -->
+<script src="assets/js/main.js"></script>
+
+<%- include('../layout/footer.ejs') %> 
+                            

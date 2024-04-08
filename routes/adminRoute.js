@@ -30,7 +30,7 @@ const upload = multer({ storage: storage });
 admin_route.get("/", auth.isLogout, adminController.loginload);
 admin_route.post("/loginpost", adminController.Loginverifying);
 
-// admin_route.use(auth.isLogin);
+admin_route.use(auth.isLogin);
 
 //----------------- Admin Dashboard -----------------//
 admin_route.get("/dashboard", adminController.loadDashboard);
@@ -53,6 +53,8 @@ admin_route.post("/category/edit/:id", categoryController.editCategory);
 
 //-----------------  Categories  active and blocked -----------------//
 admin_route.post("/category/toggle/:id",categoryController.toggleCategoryStatus);
+admin_route.post("/addOffer-category",categoryController.addOfferCategory);
+admin_route.post("/categories/remove-offer",categoryController.removeOfferCategory);
 
 //-----------------  load Product page  -----------------//
 admin_route.get("/products", productController.loadProducts);

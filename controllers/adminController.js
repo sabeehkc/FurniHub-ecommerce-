@@ -203,19 +203,18 @@ const editOfferPost = async (req, res) => {
 
         const product = await Product.findOne({ offer: offer._id });
 
-        if (!product) {
-            throw new Error("Product not found for the offer");
+        if (product) {
+            const calculatedDiscount = Math.floor(product.price - product.price * discount / 100);
+            console.log(calculatedDiscount);
+
+            product.offer = offer._id;
+            product.offerPrice = calculatedDiscount;
+
+            await product.save();
         }
 
-        const calculatedDiscount = Math.floor(product.price - product.price * discount / 100);
-        console.log(calculatedDiscount);
-
-        product.offer = offer._id;
-        product.offerPrice = calculatedDiscount;
-
-        await product.save();
-
         res.redirect("/admin/offers");
+
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");

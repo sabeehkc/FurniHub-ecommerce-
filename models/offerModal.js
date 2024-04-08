@@ -20,6 +20,12 @@ const offerSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-})
+}, {
+    timestamps: true 
+});
+
+    
+// TTL index for expiryDate field
+offerSchema.index({ expiryDate: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('offer',offerSchema);

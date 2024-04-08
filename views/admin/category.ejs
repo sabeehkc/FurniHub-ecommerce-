@@ -17,6 +17,8 @@
             <tr>
                 <th>#</th>
                 <th>Name</th>
+                <th>Offer Name</th>
+                <th>Add Offer</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -25,6 +27,26 @@
                 <tr>
                     <td><%= index + 1 %></td>
                     <td><%= category.name %></td>
+                    <td>
+                        <% if (category.offer) { %>
+                            <%= category.offer.name %>
+                        <% } else { %>
+                            No Offer
+                        <% } %>
+                    </td>    
+                    <td><div class="dropdown">
+                        <button class="btn btn-outline-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Add Offer
+                        </button>
+                        <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
+                            <% offers.forEach(offer => { %>
+                                <a class="dropdown-item text-danger" onclick="addOffer('<%= offer._id %>','<%= category._id %>')"><%= offer.name %></a>
+                            <% }) %>
+                            <% if (category.offer) { %>
+                            <a class="dropdown-item text-white" onclick="removeOffer('<%= category._id %>')" >Remove offer</a>
+                            <% } %>
+                        </div>
+                    </div></td>
                     <td>
                         <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/category/edit/<%= category._id %>">Edit</a></button>
 
@@ -100,6 +122,47 @@
             }
         });
     }
+
+    function addOffer(offerId,categoryId){
+    fetch('/admin/addOffer-category', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ offerId,categoryId })
+    })
+    .then(response => {
+        if (response.ok) {
+            window.location.reload(); // Reload the page 
+        } else {
+            console.error('Failed to change product status');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function removeOffer(categoryId){
+    console.log("Inside");
+    fetch('/admin/categories/remove-offer',{
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json'
+        },
+        body: JSON.stringify({categoryId})
+    })
+    .then(response => {
+        if(response.ok){
+            window.location.reload();
+        }else {
+            console.error('Failed to remove Offer');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+}
 </script>
 
 <%- include('./layout/adfooter.ejs') %>

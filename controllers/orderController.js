@@ -38,7 +38,7 @@ async function generateRazorpay(orderId, total) {
     return new Promise(async (resolve, reject) => {
         try {
             var option = {
-                amount: total , // Amount in paise
+                amount: total*100 , // Amount in paise
                 currency: "INR",
                 receipt: orderId,
             };

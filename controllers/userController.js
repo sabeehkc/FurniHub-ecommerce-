@@ -485,6 +485,17 @@ const deleteWishlistProduct = async (req,res) => {
     } catch (error) {
         console.log(error.message);
     }
+};
+
+const loadWallet = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        res.render('wallet',{userName:userName,isLoggedIn:isLoggedIn});
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
 
@@ -506,5 +517,6 @@ module.exports = {
     Error404,
     wishlist,
     addProductWishlist,
-    deleteWishlistProduct
+    deleteWishlistProduct,
+    loadWallet
 };

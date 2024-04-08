@@ -99,6 +99,8 @@ user_route.get("/wishlist",auth.checkuser,auth.isBlock,userController.wishlist);
 user_route.get("/add-wishlist/:id",userController.addProductWishlist);
 user_route.get("/wishlist/remove",userController.deleteWishlistProduct);
 
+user_route.get("/wallet",userController.loadWallet);
+
 user_route.get('*',userController.Error404);
 
 //----------------- export user route -----------------//
