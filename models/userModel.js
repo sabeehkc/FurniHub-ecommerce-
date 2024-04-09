@@ -29,6 +29,10 @@ const userSchema =  new mongoose.Schema({
             type:Boolean,
             require:true
         },
+        refcode: {
+            type: String,
+            default:''
+        },
          // Fields for Google authentication
         googleId: {
             type: String

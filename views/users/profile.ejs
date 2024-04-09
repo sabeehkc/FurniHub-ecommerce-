@@ -63,9 +63,18 @@
                                         </div>
                                     </div>
                                     <hr>
-                                    <div>
-                                        <h6>Email</h6>
-                                        <p><%= user.email %></p>
+                                    <div class="d-flex" style="justify-content: space-between;">
+                                        <div>
+                                            <h6>Email</h6>
+                                            <p><%= user.email %></p>
+                                        </div>
+                                        <div>
+                                            <h6>Refferal Code</h6>
+                                            <p id="referralCode"><%= user.refcode %><a class="ml-2 text-muted"  onclick="copyReferralCode()" title="Copy Referral Code" > 
+                                                <i class="fas fa-copy"></i> 
+                                              </a></p>
+                                            
+                                        </div>    
                                     </div>
                                     <div class="pt-4">
                                         <button class="btn-primary" style="border: none;" data-toggle="modal" data-target="#changePasswordModal">Change Password</button>
@@ -199,6 +208,19 @@
         return isValid;
 
     }
+
+function copyReferralCode() {
+    const referralCode = document.getElementById('referralCode').innerText;
+    
+    navigator.clipboard.writeText(referralCode)
+        .then(() => {
+        console.log('Referral code copied successfully: ' + referralCode);
+        })
+        .catch(err => {
+        console.error('Unable to copy referral code: ', err);
+        alert('Failed to copy referral code. Please copy it manually.');
+        });
+}
 </script>
 
 <script>

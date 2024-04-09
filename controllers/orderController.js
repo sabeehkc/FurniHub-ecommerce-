@@ -5,7 +5,7 @@ const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const Razorpay = require("razorpay");
 const crypto = require('crypto');//to use SHA256 algorithm
-
+const Wallet = require("../models/walletModel");
 
 //----------------- Razorpay instance -----------------//
 var instance = new Razorpay({
@@ -245,16 +245,52 @@ const cancelandReturnOrder = async (req, res) => {
         // Find the order
         const order = await Order.findOne({ _id: orderId });
 
-        // Find the product to be canceled
+        // Find the product to be canceled or returned
         const productIndex = order.products.findIndex(product => product._id.toString() === productId);
 
         if (productIndex !== -1) {
+            // Check if payment status is "paid"
+            if (order.paymentStatus === "paid") {
+               
+
+                // Save the refunded amount and order details in the user's wallet
+                const user = await User.findOne({_id:order.user});
+                if (user) {
+                    const wallet = await Wallet.findOne({ user: user._id });
+                    const refundedAmount = order.products[productIndex].subtotal + wallet.amount
+                    if (wallet) {
+                        // Create a new wallet transaction for the refunded amount and order details
+                        const walletAmount = {
+                            amount: refundedAmount,
+                            order: {
+                                orderId: order._id,
+                                name:order.products[productIndex].name,
+                                reason: "Amount Credited",
+                                price:order.products[productIndex].subtotal,
+                                status:"credited",
+                            },
+                        };
+                        // Add the transaction to the wallet
+                        wallet.order.push(walletAmount);
+                        // Save the updated wallet
+                        await wallet.save();
+                    }
+                }
+            }
+
             // Update the product's orderStatus and reason
             order.products[productIndex].orderStatus = newStatus;
             order.products[productIndex].reason = reason;
 
             // Recalculate total price
             order.total -= order.products[productIndex].subtotal;
+
+            // Update product's available quantity by adding back the returned quantity
+            const product = await Product.findById(productId);
+            if (product) {
+                product.quantity += order.products[productIndex].quantity;
+                await product.save();
+            }
 
             // Save the updated order
             await order.save();
@@ -265,10 +301,11 @@ const cancelandReturnOrder = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error.message);
+        console.error("Error cancelling or returning order:", error.message);
         res.json({ success: false, message: error.message });
     }
 };
+
 
 //----------------- Load Order (admin side) -----------------//
 const loadOrdersAd = async (req,res) => {

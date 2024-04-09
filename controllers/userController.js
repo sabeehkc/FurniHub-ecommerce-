@@ -8,7 +8,7 @@ const Address = require('../models/addressModel.js');
 const Order = require('../models/orderModel.js');
 const { product } = require('./productController.js');
 const Wishlist = require('../models/wishlistModel.js');
-
+const Wallet = require("../models/walletModel.js");
 
 //-----------------  hash password -----------------//
 
@@ -98,17 +98,17 @@ const loadRegister = async (req, res) => {
 };
 
 //----------------- insert user into the database -----------------//
-
 const insertUser = async (req, res) => {
     try {
-
-        const emailExists = await User.findOne({ email:req.body['reg-email'] });
+        const emailExists = await User.findOne({ email: req.body['reg-email'] });
 
         if (emailExists) {
-            res.render('register',{message:"This Email already used"})            
-        } else {
+            return res.render('register', { message: "This Email already used" });
+        }
 
         const hashedPassword = await securePassword(req.body['reg-password']);
+        const refcode = generateReferralCode();
+        console.log(refcode);
 
         const user = new User({
             name: req.body['reg-name'],
@@ -117,23 +117,29 @@ const insertUser = async (req, res) => {
             mobile: req.body['reg-mobileno'],
             verified: false,
             is_admin: 0,
-            is_blocked: false
+            is_blocked: false,
+            refcode: refcode
         });
 
         const userData = await user.save();
-        req.session.user = userData; 
 
-        if (userData) {
-            const otp = generateOTP();
-            console.log(otp);
-            await sendOtpMail(req.body['reg-name'], req.body['reg-email'], otp, userData._id);
-            res.redirect('/otp-verification');
-        } else {
-            res.render('register');
+        let wallet = await Wallet.findOne({ user: user._id });
+        if (!wallet) {
+            wallet = new Wallet({
+                user: user._id,
+            });
+            await wallet.save();
         }
-    }
+
+        req.session.user = userData;
+
+        const otp = generateOTP();
+        console.log(otp);
+        await sendOtpMail(req.body['reg-name'], req.body['reg-email'], otp, userData._id);
+        res.redirect('/otp-verification');
     } catch (error) {
-        console.log("Error inserting user:", error.message);
+        console.error("Error inserting user:", error.message);
+        res.render('register', { message: "Error inserting user" });
     }
 };
 
@@ -148,6 +154,18 @@ const generateOTP = () => {
     }
     return OTP;
 };
+
+function generateReferralCode() {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    
+    for (let i = 0; i < 6; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    
+    return result;
+}
 
 //----------------- load OTP verification page -----------------//
 
@@ -331,29 +349,43 @@ const successGoogleLogin = async (req, res) => {
         if (!req.user) {
             return res.redirect('/register');
         }
+
         console.log(req.user);
         
         const { id, displayName, email } = req.user;
-    
 
-        // Check the user already exists in the database
+        // Check if the user already exists in the database
         let user = await User.findOne({ googleId: id });
 
         if (!user) {
-            
+            const refcode = generateReferralCode();    
+            console.log(refcode);
+
             user = new User({
                 name: displayName,
                 email: email,
-                verified: true, 
+                verified: true,
                 is_admin: 0,
                 is_blocked: false,
+                refcode: refcode,
                 googleId: id,
                 googleName: displayName,
-                googleEmail: email
+                googleEmail: email,
             });
 
             // Save new user
-            await user.save();
+            user = await user.save(); // Save and update user object
+
+            console.log("userId", user._id); // Log user ID after saving
+
+            // Check if wallet exists, create a new wallet if it doesn't
+            let wallet = await Wallet.findOne({ user: user._id });
+            if (!wallet) {
+                wallet = new Wallet({
+                    user: user._id,
+                });
+                await wallet.save(); // Save the new wallet
+            }
         }
 
         req.session.user = user;
@@ -365,6 +397,7 @@ const successGoogleLogin = async (req, res) => {
         res.redirect('/register'); 
     }
 };
+
 
 //----------------- Login With Google (failure) -----------------//
 
@@ -492,7 +525,13 @@ const loadWallet = async(req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        res.render('wallet',{userName:userName,isLoggedIn:isLoggedIn});
+        const userId = req.session.user ? req.session.user._id : null;
+        const wallet = await Wallet.findOne({user:userId});
+        if(!wallet){
+            console.log('Wallet not found');
+        }
+
+        res.render('wallet',{userName:userName,isLoggedIn:isLoggedIn,wallet});
     } catch (error) {
         console.log(error.message);
     }
