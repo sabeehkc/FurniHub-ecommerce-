@@ -1,0 +1,56 @@
+<%- include('../layout/header.ejs') %>
+<%- include('../layout/navbar.ejs') %>
+
+<main class="main">
+    <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Coupons</li>
+            </ol>
+        </div><!-- End .container -->
+    </nav><!-- End .breadcrumb-nav -->
+
+    <div class="container text-center mb-5 mt-3">
+        <% if(coupons && coupons.length > 0){ %> 
+        <div class="row">
+            <% coupons.forEach(coupon => { %> 
+            <div class="col-sm-4">
+              <div class="card text-white bg-info">
+                <div class="card-body text-white">
+                  <h5 class="card-title text-dark mb-1">Name: <%= coupon.couponName %></h5>
+                  <p class="card-text text-dark">Code: <%= coupon.couponCode  %></p>
+                  <p class="card-text text-dark">Discount: <%= coupon.discountPercent %>%</p>
+                  <a href="/apply-coupon/<%= coupon._id %>" class="btn mt-2" style="background-color: azure;">Apply</a>
+                  <p class="text-danger"><%= message %></p>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+        </div>
+        <% }else { %> 
+            <h3>No Coupons</h3>
+            <a href="/check-out" class="btn btn-primary">Back To Checkout</a>    
+        <% } %>
+    </div><!-- End .container -->
+
+    
+
+
+<%- include('../layout/allfooter.ejs') %>
+</div><!-- End .page-wrapper -->
+<button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+<%- include('../layout/mobile.ejs') %>
+
+<!-- Plugins JS File -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/jquery.hoverIntent.min.js"></script>
+<script src="assets/js/jquery.waypoints.min.js"></script>
+<script src="assets/js/superfish.min.js"></script>
+<script src="assets/js/owl.carousel.min.js"></script>
+<!-- Main JS File -->
+<script src="assets/js/main.js"></script>
+
+<%- include('../layout/footer.ejs') %>

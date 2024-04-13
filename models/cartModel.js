@@ -41,6 +41,10 @@ const cartSchema = new mongoose.Schema({
       type: Boolean,
       default: true,
     },
+    coupon: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Coupon",
+    }, 
   },
   {
     timestamps: true,

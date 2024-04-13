@@ -65,22 +65,20 @@
                         <table class="table">
                             <thead class="thead-dark">
                                 <tr>
+                                <th scope="col">Transaction</th>
+                                <th scope="col">Amount</th>
                                 <th scope="col">Date</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Reson</th>
-                                <th scope="col">Price</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                <th>1</th>
-                                <td><%= wallet.order.name %></td>
-                                <td><%= wallet.order.reson %></td>
+                                <td><%=wallet.order.status %></td>
                                 <% if(wallet.order.status === 'credited'){ %> 
                                     <td class="text-success">+<%= wallet.order.price %></td>
                                 <% }else { %> 
                                     <td class="text-danger">-<%= wallet.order.price %></td>
                                 <% } %>
+                                <td><%= new Date(wallet.order.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -1,6 +1,6 @@
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
-
+const Coupon = require("../models/couponModel")
 
 //----------------- Add Cart Products -----------------//
 const addProductsCart = async (req, res) => {
@@ -77,7 +77,8 @@ const LoadCart = async (req, res) => {
 
         const userId = req.session.user ? req.session.user._id : '';
         
-        const cartProducts = await Cart.find({ user: userId }).populate({ path: 'products.product', model: Product });
+        const cartProducts = await Cart.find({ user: userId }).populate({ path: 'products.product', model: Product })
+        .populate({ path: 'coupon', model: Coupon});
         
         res.render('cart', { userName: userName, isLoggedIn: isLoggedIn, cartProducts: cartProducts });
 

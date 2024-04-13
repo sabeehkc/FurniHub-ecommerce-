@@ -20,10 +20,6 @@ const walletSchema = new mongoose.Schema({
         type: String,
         required: true
       },
-      reason: {
-        type: String,
-        required: true,
-      },
       status: {
         type: String,
         enum: ["credited", "debited"],

@@ -6,6 +6,7 @@ const Order = require("../models/orderModel");
 const Razorpay = require("razorpay");
 const crypto = require('crypto');//to use SHA256 algorithm
 const Wallet = require("../models/walletModel");
+const Coupon = require('../models/couponModel');
 
 //----------------- Razorpay instance -----------------//
 var instance = new Razorpay({
@@ -24,7 +25,9 @@ const LoadCheckOut = async (req,res) => {
         const userId = req.session.user ? req.session.user._id : null;
 
         const addresses = await Address.find({user:userId}).populate({path:'user',model:User});
-        const cart = await Cart.find({ user: userId }).populate({ path: 'products.product', model: Product });
+        const cart = await Cart.find({ user: userId })
+        .populate({ path: 'products.product', model: Product })
+        .populate({ path: 'coupon', model: Coupon})
 
         res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn,addresses,cart});
         
@@ -152,6 +155,54 @@ const verifyrazorpayment = async (req, res) => {
     }
 };
 
+//----------------- Display Coupon checkout time -----------------//
+const displyaCoupons = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const coupons = await Coupon.find();
+
+        const userId = req.session.user ? req.session.user._id : null;
+        // const cart = await Cart.findOne({user:userId});
+        // if(!cart){
+        //     console.log("Cart is not found");
+        // }
+
+        res.render('disCoupons',{userName:userName,isLoggedIn:isLoggedIn,coupons,message:""})
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+//----------------- Apply Coupon checkout -----------------//
+const applyCoupon = async(req,res) => {
+    try {
+        const couponId = req.params.id
+        const coupon = await Coupon.findById(couponId);
+
+        const userId = req.session.user ?  req.session.user._id : null;
+        const cart = await Cart.findOne({user:userId});
+
+        const calculateDiscount = Math.floor(cart.grandTotal - cart.grandTotal * coupon.discountPercent / 100)
+        console.log(calculateDiscount);
+
+        if(cart.grandTotal >= coupon.minAmount ){
+            cart.grandTotal = calculateDiscount;
+            cart.coupon = coupon._id;
+            await cart.save();
+        }else {
+            res.render('disCoupon',{message:"You can't use this coupon"})
+        }
+       
+        res.redirect('/check-out');
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 //----------------- Load Order Page (user side) -----------------//
 
 const loadOrders = async (req,res) => {
@@ -252,7 +303,6 @@ const cancelandReturnOrder = async (req, res) => {
             // Check if payment status is "paid"
             if (order.paymentStatus === "paid") {
                
-
                 // Save the refunded amount and order details in the user's wallet
                 const user = await User.findOne({_id:order.user});
                 if (user) {
@@ -265,7 +315,6 @@ const cancelandReturnOrder = async (req, res) => {
                             order: {
                                 orderId: order._id,
                                 name:order.products[productIndex].name,
-                                reason: "Amount Credited",
                                 price:order.products[productIndex].subtotal,
                                 status:"credited",
                             },
@@ -371,5 +420,7 @@ module.exports = {
     orderDetails,
     verifyrazorpayment,
     loadOrdersAd,
-    ChangeOrderStatus
+    ChangeOrderStatus,
+    displyaCoupons,
+    applyCoupon
 }

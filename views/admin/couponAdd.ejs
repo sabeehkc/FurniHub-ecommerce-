@@ -1,0 +1,117 @@
+<%- include('./layout/adheader.ejs') %>
+
+<div class="container-scroller text-center">
+    <%- include('./layout/sidenav.ejs') %>
+    <div class="container-fluid page-body-wrapper">
+        <%- include('./layout/topnav.ejs') %>
+        <div class="w-100 container-fluid bg-dark mt-5">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header bg-dark text-white">
+                                <h2 class="text-center mb-0">Add Coupon</h2>
+                            </div>
+                            <div class="card-body">
+                                <form action="/admin/coupons/addpost" method="POST" onsubmit="return validate()">
+                                    <div class="form-group">
+                                        <label for="coupon-name">Coupon Name</label>
+                                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter Coupon Name" >
+                                        <div id="nameError" class="text-danger"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="coupon-Code">Coupon Code</label>
+                                        <input type="text" name="couponCode" id="couponCode" class="form-control" placeholder="Enter Coupon Code" >
+                                        <div id="codeError" class="text-danger"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="discount">Discount Percentage</label>
+                                        <input type="number" name="discount" id="discount" class="form-control" placeholder="Enter Discount Percentage"  pattern="[1-9][0-9]?">
+                                        <div id="discountError" class="text-danger"></div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="min">Minimum Amount</label>
+                                            <input type="number" name="minAmount" id="minAmount" class="form-control" placeholder="Enter Minimum Amount" >
+                                            <div id="minAmountError" class="text-danger"></div>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="expiryDate">Expiry Date</label>
+                                            <input type="date" name="expiryDate" id="expiryDate" class="form-control">
+                                            <div id="expiryDateError" class="text-danger"></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" name="submit" class="btn btn-primary">Add Offer</button>
+                                        <a href="/admin/coupons" class="btn btn-primary ml-2">Back</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<footer class="footer">
+    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+        <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © FurniHub.com 2024</span>
+        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
+    </div>
+</footer>
+       
+<script>
+    function validate(){
+        var name = document.getElementById('name').value.trim();
+        var couponCode = document.getElementById('couponCode').value.trim();
+        var discount = document.getElementById('discount').value.trim();
+        var minAmount = document.getElementById('minAmount').value.trim();
+        var expiryDate = document.getElementById('expiryDate').value.trim();
+
+        var nameError = document.getElementById('nameError');
+        var codeError = document.getElementById('codeError');
+        var discountError = document.getElementById('discountError');
+        var minAmountError = document.getElementById('minAmountError');
+        var expiryDateError = document.getElementById('expiryDateError');
+
+        nameError.textContent = '';
+        codeError.textContent = '';
+        discountError.textContent = '';
+        minAmountError.textContent = '';
+        expiryDateError.textContent = '';
+
+        var isValid = true;
+
+        if(name === ''){
+            nameError.textContent = 'Enter Offer Name'
+            isValid = false
+        };
+
+        if(couponCode === ''){
+            codeError.textContent = 'Enter Coupon Code'
+            isValid = false
+        }
+
+        if(isNaN(parseFloat(discount)) || discount <= 0 || discount >=100 ) {
+            discountError.textContent = "Check Discount Percentage"
+            isValid = false;
+        };
+
+        if(minAmount === '' || minAmount <= 0){
+            minAmountError.textContent = 'Please select any date'
+            isValid = false
+        };
+
+        if(expiryDate === ''){
+            expiryDateError.textContent = 'Please select any date'
+            isValid = false
+        };
+
+        return isValid
+ 
+    }
+</script>
+                
+<%- include('./layout/adfooter.ejs') %>               

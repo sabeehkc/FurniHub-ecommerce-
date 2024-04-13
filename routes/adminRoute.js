@@ -5,7 +5,7 @@ const adminController = require("../controllers/adminController");
 const productController = require("../controllers/productController");
 const categoryController = require("../controllers/categoryController");
 const orderController = require("../controllers/orderController");
-
+const couponController = require("../controllers/couponController");
 //----------------- set view engine -----------------//
 admin_route.set("view engine", "ejs");
 admin_route.set("views", "./views/admin");
@@ -30,7 +30,7 @@ const upload = multer({ storage: storage });
 admin_route.get("/", auth.isLogout, adminController.loginload);
 admin_route.post("/loginpost", adminController.Loginverifying);
 
-admin_route.use(auth.isLogin);
+// admin_route.use(auth.isLogin);
 
 //----------------- Admin Dashboard -----------------//
 admin_route.get("/dashboard", adminController.loadDashboard);
@@ -78,6 +78,13 @@ admin_route.get("/offers/edit/:id",adminController.loadeditOffer);
 admin_route.post("/offers/edit/:id",adminController.editOfferPost);
 admin_route.post("/offers/delete/:id",adminController.deleteOffer);
 
+
+admin_route.get("/coupons",couponController.loadCoupons);
+admin_route.get("/coupons/add",couponController.loadCouponAdd);
+admin_route.post("/coupons/addpost",couponController.couponAddPost);
+admin_route.get("/coupons/edit/:id",couponController.loadEditCoupon);
+admin_route.post("/coupons/edit/:id",couponController.editCoupon);
+admin_route.post("/coupons/delete/:id",couponController.deleteCoupon);
 
 admin_route.get("/logout", adminController.logout);
 

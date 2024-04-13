@@ -36,7 +36,10 @@ const addCategory = async (req, res) => {
         if(cat){
             res.render('addcategory',{message: "This Category alredy exists"})
         }else{
-            const category = new Category({ name, description }); 
+            const category = new Category({
+                name,
+                description
+            }); 
 
             await category.save();
 

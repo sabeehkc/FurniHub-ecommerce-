@@ -17,7 +17,7 @@
     </nav><!-- End .breadcrumb-nav -->
 
 
-    <% if(wishlistProducts && wishlistProducts.length >= 0) { %>
+    <% if (wishlistProducts && wishlistProducts.length > 0) { %>
     <div class="page-content"> 
         <div class="container"> 
             <table class="table table-wishlist table-mobile text-center">
@@ -53,7 +53,7 @@
                                 </h3><!-- End .product-title -->
                             </div><!-- End .product -->
                         </td>
-                        <td class="price-col text-muted"><del>₹<%= product.price %></del></td>
+                        <td class="price-col text-muted"><del>₹<%= product.product.price %></del></td>
                         <td class="price-col">
                             <% if(product.product.offer) { %>
                                 ₹<%= product.product.offerPrice %>    
@@ -95,7 +95,7 @@
             </div><!-- End .wishlist-share -->
         </div><!-- End .container -->
     </div><!-- End .page-content -->
-    <% }else { %> 
+    <% } else { %> 
         <h3 class="text-primary text-center ">No Products In Wishlist</h3>
     <% } %>
 </main><!-- End .main -->

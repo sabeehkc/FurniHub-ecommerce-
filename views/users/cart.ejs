@@ -115,31 +115,15 @@
                                             <td>₹0.00</td>
                                         </tr><!-- End .summary-shipping-row -->
     
-                                        <!-- <tr class="summary-shipping-row">
-                                            <td>
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" id="standart-shipping" name="shipping" class="custom-control-input">
-                                                    <label class="custom-control-label" for="standart-shipping">Standart:</label>
-                                                </div> End .custom-control 
-                                            </td>
-                                            <td>₹0.00</td>
-                                        </tr> End .summary-shipping-row 
-    
-                                        <tr class="summary-shipping-row">
-                                            <td>
-                                                <div class="custom-control custom-radio">
-                                                    <input type="radio" id="express-shipping" name="shipping" class="custom-control-input">
-                                                    <label class="custom-control-label" for="express-shipping">Express:</label>
-                                                </div> End .custom-control 
-                                            </td>
-                                            <td>₹0.00</td>
-                                        </tr>End .summary-shipping-row -->
-    
                                         <tr class="summary-shipping-estimate">
                                             <td>Estimate for Your Country<br> <a href="/address">Change address</a></td>
                                             <td>&nbsp;</td>
                                         </tr><!-- End .summary-shipping-estimate -->
-    
+                                        <% if(cartProducts[0].coupon){ %>
+                                        <tr>
+                                            <td><span class="text-primary"><%= cartProducts[0].coupon.couponName  %></span> couponAppied</td>
+                                        </tr>
+                                        <% } %>
                                         <tr class="summary-total">
                                             <td>Total:</td>
                                             <td>₹<%= cartProducts[0].grandTotal %></td> 
@@ -188,7 +172,7 @@
                     const data = await response.json();
                     const subtotalCell = document.querySelector(`.subtotal-cell-${productId}`);
                     subtotalCell.textContent = `₹${data.subtotal}`;
-
+                    window.location.reload();
                 } else {
                     console.error('Failed to update quantity');
                 }

@@ -84,6 +84,8 @@ user_route.get("/cart/remove", cartController.deleteCartProduct);
 user_route.put("/updateQuantity", cartController.updateProductQuantity);
 
 user_route.get("/check-out",auth.checkuser,auth.isBlock,orderController.LoadCheckOut);
+user_route.get("/displayCoupons",auth.checkuser,auth.isBlock,orderController.displyaCoupons);
+user_route.get("/apply-coupon/:id",orderController.applyCoupon);
 
 user_route.post("/order-placed", orderController.placeOrder);
 user_route.get("/thank-you",auth.checkuser,auth.isBlock,orderController.ThankYou);

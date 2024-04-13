@@ -20,11 +20,12 @@
     <div class="page-content">
         <div class="checkout">
             <div class="container">
-                <div class="checkout-discount">
-                    <form action="#">
-                        <input type="text" class="form-control" required id="checkout-discount-input">
-                        <label for="checkout-discount-input" class="text-truncate">Have a coupon? <span>Click here to enter your code</span></label>
-                    </form>
+                <div class=" d-flex w-100 " style="justify-content: end;">
+                    <% if(!cart[0].coupon){%> 
+                        <a href="/displayCoupons" class="btn btn-danger">Apply Coupon</a>    
+                    <% }else {%>
+                        <a href="#" class="btn btn-outline-dark-2">Coupon Applied</a>
+                    <% } %>
                 </div><!-- End .checkout-discount -->
                 <form id="checkout-form" >
                     <div class="row">
@@ -59,6 +60,7 @@
                                 <h4 class='text-primary text-center'>No Address, Please add a Address</h4>
                             <% } %>
                         </div><!-- End .col-lg-8 -->
+
                         <aside class="col-lg-4">
                             <div class="summary">
                                 <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
@@ -100,7 +102,10 @@
                                         </tr><!-- End .summary-total -->
                                     </tbody>
                                 </table><!-- End .table table-summary -->
-
+                                <% if(cart[0].coupon){ %>
+                                    <p class="mb-1"><span class="text-primary"><%= cart[0].coupon.couponName  %></span> couponAppied</p>
+                                <% } %>
+                               
                                 <div class="accordion-summary" id="accordion-payment">
                                     <label for="paymentOption">Select Payment Option:</label>
                                     <select id="paymentOption" name="paymentOption" class="form-control">
