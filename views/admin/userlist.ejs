@@ -5,6 +5,8 @@
 <%- include('./layout/topnav.ejs') %>
 
     <div class="w-100 container-fluid bg-dark mt-5">
+        <label for="searchInput" class="search-label mt-4">Search by Name:</label>
+        <input type="search" id="searchInput" class="w-100" style="background-color: rgb(217, 213, 213);" placeholder="Enter name"><br>
         <table class="table-bordered w-100 mt-4 h-75">
             <thead>
                 <tr>
@@ -128,6 +130,20 @@
 </script>
 
 
+<script>
+    const searchInput = document.getElementById('searchInput');
+const tableRows = document.querySelectorAll('tbody tr');
+
+searchInput.addEventListener('input', function () {
+  const searchTerm = searchInput.value.toLowerCase();
+
+  tableRows.forEach(row => {
+    const userName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+    row.style.display = userName.includes(searchTerm) ? '' : 'none';
+  });
+});
+
+</script>
   
   
   

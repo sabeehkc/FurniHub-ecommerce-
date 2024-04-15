@@ -33,12 +33,17 @@
                             <button type="button" class="btn btn-primary mb-2" data-toggle="modal" data-target="#addAddressModal">
                                 Add Address<i class="icon-edit"></i></button>
                         </div>
+                        <div class="col-lg-8">
+                            <h5 class="text-center" style="text-decoration:underline;">Select a Address</h5>
+                             
+                        </div>
+                        
                         <div class="col-lg-8 d-flex ">
                             <% if(addresses.length !== 0){ %> 
-
+                                
                                 <% addresses.forEach((address) => {%>
-                                    <div class="col-lg-4">
-                                    <div class="card card-dashboard ">   
+                                    <div class="col-lg-4"> 
+                                    <div class="card card-dashboard "> 
                                         <div class="card-body ">
                                             <input type="radio" name="address" value="<%= address._id %>" required>
                                             <h3 class="card-title">Billing Address</h3><!-- End .card-title -->

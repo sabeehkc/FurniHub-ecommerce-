@@ -6,11 +6,29 @@
             <%- include('./layout/topnav.ejs') %>
 
                 <div class="w-100 container-fluid bg-dark mt-5">
-                        <div class="mt-5">
-                            <h2>Order Management</h2>
+                        <div class="mt-5 mb-3">
+                            <h2>Sales Report</h2>
                         </div>
-                    <div class="container mt-2" style="overflow-x: auto;">
-                       
+                        <div class="d-flex" style="justify-content: left;">
+                            <h6>Total Sales: <%= totalOrderProductCount  %></h6><br>
+                        </div>
+                        <div class=" d-flex" style="justify-content: left;">
+                            <h6>Total Amount: ₹<%= totalOrderPrice %>.00</h6>
+                        </div>
+                        
+                            
+                        <div class="container mt-2">
+                            
+                            
+                            <p class="" style="text-decoration: underline;">filter Option</p>
+                            <select class="form-control" id="filterOption" name="filterOption" onchange="applyFilter()">
+                            <option value="day">All</option>
+                            <option value="day">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            </select>
+                        </div>
+                        <div style="overflow-x: auto;">
                         <% if (orders && orders.length > 0 ) { %>
                             <table class="table">
                                 <thead>
@@ -24,7 +42,7 @@
                                         <th>Payment Method</th>
                                         <th>Order Status</th>
                                         <th>Reason</th>
-                                        <th>Action</th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,26 +93,7 @@
                                                     <td>   </td>
                                                 <% } %>
 
-                                                <% if( product.orderStatus !== 'delivered' ){ %>
-                                                    <% if(product.orderStatus !== 'cancelled') { %> 
-                                                        <td><div class="dropdown">
-                                                            <button class="btn btn-outline-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                Change Status
-                                                            </button>
-                                                            <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
-                                                                <% if (product.orderStatus !== 'shipped') { %>
-                                                                    <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'shipped')">Shipped</a>
-                                                                <% } %>
-                                                                <% if (product.orderStatus !== 'delivered') { %>
-                                                                <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
-                                                                <% } %>
-                                                                <% if(product.orderStatus === 'request return'){ %> 
-                                                                    <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'returned')">Return</a>
-                                                                <% } %>
-                                                            </div>
-                                                        </div></td>
-                                                    <% } %>
-                                                <% } %> 
+                                                
                                             
                                             </tr>
                                         <% }) %>
@@ -106,36 +105,17 @@
                             <span style="font-size: x-large;">No Orders</span>
                         <% } %>
                     </div>
-                     <!-- Pagination -->
-                    <nav aria-label="Page navigation ">
-                        <ul class="pagination justify-content-center mt-4">
-                            <% if (currentPage > 1) { %>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li> 
-                            <% } %>
-                            <% for (let i = 1; i <= totalPages; i++) { %> 
-                                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
-                                </li>
-                            <% } %>
-                            <% if (currentPage < totalPages) { %>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
-                                        <span aria-label="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            <% } %>
-                        </ul>
-                    </nav>
-                    <!-- End Pagination -->
-                </div>
+                    <div class="mt-5">
+                        <a href="" class="btn btn-primary">Generate Pdf</a>
+                        <a href="" class="btn btn-primary" >Generate Excel</a>
+                    </div>    
+
+                
         </div>
 </div>
-
-
+        
+        
+        
 <footer class="footer">
     <div class="d-sm-flex justify-content-center justify-content-sm-between">
         <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © FurniHub.com 2024</span>
@@ -143,30 +123,5 @@
     </div>
 </footer>
 
-
-
-<script>
-    function changeProductStatus(orderId, productId, newStatus) {
-
-    fetch(`/admin/change-product-status/${orderId}/${productId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ newStatus })
-    })
-    .then(response => {
-        if (response.ok) {
-            window.location.reload(); // Reload the page 
-        } else {
-            console.error('Failed to change product status');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-</script>
- 
-    
+   
 <%- include('./layout/adfooter.ejs') %>    

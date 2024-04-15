@@ -8,30 +8,30 @@ const walletSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
-    default:0
+    default : 0
   },
   order: [
     {
       orderId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Order",
+        ref: 'Order',
       },
       name: {
         type: String,
         required: true
       },
+      price: {
+        type: Number,
+        required: true
+      },
       status: {
         type: String,
-        enum: ["credited", "debited"],
-      },
-      price:{
-        type: Number,
-        default: 0
+        enum:["credited","debited"]
       },
       date: {
         type: Date,
         default: Date.now,
-      },
+      }
     },
   ],
 });

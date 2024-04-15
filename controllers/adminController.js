@@ -240,6 +240,37 @@ const deleteOffer = async(req,res) => {
     } catch (error) {
         console.log(error.message);
     }
+};
+
+
+const loadSalesReport = async(req,res) => {
+    try {
+        const orders = await Order.find().populate({
+            path: 'address',
+            model: Address,
+            populate: {
+                path: 'user',
+                model: User
+            }
+        });
+                
+        let totalOrderProductCount = 0;
+        let totalOrderPrice = 0;
+
+        for (const order of orders) {
+            totalOrderProductCount += order.products.length;
+            const orderPrice = order.products.reduce((acc, product) => {
+                return acc + product.price;
+            }, 0);
+            totalOrderPrice += orderPrice;
+        }
+
+        
+
+        res.render('salesReport',{orders,totalOrderProductCount,totalOrderPrice})
+    } catch (error) {
+        console.log(error.message);
+    }
 }
 
 
@@ -256,5 +287,6 @@ module.exports = {
     addOffer,
     loadeditOffer,
     editOfferPost,
-    deleteOffer
+    deleteOffer,
+    loadSalesReport
 }

@@ -86,6 +86,8 @@ admin_route.get("/coupons/edit/:id",couponController.loadEditCoupon);
 admin_route.post("/coupons/edit/:id",couponController.editCoupon);
 admin_route.post("/coupons/delete/:id",couponController.deleteCoupon);
 
+admin_route.get("/salesReport",adminController.loadSalesReport);
+
 admin_route.get("/logout", adminController.logout);
 
 admin_route.get('*',adminController.Error404);

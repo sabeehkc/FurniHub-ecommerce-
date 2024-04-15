@@ -53,16 +53,16 @@
                         
                         <div>
                            
-                            <h6 style="margin-bottom: 10px;">
+                            <h4 style="margin-bottom: 10px;">
                                 <% if(wallet.amount) { %>
                                     Balance: ₹<%=wallet.amount %>
                                 <% }else{ %>
                                     Balance: ₹0.00
                                 <% } %>
-                            </h6>
+                            </h4>
                             
                         </div>
-                        <table class="table">
+                        <table class="table  text-center">
                             <thead class="thead-dark">
                                 <tr>
                                 <th scope="col">Transaction</th>
@@ -72,13 +72,13 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                <td><%=wallet.order.status %></td>
-                                <% if(wallet.order.status === 'credited'){ %> 
-                                    <td class="text-success">+<%= wallet.order.price %></td>
+                                <td><%=wallet.order[0].status %></td>
+                                <% if(wallet.order[0].status === 'credited'){ %> 
+                                    <td class="text-success">+<%= wallet.order[0].price %></td>
                                 <% }else { %> 
-                                    <td class="text-danger">-<%= wallet.order.price %></td>
+                                    <td class="text-danger">-<%= wallet.order[0].price %></td>
                                 <% } %>
-                                <td><%= new Date(wallet.order.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                <td><%= new Date(wallet.order[0].date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
                                 </tr>
                             </tbody>
                         </table>

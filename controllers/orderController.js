@@ -293,48 +293,43 @@ const cancelandReturnOrder = async (req, res) => {
         const newStatus = req.body.newStatus;
         const reason = req.body.reason;
 
-        // Find the order
         const order = await Order.findOne({ _id: orderId });
 
-        // Find the product to be canceled or returned
         const productIndex = order.products.findIndex(product => product._id.toString() === productId);
 
         if (productIndex !== -1) {
-            // Check if payment status is "paid"
             if (order.paymentStatus === "paid") {
-               
-                // Save the refunded amount and order details in the user's wallet
+
                 const user = await User.findOne({_id:order.user});
                 if (user) {
                     const wallet = await Wallet.findOne({ user: user._id });
                     const refundedAmount = order.products[productIndex].subtotal + wallet.amount
+                    console.log("Refunded Amount",refundedAmount);
+                    const name = order.products[productIndex].name;
+                    const price =  order.products[productIndex].subtotal;
+                    console.log("name",name);
+                    console.log("price",price);
                     if (wallet) {
-                        // Create a new wallet transaction for the refunded amount and order details
-                        const walletAmount = {
-                            amount: refundedAmount,
-                            order: {
-                                orderId: order._id,
-                                name:order.products[productIndex].name,
-                                price:order.products[productIndex].subtotal,
-                                status:"credited",
-                            },
-                        };
-                        // Add the transaction to the wallet
-                        wallet.order.push(walletAmount);
-                        // Save the updated wallet
+                        wallet.amount = refundedAmount
+                        wallet.order.push({
+                            orderId: order._id,
+                            name: name,
+                            price:price,
+                            status: "credited",
+                        });
                         await wallet.save();
                     }
                 }
             }
 
-            // Update the product's orderStatus and reason
             order.products[productIndex].orderStatus = newStatus;
             order.products[productIndex].reason = reason;
-
-            // Recalculate total price
+            if(order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet'){
+                order.paymentStatus = 'Refunded'
+            }
             order.total -= order.products[productIndex].subtotal;
 
-            // Update product's available quantity by adding back the returned quantity
+        
             const product = await Product.findById(productId);
             if (product) {
                 product.quantity += order.products[productIndex].quantity;
