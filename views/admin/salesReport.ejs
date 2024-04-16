@@ -15,22 +15,55 @@
                         <div class=" d-flex" style="justify-content: left;">
                             <h6>Total Amount: ₹<%= totalOrderPrice %>.00</h6>
                         </div>
-                        
-                            
-                        <div class="container mt-2">
-                            
-                            
-                            <p class="" style="text-decoration: underline;">filter Option</p>
-                            <select class="form-control" id="filterOption" name="filterOption" onchange="applyFilter()">
-                            <option value="day">All</option>
-                            <option value="day">Today</option>
-                            <option value="week">This Week</option>
-                            <option value="month">This Month</option>
-                            </select>
+
+                        <div class=" d-flex mt-2" style="justify-content: left;">
+                            <p class="" >filter Option:</p>
                         </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <form id="filterForm" action="/admin/salesReport" method="GET">
+                                    <div class="form-row align-items-center">
+                                        <div class="col-auto">
+                                            <label class="sr-only" for="filterOption">Filter Option</label>
+                                            <select class="form-control" id="filterOption" name="filterOption" onchange="applyFilter()">
+                                                <option value="day">All</option>
+                                                <option value="day">Today</option>
+                                                <option value="week">This Week</option>
+                                                <option value="month">This Month</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="startDate" name="startDate">
+                                    <input type="hidden" id="endDate" name="endDate">
+                                </form>
+                            </div>
+                            <div class="col-lg-6 mt-2 mt-lg-0">
+                                <form action="/admin/salesReport" method="GET">
+                                    <div class="form-group row">
+                                        <label for="startDate" class="col-sm-4 col-form-label">Start Date:</label>
+                                        <div class="col-sm-8">
+                                            <input type="date" id="startDate" name="startDate" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="endDate" class="col-sm-4 col-form-label">End Date:</label>
+                                        <div class="col-sm-8">
+                                            <input type="date" id="endDate" name="endDate" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-8 offset-sm-4">
+                                            <button type="submit" class="btn btn-primary">Filter</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                      
                         <div style="overflow-x: auto;">
                         <% if (orders && orders.length > 0 ) { %>
-                            <table class="table">
+                            <table class="table" id="salesReport">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -38,10 +71,10 @@
                                         <th>Quantity</th>
                                         <th>Address</th>
                                         <th>Price</th>
-                                        <th>Payment status</th>
+                                        <th>Payment Status</th>
                                         <th>Payment Method</th>
                                         <th>Order Status</th>
-                                        <th>Reason</th>
+                                        
                                         
                                     </tr>
                                 </thead>
@@ -86,15 +119,6 @@
                                                 <% }else { %> 
                                                     <td  style="text-align: center; color: red;"><%= product.orderStatus %></td>
                                                 <% } %> 
-
-                                                <% if(product.reason){ %> 
-                                                <td><%= product.reason %></td>    
-                                                <% }else { %> 
-                                                    <td>   </td>
-                                                <% } %>
-
-                                                
-                                            
                                             </tr>
                                         <% }) %>
                                         
@@ -105,16 +129,27 @@
                             <span style="font-size: x-large;">No Orders</span>
                         <% } %>
                     </div>
-                    <div class="mt-5">
-                        <a href="" class="btn btn-primary">Generate Pdf</a>
-                        <a href="" class="btn btn-primary" >Generate Excel</a>
-                    </div>    
-
+                                        
+                        <div class="container text-center mt-5">
+                            <div class="row justify-content-center">
+                            <!-- Button to generate PDF -->
+                            <div class="col-md-4">
+                                <!-- <a href="/admin/download-salesReprot" class="btn btn-primary btn-sm btn">Generate PDF</a> -->
+                                <button onclick="generatePDF()" class="btn btn-primary btn-sm btn-rounded-none">Generate PDF</button>
+                            </div>
+                            <!-- Form to generate Excel -->
+                            <div class="col-md-4">
+                                <form action="/admin/excel" method="GET">
+                                <button type="submit" class="btn btn-success btn-sm btn-rounded-none">Generate Excel</button>
+                                </form>
+                            </div>
+                            </div>
+                        </div>
                 
+                </div>
         </div>
 </div>
-        
-        
+      
         
 <footer class="footer">
     <div class="d-sm-flex justify-content-center justify-content-sm-between">
@@ -122,6 +157,112 @@
         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free Bootstrap admin templates from Bootstrapdash.com</span>
     </div>
 </footer>
+
+
+
+
+<script>
+    function applyFilter() {
+      const filterOption = document.getElementById("filterOption").value
+      let startDate, endDate
+
+      const today = new Date()
+      const currentDay = today.getDate()
+      const currentMonth = today.getMonth()
+      const currentYear = today.getFullYear()
+      const currentDayOfWeek = today.getDay() // Sunday = 0, Monday = 1, ..., Saturday = 6
+
+      switch (filterOption) {
+        case "day":
+          startDate = new Date(currentYear, currentMonth, currentDay)
+          endDate = new Date(currentYear, currentMonth, currentDay + 1)
+          break
+        case "week":
+          const firstDayOfWeek = currentDay - currentDayOfWeek // Calculate the first day of the current week
+          startDate = new Date(currentYear, currentMonth, firstDayOfWeek)
+          endDate = new Date(currentYear, currentMonth, firstDayOfWeek + 7)
+          break
+        case "month":
+          startDate = new Date(currentYear, currentMonth, 1) // First day of the current month
+          endDate = new Date(currentYear, currentMonth + 1, 0) // Last day of the current month
+          break
+      }
+
+      // Format start and end dates as yyyy-mm-dd (required format for date inputs)
+      const formattedStartDate = startDate.toISOString().split('T')[0]
+      const formattedEndDate = endDate.toISOString().split('T')[0]
+
+      // Set the values of the date inputs in the form
+      document.getElementById("startDate").value = formattedStartDate
+      document.getElementById("endDate").value = formattedEndDate
+
+      // Submit the form to apply the filter
+      document.getElementById("filterForm").submit()
+    }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.min.js"></script>
+<script>
+    function generatePDF() {
+        console.log("Generating PDF...");
+        const doc = new jsPDF();
+
+        // Get table element
+        const table = document.getElementById("salesReport");
+        console.log("Table element:", table);
+
+        // Convert table to data array
+        const data = doc.autoTableHtmlToJson(table);
+        console.log("Data from table:", data);
+
+        // Set document title
+        doc.text("Sales Report", 10, 10);
+
+        // Calculate total sales count and total amount
+        const totalSalesCount = data.data.length;
+        let totalAmount = 0;
+
+        // Iterate through each row in the data
+        for (const row of data.data) {
+            const subtotal = parseFloat(row[4].content); 
+            console.log("Subtotal:", subtotal);
+            if (!isNaN(subtotal)) {
+                totalAmount += subtotal; 
+            }
+        }
+
+        // Add total sales count and total amount to the document
+        doc.text(`Total Sales Count: ${totalSalesCount}`, 10, 20);
+        doc.text(`Total Amount: ₹${totalAmount.toFixed(2)}`, 10, 30);
+
+        const headers = [
+            "Date",
+            "Product",
+            "Quantity",
+            "Address",
+            "Price",
+            "Payment Status",
+            "Payment Method",
+            "Order Status",
+        ];
+
+        // Add table using autoTable plugin
+        doc.autoTable({
+            head: [headers],
+            body: data.data,
+            startY: 40,
+            headStyles: { fillColor: [124, 95, 240] },
+            alternateRowStyles: { fillColor: [231, 215, 252] },
+        });
+
+        // Save PDF
+        doc.save("sales_report.pdf");
+    }
+</script>
+
+
+
 
    
 <%- include('./layout/adfooter.ejs') %>    

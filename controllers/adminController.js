@@ -5,7 +5,8 @@ const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const Address = require("../models/addressModel");
 const Offer = require("../models/offerModal");
-
+const jsPDF = require('jspdf');
+const ExcelJS =  require('exceljs');
 //----------------- Admin login page -----------------//
 
 const loginload = async(req,res) => {
@@ -245,7 +246,8 @@ const deleteOffer = async(req,res) => {
 
 const loadSalesReport = async(req,res) => {
     try {
-        const orders = await Order.find().populate({
+        const orders = await Order.find({"products.orderStatus": { $nin: ["returned", "cancelled"] } })
+        .populate({
             path: 'address',
             model: Address,
             populate: {
@@ -271,8 +273,68 @@ const loadSalesReport = async(req,res) => {
     } catch (error) {
         console.log(error.message);
     }
-}
+};
 
+const generateExcel = async (req, res) => {
+    try {
+     
+      // Fetch filtered orders from the database
+      const Orders = await Order.find({"products.orderStatus": { $nin: ["returned", "cancelled"] } }).populate({
+        path: 'products.product', 
+        model: Product
+    }).populate({
+        path: 'user',
+        model: User
+      }).populate({
+        path: 'address',
+        model: Address
+    })
+  
+      // Create a new Excel workbook
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Orders");
+  
+      // Add headers
+      sheet.addRow([
+        "Date",
+        "Product",
+        "Quantity",
+        "Address",
+        "Price",
+        "Payment Status",
+        "Payment Method",
+        "Order Status",
+      ]);
+  
+      // Add data rows for filtered orders
+      Orders.forEach((order) => {
+        sheet.addRow([
+          order.createdAt,
+          order.products[0].name,  
+          order.products[0].quantity,
+          order.address.city, 
+          order.total,
+          order.paymentStatus,
+          order.paymentMethod, 
+          order.products[0].orderStatus,
+        ]);
+      });
+  
+      // Set response headers
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
+      res.setHeader("Content-Disposition", "attachment; filename=filtered_orders.xlsx");
+  
+      // Send the Excel file
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (error) {
+      console.error("Error generating Excel:", error.message);
+      res.status(500).send("Error generating Excel");
+    }
+};
 
 module.exports = {
     loginload,
@@ -288,5 +350,7 @@ module.exports = {
     loadeditOffer,
     editOfferPost,
     deleteOffer,
-    loadSalesReport
+    loadSalesReport,
+    generateExcel
+
 }

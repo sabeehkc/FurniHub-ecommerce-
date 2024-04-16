@@ -157,7 +157,7 @@
     })
     .then(response => {
         if (response.ok) {
-            window.location.reload(); // Reload the page 
+            window.location.href = '/admin/orders';
         } else {
             console.error('Failed to change product status');
         }

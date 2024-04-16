@@ -1,6 +1,12 @@
 <%- include('../layout/header.ejs') %>
 <%- include('../layout/navbar.ejs') %>
 
+<style>
+.hidden-product {
+    display: none;
+}
+</style>
+
 <main class="main">
     <div class="page-header text-center" style="background-image: url('assets/images/allproduct banner.jpg')">
         <div class="container">
@@ -22,9 +28,11 @@
                 <div class="col-lg-9">
                     <div class="toolbox">
                         <div class="toolbox-left">
-                            <!-- <div class="toolbox-info">
-                                Showing <span>9 of 56</span> Products
-                            </div>End .toolbox-info -->
+                            <div class="d-flex">
+                                <label for="Search">Search:</label>
+                                <input type="search" id="searchInput" class="w-100 ml-4" placeholder="Enter product name">
+
+                            </div>
                         </div><!-- End .toolbox-left -->
 
                         <div class="toolbox-right">
@@ -182,6 +190,27 @@
 
 
 <%- include('../layout/mobile.ejs') %>
+
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const products = document.querySelectorAll('.product');
+
+    searchInput.addEventListener('input', function () {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+
+        products.forEach(product => {
+            const productName = product.querySelector('.product-title a').textContent.toLowerCase();
+            if (productName.includes(searchTerm)) {
+                product.style.display = 'block'; // Show the product
+            } else {
+                product.style.display = 'none'; // Hide the product
+            }
+        });
+    });
+</script>
+
+  
 
  <!-- Plugins JS File -->
  <script src="assets/js/jquery.min.js"></script>

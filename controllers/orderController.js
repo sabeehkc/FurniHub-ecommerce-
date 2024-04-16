@@ -397,12 +397,13 @@ const ChangeOrderStatus = async (req, res) => {
         product.orderStatus = newStatus;
 
         await order.save();
-
+        
+        return res.status(200).json({ message: 'Product status changed successfully' });
 
     } catch (error) {
         console.log(error.message);
     }
-}
+};
 
 
  

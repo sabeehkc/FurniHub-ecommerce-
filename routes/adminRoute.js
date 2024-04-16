@@ -87,6 +87,7 @@ admin_route.post("/coupons/edit/:id",couponController.editCoupon);
 admin_route.post("/coupons/delete/:id",couponController.deleteCoupon);
 
 admin_route.get("/salesReport",adminController.loadSalesReport);
+admin_route.get("/excel", adminController.generateExcel);
 
 admin_route.get("/logout", adminController.logout);
 
