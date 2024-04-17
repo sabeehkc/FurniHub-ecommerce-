@@ -24,6 +24,7 @@
                         </thead>
                         <tbody>
                             <% offers.forEach((offer, index) => { %>
+                                <% if(offer.status === true){ %> 
                                 <tr>
                                     <td><%= index + 1 %></td>
                                     <td><%= offer.name %></td>
@@ -36,6 +37,7 @@
                                         <button type="button" class="btn btn-danger"  onclick="deleteOffer('<%= offer._id %>')"> Delete</button>
                                     </td>
                                 </tr>
+                                <% } %>
                             <% }); %>
                         </tbody>
                     </table>

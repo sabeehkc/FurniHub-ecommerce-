@@ -87,7 +87,7 @@
                                         </div>
                                     </div>
                                     <% if( myorder.products[i].orderStatus === 'delivered'){%> 
-                                        <button onclick="generatePDF()" class="btn btn-info">Download Invoice</button>    
+                                        <button onclick="generatePDF(this)" class="btn btn-info" data-order="<%= JSON.stringify(myorder) %>">Invoice</button>  
                                     <% } %>
                                 </div>
                                 
@@ -115,50 +115,52 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.min.js"></script>
 
 <script>
-    function generatePDF() {
-        console.log("Generating PDF...");
-        const doc = new jsPDF();
+  function generatePDF(button) {
+    const orderData = button.getAttribute("data-order");
+    const order = JSON.parse(orderData);
 
-        // Get div element
-        const orderInvoiceDiv = document.getElementById("orderInvoice");
-        console.log("Div element:", orderInvoiceDiv);
+    const createdAtDate = new Date(order.createdAt);
 
-        // Extract data from the div
-        const data = {
-            head: [], // Headers will be empty as they are not explicitly defined in the div
-            body: [],
-        };
+    // Extract day, month, and year from the createdAtDate object
+    const day = createdAtDate.getDate(); // Get day of the month (1-31)
+    const month = createdAtDate.getMonth() + 1; // Get month (0-11); add 1 to display month correctly (1-12)
+    const year = createdAtDate.getFullYear(); // Get full year (e.g., 2024)
 
-        // Iterate through child elements of the div
-        const divChildren = orderInvoiceDiv.children;
-        for (let i = 0; i < divChildren.length; i++) {
-            const row = [];
-            const child = divChildren[i];
-            const cells = child.children;
-            for (let j = 0; j < cells.length; j++) {
-                row.push(cells[j].textContent.trim());
-            }
-            data.body.push(row);
-        }
-        console.log("Data from div:", data);
+    // Format day and month to ensure leading zero if necessary (e.g., '04' instead of '4')
+    const formattedDay = day.toString().padStart(2, "0"); // Add leading zero if day is a single digit
+    const formattedMonth = month.toString().padStart(2, "0"); // Add leading zero if month is a single digit
 
-        // Set document title
-        doc.text("Order Invoice", 10, 10);
+    // Create the formatted date string in dd-mm-yyyy format
+    const formattedDate = `${formattedDay}-${formattedMonth}-${year}`;
 
-        // Add table using autoTable plugin
-        doc.autoTable({
-            head: [data.head],
-            body: data.body,
-            startY: 40,
-            headStyles: { fillColor: [124, 95, 240] },
-            alternateRowStyles: { fillColor: [231, 215, 252] },
-        });
+    const doc = new jsPDF();
 
-        // Save PDF
-        doc.save("order_invoce.pdf");
-    }
+    // Set document title
+    doc.text("Invoice", 10, 40); // Adjust position as needed
+
+    // Add order details to the PDF
+    doc.text(`User: ${order.user.name}, 10, 50`);
+    doc.text(`Total: ${order.product.subtotal.toFixed(2)}, 10, 80`);
+    doc.text(`Payment Method: ${order.paymentMethod}, 10, 70`);
+    doc.text(`Is Paid: ${order.paymentStatus === 'pending' ? "No" : "Yes"}, 10, 80`);
+
+    // Now use formattedDate in your text function
+    doc.text(`Date: ${formattedDate}, 10, 90`);
+
+    // Add table for product details
+    const productName = order.product.name; // Assuming there's only one product
+    const productData = [[productName]];
+    const headers = ["Product"];
+    doc.autoTable({
+      head: [headers],
+      body: productData,
+      startY: 100, // Adjust startY position as needed
+    });
+
+    // Save PDF
+    doc.save("invoice.pdf");
+  }
 </script>
-
 
 <!-- Plugins JS File -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -24,8 +24,12 @@ const offerSchema = new mongoose.Schema({
     timestamps: true 
 });
 
-    
-// TTL index for expiryDate field
-offerSchema.index({ expiryDate: 1 }, { expireAfterSeconds: 0 });
+offerSchema.pre('find', async function () {
+    const currentDate = new Date();
+    await this.model.updateMany(
+        { expiryDate: { $lt: currentDate }, status: true },
+        { $set: { status: false } }
+    );
+});
 
 module.exports = mongoose.model('offer',offerSchema);

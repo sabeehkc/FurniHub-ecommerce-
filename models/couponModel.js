@@ -22,9 +22,9 @@ const couponSchema = new mongoose.Schema({
         type:Date,
         required:true
     },
-    userUsed : {
-        type : mongoose.Types.ObjectId,
-        ref :'User'   
+    status:{
+        type:Boolean,
+        default:true
     },
     },
     {

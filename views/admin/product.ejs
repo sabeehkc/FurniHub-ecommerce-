@@ -58,9 +58,13 @@
                                             Add Offer
                                         </button>
                                         <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
+                                            
                                             <% offers.forEach(offer => { %>
-                                                <a class="dropdown-item text-danger" onclick="addOffer('<%= offer._id %>','<%= product._id %>')"><%= offer.name %></a>
+                                                <% if(offer.status === true){ %>
+                                                    <a class="dropdown-item text-danger" onclick="addOffer('<%= offer._id %>','<%= product._id %>')"><%= offer.name %></a>
+                                                <% } %>
                                             <% }) %>
+                                            
                                             <% if (product.offer) { %>
                                             <a class="dropdown-item text-white" onclick="removeOffer('<%= product._id %>')" >Remove offer</a>
                                             <% } %>

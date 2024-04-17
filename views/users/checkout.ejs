@@ -216,9 +216,6 @@
         };
         console.log(data);
 
-        // if (paymentMethod === 'Razorpay') {
-        //     razorpayPayment(data);
-        // } else {
             fetch('/order-placed', {
                 method: 'POST',
                 headers: {
@@ -243,7 +240,6 @@
                 console.error('There was a problem with your fetch operation:', error);
             });
         }
-    // };
 
     function razorpayPayment(order) {
     var options = {

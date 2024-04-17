@@ -96,6 +96,7 @@ user_route.put('/orders/status',orderController.cancelandReturnOrder);
 user_route.get('/orderdetails',orderController.orderDetails);
 
 user_route.get("/filter-category/:id",auth.isBlock,productController.FilterCategory);
+user_route.get('/all-products', productController.sortProducts);
 
 user_route.get("/wishlist",auth.checkuser,auth.isBlock,userController.wishlist);
 user_route.get("/add-wishlist/:id",userController.addProductWishlist);

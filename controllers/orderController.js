@@ -92,16 +92,25 @@ const placeOrder =  async (req, res) => {
 
         await newOrder.save();
 
+        const wallet = await Wallet.find({user:user._id})
+
         if (paymentMethod === 'COD') {
             await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'pending' } });
             return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
         } else if (paymentMethod === 'Wallet') {
-            console.log("Wallet is not completed");
+            if (wallet.amount >= cart.grandTotal) {
+                await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'paid' } });
+                // Update wallet balance after deducting the order amount
+                await Wallet.updateOne({ user: user._id }, { $inc: { amount: -cart.grandTotal } });
+                return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
+            } else {
+                return res.status(400).json({ error: "Insufficient wallet balance" });
+            }
         } else if(paymentMethod === 'Razorpay') {
             const razorpayOrder = await generateRazorpay(newOrder._id, newOrder.total);
             res.json({razorpayOrder,pay:'razor'});
         }else {
-            console.log("Unsupported payment methos:",paymentMethod);
+            console.log("Unsupported payment method:",paymentMethod);
             res.status(400).json({error: 'Unsupported payment method'});
         }
 

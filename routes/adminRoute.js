@@ -30,7 +30,7 @@ const upload = multer({ storage: storage });
 admin_route.get("/", auth.isLogout, adminController.loginload);
 admin_route.post("/loginpost", adminController.Loginverifying);
 
-// admin_route.use(auth.isLogin);
+admin_route.use(auth.isLogin);
 
 //----------------- Admin Dashboard -----------------//
 admin_route.get("/dashboard", adminController.loadDashboard);

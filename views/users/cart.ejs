@@ -172,7 +172,7 @@
                     const data = await response.json();
                     const subtotalCell = document.querySelector(`.subtotal-cell-${productId}`);
                     subtotalCell.textContent = `₹${data.subtotal}`;
-                    window.location.reload();
+                    window.location.href = '/cart';
                 } else {
                     console.error('Failed to update quantity');
                 }

@@ -435,13 +435,14 @@ const addProductWishlist = async (req,res) => {
 
         if(!product){
             console.log("Product not Found");
+           
         }
 
         const userId = req.session.user ? req.session.user._id : null;
          
         if(!userId){
-            // alert("Your not Loged, Please Login")
             console.log("User not found");
+            res.redirect(req.headers.referer)
         }
 
         let wishlist = await Wishlist.findOne({user: userId});

@@ -7,7 +7,7 @@
         <div class="w-100 container-fluid bg-dark mt-5">
             <div class="container mt-5">
                 <h2>Coupon Management</h2>
-                <% if (coupons.length === 0) { %>
+                <% if (coupons.length === 0 ) { %>
                     <span style="font-size:x-large">No Coupons</span>
                 <% } else { %>
                     <table class="table">
@@ -24,6 +24,7 @@
                         </thead>
                         <tbody>
                             <% coupons.forEach((coupon, index) => { %>
+                                <% if(coupon.status === true){ %> 
                                 <tr>
                                     <td><%= index + 1 %></td>
                                     <td><%= coupon.couponName %></td>
@@ -36,6 +37,7 @@
                                         <button type="button" class="btn btn-danger"  onclick="deleteCoupon('<%= coupon._id %>')"> Delete</button>
                                     </td>
                                 </tr>
+                                <% } %>
                             <% }); %>
                         </tbody>
                     </table>
