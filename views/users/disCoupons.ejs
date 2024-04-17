@@ -12,24 +12,24 @@
     </nav><!-- End .breadcrumb-nav -->
 
     <div class="container text-center mb-5 mt-3">
-        <% if(coupons && coupons.length > 0 ){ %>
-            <% if(coupons.status === true) { %>  
+        <% if(coupons && coupons.length > 0){ %>
+            
                 <div class="row">
-                    <% coupons.forEach(coupon => { %> 
-                    <div class="col-sm-4">
-                    <div class="card text-white bg-info">
-                        <div class="card-body text-white">
-                        <h5 class="card-title text-dark mb-1">Name: <%= coupon.couponName %></h5>
-                        <p class="card-text text-dark">Code: <%= coupon.couponCode  %></p>
-                        <p class="card-text text-dark">Discount: <%= coupon.discountPercent %>%</p>
-                        <a href="/apply-coupon/<%= coupon._id %>" class="btn mt-2" style="background-color: azure;">Apply</a>
-                        <p class="text-danger"><%= message %></p>
+                    <% coupons.forEach(coupon => { %>
+                    <% if(coupon.status === true && cart.grandTotal > coupon.minAmount) { %>  
+                        <div class="col-sm-4">
+                            <div class="card text-white bg-info">
+                                <div class="card-body text-white">
+                                <h5 class="card-title text-dark mb-1">Name: <%= coupon.couponName %></h5>
+                                <p class="card-text text-dark">Code: <%= coupon.couponCode  %></p>
+                                <p class="card-text text-dark">Discount: <%= coupon.discountPercent %>%</p>
+                                <a href="/apply-coupon/<%= coupon._id %>" class="btn mt-2" style="background-color: azure;">Apply</a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    </div>
+                    <% } %>
                     <% }) %>
                 </div>
-            <% } %>
         <% }else { %> 
             <h3>No Coupons</h3>
             <a href="/check-out" class="btn btn-primary">Back To Checkout</a>    

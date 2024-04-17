@@ -56,25 +56,25 @@
                                 <div class="form-group">
                                     <label>Image 1 *</label>
                                     <input type="file" id="productImages1" name="images" class="form-control"   >   
-                                    <div id="image-preview1"></div>      
+                                    <div id="image-preview1" class="w-50"></div>      
                                     <div id="imagesError1" class="text-danger"></div>
                                 </div>
                                 <div class="form-group">
                                     <label>Image 2 *</label>
                                     <input type="file" id="productImages2" name="images" class="form-control"   >
-                                    <div id="image-preview2"></div>
+                                    <div id="image-preview2" class="w-50"></div>
                                     <div id="imagesError2" class="text-danger"></div>
                                 </div>
                                 <div class="form-group">
                                     <label>Image 3 *</label>
                                     <input type="file" id="productImages3" name="images" class="form-control"   >
-                                    <div id="image-preview3"></div>
+                                    <div id="image-preview3" class="w-50"></div>
                                     <div id="imagesError3" class="text-danger"></div>
                                 </div>
                                 <div class="form-group">
                                     <label >Image 4 *</label>
                                     <input type="file" id="productImages4" name="images" class="form-control"  >
-                                    <div id="image-preview4"></div>    
+                                    <div id="image-preview4" class="w-50" ></div>    
                                     <div id="imagesError4" class="text-danger"></div>
                                 </div>
                                 
@@ -189,33 +189,125 @@
 </script>
 
 <script>
-    function previewImage(input, previewId) {
-        const preview = document.getElementById(previewId);
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" alt="Image Preview" style="max-width: 100%; max-height: 200px;">`;
-            }
-            reader.readAsDataURL(input.files[0]);
-        } else {
-            preview.innerHTML = '';
-        }
-    }
+    document.addEventListener("DOMContentLoaded", function () {
+  // Get all file inputs and image preview divs
+  const fileInputs = document.querySelectorAll('[id^="productImages"]');
+  const imagePreviews = document.querySelectorAll('[id^="image-preview"]');
 
-    // Attach event listeners to file input elements
-    document.getElementById('productImages1').addEventListener('change', function() {
-        previewImage(this, 'image-preview1');
+  // Initialize cropper for each image preview
+  const croppers = [];
+
+  fileInputs.forEach((fileInput, index) => {
+    let originalFile; // Variable to store the original file object
+    let croppedBlob; // Variable to store the cropped image blob
+    let cropper; // Variable to store the cropper instance
+    let editButton; // Variable to store the edit button
+
+    fileInput.addEventListener("change", function () {
+      // Clear previous previews for the specific index
+      imagePreviews[index].innerHTML = "";
+
+      // Display image previews for the specific index
+      Array.from(fileInput.files).forEach((file) => {
+        originalFile = file; // Store the original file object
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.style.maxWidth = "100%"; // Adjust the max width as needed
+          img.style.height = "auto"; // Maintain aspect ratio
+          img.style.maxHeight = "500px"; // Limit maximum height
+
+          if (!editButton) {
+            // Add edit button only if it doesn't exist
+            editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.addEventListener("click", function (event) {
+              // Prevent default form submission behavior
+              event.preventDefault();
+
+              if (!cropper) {
+                // Initialize cropper if not already initialized
+                if (croppedBlob) {
+                  // Display cropped image
+                  const croppedImg = document.createElement("img");
+                  croppedImg.src = URL.createObjectURL(croppedBlob);
+                  croppedImg.style.maxWidth = "100%";
+                  croppedImg.style.height = "auto";
+                  imagePreviews[index].appendChild(croppedImg);
+                }
+
+                cropper = new Cropper(img, {
+                  aspectRatio: 1, // Square aspect ratio
+                  viewMode: 1, // Preview mode
+                  cropBoxResizable: false, // Disable resizable crop box
+                  crop: function (event) {
+                    // Do something with cropped data if needed
+                  },
+                });
+              } else {
+                // Re-enable cropping functionality
+                cropper.replace(img);
+
+                if (croppedBlob) {
+                  // Display cropped image
+                  const croppedImg = document.createElement("img");
+                  croppedImg.src = URL.createObjectURL(croppedBlob);
+                  croppedImg.style.maxWidth = "100%";
+                  croppedImg.style.height = "auto";
+                  imagePreviews[index].appendChild(croppedImg);
+                }
+              }
+
+              // Save cropped image and update preview on save button click
+              const saveButton = document.createElement("button");
+              saveButton.textContent = "Save";
+              saveButton.addEventListener("click", function () {
+                // Get cropped canvas
+                const canvas = cropper.getCroppedCanvas({
+                  width: 500,
+                  height: 500,
+                });
+
+                // Update image preview
+                imagePreviews[index].innerHTML = "";
+                imagePreviews[index].appendChild(canvas);
+
+                // Replace original file with cropped image
+                croppedBlob = canvas.toBlob(function (blob) {
+                  // Store the cropped image blob
+                  croppedBlob = blob;
+
+                  // Hide cropper interface
+                  cropper.crop();
+
+                  // Remove edit button
+                  editButton.remove();
+
+                  // Destroy cropper instance
+                  cropper.destroy();
+                  cropper = null;
+                });
+              });
+
+              imagePreviews[index].appendChild(saveButton);
+            });
+
+            // Append edit button to image preview
+            imagePreviews[index].appendChild(editButton);
+          }
+
+          // Append original image to image preview
+          imagePreviews[index].appendChild(img);
+        };
+
+        reader.readAsDataURL(file);
+      });
     });
-    document.getElementById('productImages2').addEventListener('change', function() {
-        previewImage(this, 'image-preview2');
-    });
-    document.getElementById('productImages3').addEventListener('change', function() {
-        previewImage(this, 'image-preview3');
-    });
-    document.getElementById('productImages4').addEventListener('change', function() {
-        previewImage(this, 'image-preview4');
-    });
+  });
+});
 </script>
-
 
 <%- include('./layout/adfooter.ejs') %>

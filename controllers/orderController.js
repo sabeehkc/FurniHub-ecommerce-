@@ -173,12 +173,12 @@ const displyaCoupons = async(req,res) => {
         const coupons = await Coupon.find();
 
         const userId = req.session.user ? req.session.user._id : null;
-        // const cart = await Cart.findOne({user:userId});
-        // if(!cart){
-        //     console.log("Cart is not found");
-        // }
+        const cart = await Cart.findOne({user:userId});
+        if(!cart){
+            console.log("Cart is not found");
+        }
 
-        res.render('disCoupons',{userName:userName,isLoggedIn:isLoggedIn,coupons,message:""})
+        res.render('disCoupons',{userName:userName,isLoggedIn:isLoggedIn,coupons,cart})
 
     } catch (error) {
         console.log(error.message);
@@ -201,10 +201,7 @@ const applyCoupon = async(req,res) => {
             cart.grandTotal = calculateDiscount;
             cart.coupon = coupon._id;
             await cart.save();
-        }else {
-            res.render('disCoupon',{message:"You can't use this coupon"})
         }
-       
         res.redirect('/check-out');
 
     } catch (error) {
@@ -312,10 +309,11 @@ const cancelandReturnOrder = async (req, res) => {
                 const user = await User.findOne({_id:order.user});
                 if (user) {
                     const wallet = await Wallet.findOne({ user: user._id });
-                    const refundedAmount = order.products[productIndex].subtotal + wallet.amount
+                    const refundAmount1 = order.products[productIndex].subtotal - order.total;
+                    const refundAmount2 = order.products[productIndex].subtotal - refundAmount1
+                    const refundedAmount = refundAmount2 + wallet.amount
                     console.log("Refunded Amount",refundedAmount);
                     const name = order.products[productIndex].name;
-                    const price =  order.products[productIndex].subtotal;
                     console.log("name",name);
                     console.log("price",price);
                     if (wallet) {
@@ -333,7 +331,7 @@ const cancelandReturnOrder = async (req, res) => {
 
             order.products[productIndex].orderStatus = newStatus;
             order.products[productIndex].reason = reason;
-            if(order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet'){
+            if(order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet' || order.products[productIndex].orderStatus === 'delivered' ){
                 order.paymentStatus = 'Refunded'
             }
             order.total -= order.products[productIndex].subtotal;

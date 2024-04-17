@@ -23,7 +23,7 @@
     <div class="dashboard">
         <div class="container">
             <div class="row">
-                <aside class="col-md-4 col-lg-3">
+                <aside class="col-md-4 col-lg-2">
                     <ul class="nav nav-dashboard flex-column mb-3 mb-md-0">
                         <li class="nav-item">
                             <a class="nav-link " href="/profile"  >Dashboard</a>
@@ -43,25 +43,26 @@
                         </li>
                     </ul>
                 </aside><!-- End .col-lg-3 -->
-                <div class=" col-lg-9 col-lg-8 ">
+                <div class=" col-lg-10 col-lg-8 ">
                     <% if(orders && orders.length > 0) { %> 
                     <div class="tab-content">
                         <div class="" >
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <!-- <th style="text-align: center;">No</th> -->
+                                        <th style="text-align: center;">No</th>
                                         <th style="text-align: center;">Product</th>
                                         <th style="text-align: center;">Quantity</th>
-                                        <th style="text-align: center;">Price</th>
+                                        <th style="text-align: center;">Order Price</th>
                                         <th style="text-align: center;">Order Status</th>
                                         <th style="text-align: center;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <% orders?.forEach(order => { %>
+                                    <% orders?.forEach((order,index) => { %>
                                     <% order?.products.forEach(product => { %>
                                         <tr>
+                                            <td><%= index+1  %></td>
                                             <td class="product-col">
                                                 <div class="product">
                                                     <figure class="product-media">
@@ -75,7 +76,7 @@
                                                 </div>
                                             </td>
                                             <td class="quantity-col" style="text-align: center;"><%= product.quantity %></td>
-                                            <td class="price-col" style="text-align: center;">₹<%= product.subtotal %></td>
+                                            <td class="price-col" style="text-align: center;">₹<%= order.total %></td>
                                             <% if(product.orderStatus == 'placed') { %>
                                                 <td  style="text-align: center; color: blue;"><%= product.orderStatus %></td>
                                             <% }else if(product.orderStatus == 'shipped') { %>
@@ -155,7 +156,7 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        $('#tabletoload').load('/orders #tabletoload');
+                        window.location.href = '/orders';
                     })
                     .catch(error => {
                         console.error('Error:', error);

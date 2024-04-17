@@ -57,9 +57,11 @@
                                         <div class="media-body ml-5 d-flex" style="justify-content: space-evenly;">
                                             <div>
                                             <h5 class="mt-0"><%= myorder.products[i].name %></h5>
-                                            <h6>Price: <%= myorder.products[i].price %></h6>
+                                            <!-- <% const productPrice = myorder.products[i].price - myorder.total  %>
+                                            <% const totalproductPrice = myorder.products[i].price - productPrice %>
+                                            <h6>Price: <%= totalproductPrice %></h6> -->
                                             <h6>Quantity: <%= myorder.products[i].quantity %></h6>
-                                            <h6>Total: <%= myorder.products[i].subtotal %></h6>
+                                            <h6>Total: <%= myorder.total %></h6>
                                             <h6>Payment: <span class="bg-success badge text-white"><%= myorder.paymentStatus %> </span> </h6>
                                             <h6>Status: 
                                                 <% const orderStatus = myorder.products[i].orderStatus; %>

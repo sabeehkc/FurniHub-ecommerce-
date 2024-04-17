@@ -527,12 +527,12 @@ const loadWallet = async(req,res) => {
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
         const userId = req.session.user ? req.session.user._id : null;
-        const wallet = await Wallet.findOne({user:userId});
-        if(!wallet){
+        const wallets = await Wallet.findOne({user:userId});
+        if(!wallets){
             console.log('Wallet not found');
         }
 
-        res.render('wallet',{userName:userName,isLoggedIn:isLoggedIn,wallet});
+        res.render('wallet',{userName:userName,isLoggedIn:isLoggedIn,wallets});
     } catch (error) {
         console.log(error.message);
     }

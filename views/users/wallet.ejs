@@ -49,13 +49,13 @@
                             <h3 style="font-family: Arial, Helvetica, sans-serif; margin-bottom: 10px;">Wallet</h3>
                             
                         </div>
-                        <% if(wallet){ %>
+                        <% if(wallets){ %>
                         
                         <div>
                            
                             <h4 style="margin-bottom: 10px;">
-                                <% if(wallet.amount) { %>
-                                    Balance: ₹<%=wallet.amount %>
+                                <% if(wallets.amount) { %>
+                                    Balance: ₹<%=wallets.amount %>
                                 <% }else{ %>
                                     Balance: ₹0.00
                                 <% } %>
@@ -71,15 +71,17 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <% wallets.order.forEach(wallet => { %>
                                 <tr>
-                                <td><%=wallet.order[0].status %></td>
-                                <% if(wallet.order[0].status === 'credited'){ %> 
-                                    <td class="text-success">+<%= wallet.order[0].price %></td>
+                                <td><%=wallet.status %></td>
+                                <% if(wallet.status === 'credited'){ %> 
+                                    <td class="text-success">+<%= wallet.price %></td>
                                 <% }else { %> 
-                                    <td class="text-danger">-<%= wallet.order[0].price %></td>
+                                    <td class="text-danger">-<%= wallet.price %></td>
                                 <% } %>
-                                <td><%= new Date(wallet.order[0].date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                <td><%= new Date(wallet.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
                                 </tr>
+                                <% }) %>
                             </tbody>
                         </table>
                         <% }else { %>

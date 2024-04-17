@@ -79,30 +79,30 @@ user_route.post("/edit-address/:id", profileController.editAddress);
 user_route.get("/delete-address/:id", profileController.deleteAddress);
 
 user_route.get("/cart", auth.checkuser, auth.isBlock, cartController.LoadCart);
-user_route.get("/cart-Products/:id", cartController.addProductsCart);
-user_route.get("/cart/remove", cartController.deleteCartProduct);
+user_route.get("/cart-Products/:id",  auth.checkuser, auth.isBlock, cartController.addProductsCart);
+user_route.get("/cart/remove", auth.checkuser, auth.isBlock, cartController.deleteCartProduct);
 user_route.put("/updateQuantity", cartController.updateProductQuantity);
 
 user_route.get("/check-out",auth.checkuser,auth.isBlock,orderController.LoadCheckOut);
 user_route.get("/displayCoupons",auth.checkuser,auth.isBlock,orderController.displyaCoupons);
 user_route.get("/apply-coupon/:id",orderController.applyCoupon);
 
-user_route.post("/order-placed", orderController.placeOrder);
+user_route.post("/order-placed", auth.checkuser, auth.isBlock, orderController.placeOrder);
 user_route.get("/thank-you",auth.checkuser,auth.isBlock,orderController.ThankYou);
 user_route.get("/orders",auth.checkuser,auth.isBlock,orderController.loadOrders);
 user_route.post('/verify-payment',orderController.verifyrazorpayment)
 
 user_route.put('/orders/status',orderController.cancelandReturnOrder);
-user_route.get('/orderdetails',orderController.orderDetails);
+user_route.get('/orderdetails', auth.checkuser, auth.isBlock, orderController.orderDetails);
 
 user_route.get("/filter-category/:id",auth.isBlock,productController.FilterCategory);
-user_route.get('/all-products', productController.sortProducts);
+user_route.get('/all-products',  auth.checkuser, auth.isBlock, productController.sortProducts);
 
 user_route.get("/wishlist",auth.checkuser,auth.isBlock,userController.wishlist);
-user_route.get("/add-wishlist/:id",userController.addProductWishlist);
-user_route.get("/wishlist/remove",userController.deleteWishlistProduct);
+user_route.get("/add-wishlist/:id", auth.checkuser, auth.isBlock, userController.addProductWishlist);
+user_route.get("/wishlist/remove", auth.checkuser, auth.isBlock, userController.deleteWishlistProduct);
 
-user_route.get("/wallet",userController.loadWallet);
+user_route.get("/wallet",  auth.checkuser, auth.isBlock,userController.loadWallet);
 
 user_route.get('*',userController.Error404);
 
