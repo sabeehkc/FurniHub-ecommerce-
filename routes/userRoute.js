@@ -81,7 +81,7 @@ user_route.get("/delete-address/:id", profileController.deleteAddress);
 user_route.get("/cart", auth.checkuser, auth.isBlock, cartController.LoadCart);
 user_route.get("/cart-Products/:id",  auth.checkuser, auth.isBlock, cartController.addProductsCart);
 user_route.get("/cart/remove", auth.checkuser, auth.isBlock, cartController.deleteCartProduct);
-user_route.put("/updateQuantity", cartController.updateProductQuantity);
+user_route.post("/updateQuantity", cartController.updateProductQuantity);
 
 user_route.get("/check-out",auth.checkuser,auth.isBlock,orderController.LoadCheckOut);
 user_route.get("/displayCoupons",auth.checkuser,auth.isBlock,orderController.displyaCoupons);

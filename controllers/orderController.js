@@ -100,8 +100,23 @@ const placeOrder =  async (req, res) => {
         } else if (paymentMethod === 'Wallet') {
             if (wallet.amount >= cart.grandTotal) {
                 await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'paid' } });
-                // Update wallet balance after deducting the order amount
+
                 await Wallet.updateOne({ user: user._id }, { $inc: { amount: -cart.grandTotal } });
+
+                await Wallet.updateOne(
+                    { user: user._id },
+                    {
+                        $push: {
+                            order: {
+                                orderId: newOrder._id,
+                                name: newOrder.name, 
+                                price: cart.grandTotal,
+                                status: 'debited',
+                            },
+                        },
+                    }
+                );
+
                 return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
             } else {
                 return res.status(400).json({ error: "Insufficient wallet balance" });
@@ -122,7 +137,7 @@ const placeOrder =  async (req, res) => {
         }
 
         // Clear the user's cart after placing order
-        await Cart.findOneAndDelete({ user: userId });
+        await Cart.findOneAndDelete({ user: user._id });
 
         // Send success response
         res.status(201).json({ message: 'Order placed successfully', order: newOrder });
@@ -186,28 +201,45 @@ const displyaCoupons = async(req,res) => {
 };
 
 //----------------- Apply Coupon checkout -----------------//
-const applyCoupon = async(req,res) => {
+const applyCoupon = async (req, res) => {
     try {
-        const couponId = req.params.id
+        const couponId = req.params.id;
         const coupon = await Coupon.findById(couponId);
 
-        const userId = req.session.user ?  req.session.user._id : null;
-        const cart = await Cart.findOne({user:userId});
+        const userId = req.session.user ? req.session.user._id : null;
+        const cart = await Cart.findOne({ user: userId }).populate('products.product');
 
-        const calculateDiscount = Math.floor(cart.grandTotal - cart.grandTotal * coupon.discountPercent / 100)
-        console.log(calculateDiscount);
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
 
-        if(cart.grandTotal >= coupon.minAmount ){
-            cart.grandTotal = calculateDiscount;
+        const discountPerProduct = coupon.discountPercent / cart.products.length;
+        console.log(discountPerProduct);
+
+       
+        cart.products.forEach(item => {
+            const itemSubtotal = item.subtotal;
+            const itemDiscount = Math.floor(itemSubtotal * discountPerProduct / 100);
+            item.discount = itemDiscount;
+            const subtotalAfterDiscount =  itemSubtotal - itemDiscount;
+            item.subtotal = subtotalAfterDiscount;
+            item.save();
+        });
+
+        cart.grandTotal = cart.products.reduce((total, item) => total + item.subtotal, 0);
+
+        if (cart.grandTotal >= coupon.minAmount) {
             cart.coupon = coupon._id;
             await cart.save();
         }
-        res.redirect('/check-out');
 
+        res.redirect('/check-out');
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
+        res.status(500).json({ message: 'Server Error' });
     }
-}
+};
+
 
 //----------------- Load Order Page (user side) -----------------//
 
@@ -309,13 +341,10 @@ const cancelandReturnOrder = async (req, res) => {
                 const user = await User.findOne({_id:order.user});
                 if (user) {
                     const wallet = await Wallet.findOne({ user: user._id });
-                    const refundAmount1 = order.products[productIndex].subtotal - order.total;
-                    const refundAmount2 = order.products[productIndex].subtotal - refundAmount1
-                    const refundedAmount = refundAmount2 + wallet.amount
+                    const refundedAmount =order.total - order.products[productIndex].subtotal;
                     console.log("Refunded Amount",refundedAmount);
                     const name = order.products[productIndex].name;
                     console.log("name",name);
-                    console.log("price",price);
                     if (wallet) {
                         wallet.amount = refundedAmount
                         wallet.order.push({

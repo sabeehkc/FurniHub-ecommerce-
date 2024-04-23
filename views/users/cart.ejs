@@ -64,7 +64,7 @@
                                                 
                                             <td class="quantity-col">
                                                 <div class="cart-product-quantity">
-                                                    <input type="number" class="form-control quantity-input" value="<%= product.quantity %>" data-product-id="<%= product.product._id %>" name="quantity" min="1" max="<%= product.product.quantity  %>" step="1" data-decimals="0" required>
+                                                    <input type="number" class="form-control" id="quantity" value="<%= product.quantity %>" min="1" max="<%= product.product.quantity %>" step="1" data-decimals="0" onchange="addtocart('<%=product.product.name%>','<%= cartProducts[0].user.email%>', this.value,'<%=product.product.quantity%>','<%= product.quantity %>')" required></div>
                                                 </div>
                                             </td>
                                             <td class="total-col">₹<%= product.subtotal %></td>
@@ -155,33 +155,30 @@
 <%- include('../layout/mobile.ejs') %>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const quantityInputs = document.querySelectorAll('.quantity-input');
-
-    quantityInputs.forEach(input => {
-        input.addEventListener('change', async (event) => {
-            const productId = event.target.dataset.productId;
-            const newQuantity = event.target.value;
-
-            try {
-                const response = await fetch(`/updateQuantity?productId=${productId}&quantity=${newQuantity}`, {
-                    method: 'PUT'
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    const subtotalCell = document.querySelector(`.subtotal-cell-${productId}`);
-                    subtotalCell.textContent = `₹${data.subtotal}`;
-                    window.location.href = '/cart';
-                } else {
-                    console.error('Failed to update quantity');
-                }
-            } catch (error) {
-                console.error('Error:', error);
+    
+    function addtocart(prodname,email,qtyValue,real,currentQuantity){
+         
+    fetch(`/updateQuantity?name=${prodname}&email=${email}&qtyValue=${qtyValue}&current=${currentQuantity}&cart='yes'`, {
+    method: 'POST', 
+    headers: {
+        'Content-Type': 'application/json',
+    },
+        
+    }).then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
+            // You can handle the response if needed
+            return response.json();
+        })
+        .then(data => {
+            window.location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
-    });
-});
+    }
+
 </script>
 
 
