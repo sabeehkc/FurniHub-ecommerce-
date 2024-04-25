@@ -113,7 +113,7 @@
 
 
 <%- include('../layout/mobile.ejs') %>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.15/jspdf.plugin.autotable.min.js"></script>
 
 <script>
@@ -121,48 +121,37 @@
     const orderData = button.getAttribute("data-order");
     const order = JSON.parse(orderData);
 
-    const createdAtDate = new Date(order.createdAt);
-
-    // Extract day, month, and year from the createdAtDate object
-    const day = createdAtDate.getDate(); // Get day of the month (1-31)
-    const month = createdAtDate.getMonth() + 1; // Get month (0-11); add 1 to display month correctly (1-12)
-    const year = createdAtDate.getFullYear(); // Get full year (e.g., 2024)
-
-    // Format day and month to ensure leading zero if necessary (e.g., '04' instead of '4')
-    const formattedDay = day.toString().padStart(2, "0"); // Add leading zero if day is a single digit
-    const formattedMonth = month.toString().padStart(2, "0"); // Add leading zero if month is a single digit
-
-    // Create the formatted date string in dd-mm-yyyy format
-    const formattedDate = `${formattedDay}-${formattedMonth}-${year}`;
-
     const doc = new jsPDF();
 
     // Set document title
-    doc.text("Invoice", 10, 40); // Adjust position as needed
+    doc.text("Invoice", 10, 40); 
 
     // Add order details to the PDF
-    doc.text(`User: ${order.user.name}, 10, 50`);
-    doc.text(`Total: ${order.product.subtotal.toFixed(2)}, 10, 80`);
-    doc.text(`Payment Method: ${order.paymentMethod}, 10, 70`);
-    doc.text(`Is Paid: ${order.paymentStatus === 'pending' ? "No" : "Yes"}, 10, 80`);
+    doc.text(`User: ${order.user.name}`, 10, 50);
+    doc.text(`Total: ${order.total.toFixed(2)}`, 10, 60);
+    doc.text(`Payment Method: ${order.paymentMethod}`, 10, 70);
+    doc.text(`Is Paid: ${order.paymentStatus === 'pending' ? "No" : "Yes"}`, 10, 80);
 
-    // Now use formattedDate in your text function
-    doc.text(`Date: ${formattedDate}, 10, 90`);
+    // Format the date
+    const createdAtDate = new Date(order.createdAt);
+    const formattedDate = `${createdAtDate.getDate()}-${createdAtDate.getMonth() + 1}-${createdAtDate.getFullYear()}`;
+    doc.text(`Date: ${formattedDate}`, 10, 90);
 
     // Add table for product details
-    const productName = order.product.name; // Assuming there's only one product
-    const productData = [[productName]];
-    const headers = ["Product"];
+    const productName = order.products[0].name;
+    const address = `${order.user.name},${order.address.buildingName}, ${order.address.district}, ${order.address.city}, ${order.address.state} - ${order.address.pincode}`
+    const productData = [[productName,address]];
+    const headers = ["Product","Address"];
     doc.autoTable({
-      head: [headers],
-      body: productData,
-      startY: 100, // Adjust startY position as needed
+    head: [headers],
+    body: productData,
+    startY: 100, // Adjust startY position as needed
     });
 
     // Save PDF
     doc.save("invoice.pdf");
   }
-</script> -->
+</script>
 
 <!-- Plugins JS File -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

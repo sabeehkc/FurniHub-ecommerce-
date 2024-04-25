@@ -186,7 +186,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    newStatus: 'request return',
+                    newStatus: 'returned',
                     orderId,
                     productId,
                     reason, // Include the reason in the request
@@ -194,7 +194,7 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    $('#tabletoload').load('/orders #tabletoload');
+                    window.location.href = '/orders';
                 })
                 .catch(error => {
                     console.error('Error:', error);

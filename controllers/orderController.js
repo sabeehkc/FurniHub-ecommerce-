@@ -346,11 +346,11 @@ const cancelandReturnOrder = async (req, res) => {
                     const name = order.products[productIndex].name;
                     console.log("name",name);
                     if (wallet) {
-                        wallet.amount = refundedAmount
+                        wallet.amount += order.products[productIndex].subtotal;
                         wallet.order.push({
                             orderId: order._id,
                             name: name,
-                            price:price,
+                            price:order.products[productIndex].subtotal,
                             status: "credited",
                         });
                         await wallet.save();
@@ -358,11 +358,11 @@ const cancelandReturnOrder = async (req, res) => {
                 }
             }
 
-            order.products[productIndex].orderStatus = newStatus;
-            order.products[productIndex].reason = reason;
             if(order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet' || order.products[productIndex].orderStatus === 'delivered' ){
                 order.paymentStatus = 'Refunded'
             }
+            order.products[productIndex].orderStatus = newStatus;
+            order.products[productIndex].reason = reason;
             order.total -= order.products[productIndex].subtotal;
 
         
@@ -431,7 +431,13 @@ const ChangeOrderStatus = async (req, res) => {
         }
 
         product.orderStatus = newStatus;
-
+        
+        const allProductsDelivered = order.products.every(p => p.orderStatus === 'delivered');
+        
+        if (allProductsDelivered) {
+            order.paymentStatus = 'paid';
+        }
+        
         await order.save();
         
         return res.status(200).json({ message: 'Product status changed successfully' });

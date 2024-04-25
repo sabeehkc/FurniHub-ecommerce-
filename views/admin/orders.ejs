@@ -76,16 +76,16 @@
                                                 <% } %>
 
                                                 <% if( product.orderStatus !== 'delivered' ){ %>
-                                                    <% if(product.orderStatus !== 'cancelled') { %> 
+                                                    <% if(product.orderStatus !== 'cancelled'  || product.orderStatus !== 'returned') { %> 
                                                         <td><div class="dropdown">
                                                             <button class="btn btn-outline-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                 Change Status
                                                             </button>
                                                             <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
-                                                                <% if (product.orderStatus !== 'shipped') { %>
+                                                                <% if (product.orderStatus == 'placed') { %>
                                                                     <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'shipped')">Shipped</a>
                                                                 <% } %>
-                                                                <% if (product.orderStatus !== 'delivered') { %>
+                                                                <% if (product.orderStatus == 'shipped') { %>
                                                                 <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
                                                                 <% } %>
                                                                 <% if(product.orderStatus === 'request return'){ %> 
