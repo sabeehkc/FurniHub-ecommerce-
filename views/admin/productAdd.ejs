@@ -187,7 +187,7 @@
         return isValid;
     }
 </script>
-
+<!-- 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
   // Get all file inputs and image preview divs
@@ -306,8 +306,41 @@
         reader.readAsDataURL(file);
       });
     });
+    
   });
 });
+
+</script> -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all file inputs and image preview divs
+        const fileInputs = document.querySelectorAll('[id^="productImages"]');
+        const imagePreviews = document.querySelectorAll('[id^="image-preview"]');
+
+        fileInputs.forEach((fileInput, index) => {
+            fileInput.addEventListener("change", function () {
+                imagePreviews[index].innerHTML = "";
+
+                // Display image previews for the specific index
+                Array.from(fileInput.files).forEach((file) => {
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        const img = document.createElement("img");
+                        img.src = e.target.result;
+                        img.style.maxWidth = "100%";
+                        img.style.height = "auto";
+
+                        // Append the image to the respective image preview div
+                        imagePreviews[index].appendChild(img);
+                    };
+
+                    reader.readAsDataURL(file);
+                });
+            });
+        });
+    });
 </script>
 
 <%- include('./layout/adfooter.ejs') %>

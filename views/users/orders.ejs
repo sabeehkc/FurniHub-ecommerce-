@@ -53,7 +53,7 @@
                                         <th style="text-align: center;">No</th>
                                         <th style="text-align: center;">Product</th>
                                         <th style="text-align: center;">Quantity</th>
-                                        <th style="text-align: center;">Order Price</th>
+                                        <th style="text-align: center;">Price</th>
                                         <th style="text-align: center;">Order Status</th>
                                         <th style="text-align: center;">Action</th>
                                     </tr>
@@ -76,7 +76,7 @@
                                                 </div>
                                             </td>
                                             <td class="quantity-col" style="text-align: center;"><%= product.quantity %></td>
-                                            <td class="price-col" style="text-align: center;">₹<%= order.total %></td>
+                                            <td class="price-col" style="text-align: center;">₹<%= product.subtotal %></td>
                                             <% if(product.orderStatus == 'placed') { %>
                                                 <td  style="text-align: center; color: blue;"><%= product.orderStatus %></td>
                                             <% }else if(product.orderStatus == 'shipped') { %>
