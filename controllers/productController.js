@@ -231,16 +231,41 @@ const loadAllProduct = async (req,res) => {
         const pageSize = 9;
 
         const skip = (page - 1) * pageSize;
+        const { s } = req.query; 
+        const {a} = req.query;
 
-        const products = await Product.find({status: 'active'})
-        .limit(pageSize)
-        .skip(skip)
-        .populate({path:'category',model:Category})
-        .populate({ path: 'offer', model: Offer });
 
-        console.log(products);
+        let products;
+        let totalCount;
 
-        const totalCount = await Product.countDocuments({status: 'active'});
+        if(s){
+            if (s === 'az') {
+                products = await Product.find().sort({ name: 1 }).limit(pageSize).skip(skip).populate({path:'category',model:Category}).populate({ path: 'offer', model: Offer });
+                totalCount = await Product.countDocuments({status: 'active'});
+            } else if (s === 'za') {
+                products = await Product.find().sort({ name: -1 }).limit(pageSize).skip(skip).populate({path:'category',model:Category}).populate({ path: 'offer', model: Offer });
+                totalCount = await Product.countDocuments({status: 'active'});
+            } else if (s === 'price_asc') {
+                products = await Product.find().sort({ price: 1 }).limit(pageSize).skip(skip).populate({path:'category',model:Category}).populate({ path: 'offer', model: Offer });
+                totalCount = await Product.countDocuments({status: 'active'});
+            } else if (s === 'price_desc') {
+                products = await Product.find().sort({ price: -1 }).limit(pageSize).skip(skip).populate({path:'category',model:Category}).populate({ path: 'offer', model: Offer });
+                totalCount = await Product.countDocuments({status: 'active'});
+            } else {
+                products = await Product.find().limit(pageSize).skip(skip).populate({path:'category',model:Category}).populate({ path: 'offer', model: Offer });
+                totalCount = await Product.countDocuments({status: 'active'});
+            }
+        }else if(a){
+            products = await Product.find({status: 'active',category:a}).limit(pageSize).skip(skip).populate({path:'category',model:Category}).populate({ path: 'offer', model: Offer });
+            totalCount = await Product.countDocuments({status: 'active'});
+        }else{
+            products = await Product.find({status: 'active'})
+            .limit(pageSize)
+            .skip(skip)
+            .populate({path:'category',model:Category})
+            .populate({ path: 'offer', model: Offer });
+            totalCount = await Product.countDocuments({status: 'active'});
+        }
 
         const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -303,92 +328,7 @@ const product = async(req,res) => {
     }
 };
 
-const FilterCategory = async (req,res) => {
-    try {
-        const userName = req.session.user ? req.session.user.name : null;
-        const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        const page = parseInt(req.query.page) || 1; 
-        const pageSize = 9;
-
-        const skip = (page - 1) * pageSize;
-
-        const id = req.params.id;
-
-
-        const products = await Product.find({status: 'active',category:id}).limit(pageSize).skip(skip).populate({path:'category',model:Category});
-        console.log(products);
-
-        const totalCount = await Product.countDocuments({status: 'active'});
-
-        const totalPages = Math.ceil(totalCount / pageSize);
-        const categories = await Category.find()
-
-        res.render('allproducts',{
-            userName:userName,
-            isLoggedIn:isLoggedIn,
-            products:products,
-            categories:categories,
-            currentPage: page,
-            totalPages: totalPages
-        });
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-const sortProducts = async (req, res) => {
-    try {
-
-        const userName = req.session.user ? req.session.user.name : null;
-        const isLoggedIn = req.session.user ? true : false; //hide login button
-
-        const page = parseInt(req.query.page) || 1; 
-        const pageSize = 9;
-
-        const skip = (page - 1) * pageSize;
-
-        const { s } = req.query; 
-
-        let products;
-        let totalCount;
-
-        if (s === 'az') {
-            products = await Product.find().sort({ name: 1 }).limit(pageSize).skip(skip).populate({path:'category',model:Category});
-            totalCount = await Product.countDocuments();
-        } else if (s === 'za') {
-            products = await Product.find().sort({ name: -1 }).limit(pageSize).skip(skip).populate({path:'category',model:Category});
-            totalCount = await Product.countDocuments();
-        } else if (s === 'price_asc') {
-            products = await Product.find().sort({ price: 1 }).limit(pageSize).skip(skip).populate({path:'category',model:Category});
-            totalCount = await Product.countDocuments();
-        } else if (s === 'price_desc') {
-            products = await Product.find().sort({ price: -1 }).limit(pageSize).skip(skip).populate({path:'category',model:Category});
-            totalCount = await Product.countDocuments();
-        } else {
-            products = await Product.find().limit(pageSize).skip(skip).populate({path:'category',model:Category});
-            totalCount = await Product.countDocuments();
-        }
-
-        
-
-        const totalPages = Math.ceil(totalCount / pageSize);
-        const categories = await Category.find()
-
-        res.render('allproducts',{
-            userName:userName,
-            isLoggedIn:isLoggedIn,
-            products:products,
-            categories:categories,
-            currentPage: page,
-            totalPages: totalPages
-        });
-
-    } catch (error) {
-        console.error('Error sorting products:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-};
 
 
 //----------------- Add offer Products -----------------//
@@ -451,8 +391,6 @@ module.exports = {
     toggleProductStatus,
     loadAllProduct,
     product,
-    FilterCategory,
     addOfferProduct,
     removeOfferProduct,
-    sortProducts
 }

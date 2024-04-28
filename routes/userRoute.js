@@ -58,7 +58,7 @@ user_route.get("/back-register", auth.logUser, userController.backRegister);
 user_route.get("/login", auth.logUser, userController.loadlogin);
 user_route.post("/login-verify", auth.logUser, userController.verifyLogin);
 
-user_route.get("/all-products", auth.isBlock, productController.loadAllProduct);
+user_route.get("/all-products/", auth.isBlock, productController.loadAllProduct);
 user_route.get("/product/:id", auth.isBlock, productController.product);
 
 //----------------- Logout -----------------//
@@ -95,8 +95,8 @@ user_route.post('/verify-payment',orderController.verifyrazorpayment)
 user_route.put('/orders/status',orderController.cancelandReturnOrder);
 user_route.get('/orderdetails', auth.checkuser, auth.isBlock, orderController.orderDetails);
 
-user_route.get("/filter-category/:id",auth.isBlock,productController.FilterCategory);
-user_route.get('/all-products',  auth.checkuser, auth.isBlock, productController.sortProducts);
+// user_route.get("/filter-category/:id",auth.isBlock,productController.FilterCategory);
+// user_route.get('/all-products',  auth.checkuser, auth.isBlock, productController.sortProducts);
 
 user_route.get("/wishlist",auth.checkuser,auth.isBlock,userController.wishlist);
 user_route.get("/add-wishlist/:id", auth.checkuser, auth.isBlock, userController.addProductWishlist);
