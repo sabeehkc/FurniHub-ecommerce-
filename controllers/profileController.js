@@ -179,7 +179,7 @@ const editAddress = async (req,res) => {
         
         await address.save();
 
-        res.redirect(req.headers.referer)
+        res.redirect("/address")
         
     } catch (error) {
         console.log(error.message);
@@ -198,7 +198,7 @@ const deleteAddress = async(req,res) => {
     } catch (error) {
         console.log(error.message);
     }
-}
+};
 
 
 module.exports = {

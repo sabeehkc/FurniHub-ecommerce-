@@ -248,8 +248,14 @@ const loadOrders = async (req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
+        const page = parseInt(req.query.page) || 1; // Default to page 1 
+        const pageSize = 4; // Number of users per page
+
+        // Calculate the skip value 
+        const skip = (page - 1) * pageSize;
+
         const userId = req.session.user ? req.session.user._id : null;
-        const orders = await Order.find({user: userId}).populate({
+        const orders = await Order.find({user: userId}).limit(pageSize).skip(skip).populate({
             path: 'address',
             model: Address,
             populate: {
@@ -258,7 +264,18 @@ const loadOrders = async (req,res) => {
             }
         }).sort({ createdAt: -1 }) ;
 
-        res.render('orders',{userName:userName,isLoggedIn:isLoggedIn,orders});
+        const totalCount = await Order.countDocuments({user: userId});
+
+        // Calculate total number of pages
+        const totalPages = Math.ceil(totalCount / pageSize);
+
+        res.render('orders',{
+            userName:userName,
+            isLoggedIn:isLoggedIn,
+            orders,
+            currentPage: page,
+            totalPages: totalPages
+        });
         
     } catch (error) {
         console.log(error.message);

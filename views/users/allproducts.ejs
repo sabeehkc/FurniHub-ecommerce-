@@ -8,7 +8,7 @@
 </style>
 
 <main class="main">
-    <div class="page-header text-center" style="background-image: url('assets/images/allproduct banner.jpg')">
+    <div class="page-header text-center" style="background-image: url('/assets/images/allproduct banner.jpg')">
         <div class="container">
             <h1 class="page-title text-white" style="font-family: Georgia, 'Times New Roman', Times, serif;"> Shop smart, live stylish</h1>
         </div><!-- End .container -->
@@ -162,18 +162,18 @@
                                 <div class="widget-body">
                                     <div class="filter-items filter-items-count">
                                         
-                                            <div class="filter-item">
-                                                <div class="custom-control custom-checkbox">
-                                                    <a class="text-muted" href="/all-products">All</a>
+                                        <div class="filter-item">
+                                            <div class="custom-control custom-checkbox">
                                                 <% categories.forEach(category => { %>
-                                                <div class="">
-                                                    <!-- <input type="checkbox" class=""> -->
-                                                    <a class="text-muted" href="/all-products/?a=<%= category._id %>"><%= category.name %></a>
-                                                </div>
-                                                <!-- <span class="item-count">3</span> -->
+                                                    <div class="">
+                                                        <input type="checkbox" class="category-checkbox" data-category-id="<%= category._id %>">
+                                                        <a class="text-muted category-link" href="/all-products/?a=<%= category._id %>"><%= category.name %></a>
+                                                    </div>
                                                 <% }) %>
-                                                </div><!-- End .custom-checkbox -->
-                                            </div><!-- End .filter-item -->
+                                                <input type="checkbox" name="category-checkbox" id="">
+                                                <a class="text-muted category-link" href="/all-products">All Products</a>
+                                            </div><!-- End .custom-checkbox -->
+                                        </div><!-- End .filter-item -->
                                     </div><!-- End .filter-items -->
                                 </div><!-- End .widget-body -->
                             </div><!-- End .collapse -->
@@ -192,6 +192,45 @@
 
 <%- include('../layout/mobile.ejs') %>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.category-checkbox').on('change', function() {
+            var categoryID = $(this).data('category-id');
+            var isChecked = $(this).is(':checked');
+            var currentUrl = window.location.href.split('?')[0]; // Get current URL without query string
+            var newUrl;
+
+            if (isChecked) {
+                newUrl = currentUrl + '?a=' + categoryID;
+            } else {
+                newUrl = currentUrl;
+            }
+
+            window.location.href = newUrl; // Redirect to the new URL
+
+            // Update checkbox style
+            if (isChecked) {
+                $(this).parent().addClass('checked');
+            } else {
+                $(this).parent().removeClass('checked');
+            }
+        });
+
+        // Check checkboxes based on URL parameters
+        var params = new URLSearchParams(window.location.search);
+        params.getAll('a').forEach(categoryID => {
+            $('.category-checkbox[data-category-id="' + categoryID + '"]').prop('checked', true).parent().addClass('checked');
+        });
+    });
+</script>
+
+<style>
+    .checked {
+        /* Add your styles for checked checkboxes here */
+        background-color: #e6f7ff;
+    }
+</style>
 
 <script>
     const searchInput = document.getElementById('searchInput');
