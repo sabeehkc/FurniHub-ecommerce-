@@ -115,7 +115,9 @@
                                 <div class="accordion-summary" id="accordion-payment">
                                     <label for="paymentOption">Select Payment Option:</label>
                                     <select id="paymentOption" name="paymentOption" class="form-control">
-                                        <option value="COD">Cash on Delivery</option>
+                                        <% if(cart[0].grandTotal >= 1000){%> 
+                                            <option value="COD">Cash on Delivery</option>
+                                        <% } %>
                                         <option value="Razorpay">Razor pay</option>
                                         <option value="Wallet">Wallet</option>
                                          
@@ -309,7 +311,6 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            // Show error alert in case of network or server error
             Swal.fire({
                 icon: 'error',
                 title: 'An error occurred',

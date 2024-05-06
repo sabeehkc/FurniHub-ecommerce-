@@ -52,7 +52,21 @@ const Loginverifying = async(req,res) => {
 
 const loadDashboard = async(req,res) => {
     try {
-        res.render('dashboard');
+        let userCount = await User.find().countDocuments();
+        let orders = await Order.find({'products.orderStatus': { $in: ['delivered'] }}).countDocuments();
+        let pendingorder = await Order.find({'products.orderStatus': { $in: ['placed','shipped'] }}).countDocuments();
+
+        let Revenue = await Order.find({'products.orderStatus': { $in: ['delivered'] }})
+        let totalprice = 0;
+
+        for (const order of Revenue) {
+            const orderPrice = order.products.reduce((acc, product) => {
+                return acc + product.price;
+            }, 0);
+            totalprice += orderPrice;
+        }
+
+        res.render('dashboard',{userCount,orders,pendingorder,totalprice});
     } catch (error) {
         console.log(error.message);
     }
@@ -244,18 +258,59 @@ const deleteOffer = async(req,res) => {
 };
 
 
-const loadSalesReport = async(req,res) => {
+const loadSalesReport = async (req, res) => {
     try {
-        const orders = await Order.find({"products.orderStatus": { $nin: ["returned", "cancelled"] } })
-        .populate({
-            path: 'address',
-            model: Address,
-            populate: {
-                path: 'user',
-                model: User
-            }
-        });
-                
+        const startDate = req.query.startDate;
+        const endDate = req.query.endDate;
+        const filterOption = req.query.filterOption;
+
+        // Define filter object for date range
+        const createdAtFilter = {};
+        if (startDate && endDate) {
+            createdAtFilter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+        } else if (startDate) {
+            createdAtFilter.createdAt = { $gte: new Date(startDate) };
+        } else if (endDate) {
+            createdAtFilter.createdAt = { $lte: new Date(endDate) };
+        } else if (filterOption === 'day') {
+            // Handle filter option 'day'
+            const today = new Date();
+            const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+            createdAtFilter.createdAt = { $gte: startOfDay, $lt: endOfDay };
+        } else if (filterOption === 'week') {
+            // Handle filter option 'week'
+            const today = new Date();
+            const firstDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+            const lastDayOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 7);
+            createdAtFilter.createdAt = { $gte: firstDayOfWeek, $lt: lastDayOfWeek };
+        } else if (filterOption === 'month') {
+            // Handle filter option 'month'
+            const today = new Date();
+            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            createdAtFilter.createdAt = { $gte: firstDayOfMonth, $lt: lastDayOfMonth };
+        }
+
+        // Add exclusion for returned and canceled products
+        const orderStatusFilter = {
+            'products.orderStatus': { $in: ['delivered'] }
+        };
+
+        // Combine filters
+        const combinedFilter = { ...createdAtFilter, ...orderStatusFilter };
+
+        // Fetch sales report data from the database with optional date range and status filtering
+        const orders = await Order.find(combinedFilter)
+            .populate({
+                path: 'address',
+                model: Address,
+                populate: {
+                    path: 'user',
+                    model: User
+                }
+            });
+
         let totalOrderProductCount = 0;
         let totalOrderPrice = 0;
 
@@ -267,13 +322,13 @@ const loadSalesReport = async(req,res) => {
             totalOrderPrice += orderPrice;
         }
 
-        
-
-        res.render('salesReport',{orders,totalOrderProductCount,totalOrderPrice})
+        res.render('salesReport', { orders, totalOrderProductCount, totalOrderPrice });
     } catch (error) {
-        console.log(error.message);
+        console.error("Error fetching sales report:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 const generateExcel = async (req, res) => {
     try {
