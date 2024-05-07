@@ -149,42 +149,61 @@
 
             
   
-            <div class="row">
-              <!-- Cards for various order statuses -->
-              <!-- ...existing code for cards... -->
-  
-              <!-- Chart -->
-              <div class="col-md-12 mb-6">
-                <div class="card border-dark">
-                  <div class="card-body">
-                    <h5 class="card-title text-white font-weight-bold">
-                      Orders per Day
-                    </h5>
-                    <!-- Canvas element for the chart -->
-                    <canvas id="ordersChart" width="" height=""></canvas>
-                  </div>
+          <div class="row">
+              
+            <div class="col-lg-6 grid-margin stretch-card">
+
+              <div class="card">
+
+                <div class="card-body">
+
+                  <h4 class="card-title">Month</h4>
+
+                  <canvas id="monthlyChart" style="height:200px"></canvas>
+
                 </div>
+
               </div>
+
             </div>
+            
+            <div class="col-lg-6 grid-margin stretch-card">
+
+              <div class="card">
+
+                <div class="card-body">
+
+                  <h4 class="card-title">Year</h4>
+
+                  <canvas id="areaChart" style="height:200px"></canvas>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+          </div>
   
                       
-                      <div class="card mt-3">
-                          <div class="card-header bg-primary text-white">
+                      <div class="card mt-5 bg-dark">
+                          <div class="card-header bg-secondary text-dark">
                               Top Selling Details
                           </div>
                           <div class="card-body">
                               <div class="row">
                                   <div class="col-md-6">
-                                      <div class="card border-primary mb-3">
-                                          <div class="card-header bg-primary text-white">Top Selling Product</div>
+                                      <div class="card border-secondary mb-3">
+                                          <div class="card-header bg-secondary text-dark">Top Selling Product</div>
                                           <div class="card-body">
                                               <h5 class="card-title"><%= mostSoldProduct ? mostSoldProduct.name : '0' %></h5>
                                           </div>
                                       </div>
                                   </div>
                                   <div class="col-md-6">
-                                      <div class="card border-primary mb-3">
-                                          <div class="card-header bg-primary text-white">Top Selling Category</div>
+                                      <div class="card border-secondary mb-3">
+                                          <div class="card-header bg-secondary text-dark">Top Selling Category</div>
                                           <div class="card-body">
                                               <h5 class="card-title"><%= mostSoldCategory ? mostSoldCategory.name : '0' %></h5>
                                           </div>
@@ -209,85 +228,239 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  
-  let orders = JSON.stringify(orders) ;
-  // Function to count orders per day
-  function countOrdersPerDay(orders) {
-    const ordersPerDay = {};
-    orders.forEach(order => {
-      const date = new Date(order.createdAt).toLocaleDateString();
-      ordersPerDay[date] = (ordersPerDay[date] || 0) + 1;
-    });
-    return ordersPerDay;
-  }
 
-  // Get orders count per day
-  const ordersPerDay = countOrdersPerDay(orders);
+//  Year :-
 
-  // Prepare data for Chart.js
-  const chartData = {
-    labels: Object.keys(ordersPerDay),
-    datasets: [{
-      label: 'Orders per Day',
-      data: Object.values(ordersPerDay),
-      backgroundColor: 'rgba(54, 162, 235, 0.2)',
-      borderColor: 'rgba(54, 162, 235, 1)',
-      borderWidth: 1
-    }]
-  };
+const currentYear = new Date().getFullYear();
+const next5Years = Array.from({ length: 6 }, (_, index) => (currentYear+3) - index);
+const previeYear = next5Years.reverse();
+var date = [];
 
-  // Create Chart
-  const ctx = document.getElementById('ordersChart').getContext('2d');
-  const ordersChart = new Chart(ctx, {
-    type: 'bar',
-    data: chartData,
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: 'Number of Orders'
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: 'Date'
-          }
-        }
+fetch('/admin/chartYear', {
+
+  method: 'put',
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({})
+
+})
+    .then(res => res.json())
+
+    .then(data => {
+
+
+  previeYear.forEach((e, i) => {
+
+    let yearFound = false;
+
+    data.yearChart.forEach((year, ind) => {
+
+      if (e === year._id) {
+
+        date[i] = year.totalAmount;
+        yearFound = true;
+
       }
+
+    });
+
+    if (!yearFound) {
+
+      date[i] = 0;
+
     }
+
   });
 
-  // Filter data for Yearly
-  document.getElementById('yearlyFilter').addEventListener('click', function() {
-    const ordersPerYear = {};
-    Object.keys(ordersPerDay).forEach(date => {
-      const year = new Date(date).getFullYear();
-      ordersPerYear[year] = (ordersPerYear[year] || 0) + ordersPerDay[date];
-    });
+    if ($("#areaChart").length) {
 
-    ordersChart.data.labels = Object.keys(ordersPerYear);
-    ordersChart.data.datasets[0].data = Object.values(ordersPerYear);
-    ordersChart.update();
-  });
+      var areaData = {
 
-  // Filter data for Monthly
-  document.getElementById('monthlyFilter').addEventListener('click', function() {
-    const ordersPerMonth = {};
-    Object.keys(ordersPerDay).forEach(date => {
-      const [year, month] = date.split('/');
-      const formattedMonth = `${year}/${month}`;
-      ordersPerMonth[formattedMonth] = (ordersPerMonth[formattedMonth] || 0) + ordersPerDay[date];
-    });
+        labels: previeYear,
 
-    ordersChart.data.labels = Object.keys(ordersPerMonth);
-    ordersChart.data.datasets[0].data = Object.values(ordersPerMonth);
-    ordersChart.update();
-  });
-</script>
+        datasets: [{
+
+          label: 'sales',
+          data: date,
+
+          backgroundColor: [
+
+            'rgba(54, 162, 235, 0.2)', 
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+
+          borderColor: [
+
+            'rgba(54, 162, 235, 1)', 
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+
+          ],
+
+            borderWidth: 1,
+            fill: true,
+
+        }]
+
+      }; 
+
+    var areaOptions = {
+
+      plugins: {
+
+        filler: {
+
+          propagate: true
+
+        }
+
+      },
+
+      scales: {
+
+        yAxes: [{
+
+          gridLines: {
+            color: "rgba(204, 204, 204,0.1)"
+          }
+
+        }],
+
+        xAxes: [{
+
+          gridLines: {
+            color: "rgba(204, 204, 204,0.1)"
+          }
+
+        }]
+
+      }
+      
+    }
+
+      var areaChartCanvas = $("#areaChart").get(0).getContext("2d");
+
+      var areaChart = new Chart(areaChartCanvas, {
+
+        type: 'line',
+        data: areaData,
+        options: areaOptions
+
+      });
+
+    }
+
+  //  Month :-
+
+    const monthName = [
+
+      "January", "February", "March",
+      "April", "May", "June", "July",
+      "August", "September", "October",
+      "November", "December"
+      
+    ];
+
+    fetch('/admin/monthChart', {
+
+      method: 'put',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({})
+
+    })
+
+    .then(res => res.json())
+
+    .then(data => {
+
+      const months = monthName;
+      const salesData = data.salesData;
+
+      if ($("#monthlyChart").length) {
+
+          var monthlyData = {
+
+            labels: months,
+
+            datasets: [{
+
+              label: 'Sales',
+              data: salesData,
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1,
+              fill: true,
+
+            }]
+
+          };
+
+          var monthlyOptions = {
+
+            plugins: {
+
+              filler: {
+
+               propagate: true
+
+              }
+
+            },
+
+            scales: {
+
+              yAxes: [{
+
+                 gridLines: {
+
+                  color: "rgba(204, 204, 204,0.1)"
+
+                }
+
+              }],
+              
+              xAxes: [{
+
+                gridLines: {
+
+                  color: "rgba(204, 204, 204,0.1)"
+
+                }
+
+              }]
+
+            }
+
+          };
+
+            var monthlyChartCanvas = $("#monthlyChart").get(0).getContext("2d");
+
+            var monthlyChart = new Chart(monthlyChartCanvas, {
+
+              type: 'line',
+              data: monthlyData,
+              options: monthlyOptions
+
+            });
+        }
+
+      console.log(salesData);
+
+    })
+
+  .catch(error => console.error('Error fetching monthly sales data:', error));
   
+})
+
+</script>
+
+<!--   
 <script>
   
   function countTopSellingItems(orders) {
@@ -337,5 +510,5 @@
     document.querySelector('.top-selling-category').textContent = topSellingCategory;
 </script> 
 
-   
+    -->
 <%- include('./layout/adfooter.ejs') %>    

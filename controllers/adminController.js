@@ -122,6 +122,123 @@ const loadDashboard = async (req, res) => {
       res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
+const chartYear = async (req, res , next) => {
+
+    try {
+  
+      const curntYear = new Date().getFullYear();
+  
+      const yearChart = await Order.aggregate([
+          
+        {
+          
+          $match: {
+  
+            createdAt: {
+  
+              $gte: new Date(`${curntYear - 5}-01-01`),
+              $lte: new Date(`${curntYear}-12-31`),
+  
+            },
+  
+          },
+  
+        },
+  
+        {
+          $group: {
+  
+            _id: { $year: "$createdAt" },
+            totalAmount: { $sum: "$total" },
+  
+          },
+  
+        },
+  
+        {
+          $sort: { _id: 1 },
+        },
+  
+      ]);
+  
+      res.send({ yearChart });
+  
+    } catch (error) {
+      next(error,req,res);
+    }
+  
+};
+  
+//  Month Chart (Put Method) :-
+  
+const monthChart = async (req, res , next) => {
+  
+    try {
+      
+      const monthName = [
+  
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+  
+      const curntYear = new Date().getFullYear();
+  
+      const monData = await Order.aggregate([
+      
+        {
+          $match: {
+  
+            createdAt: {
+  
+              $gte: new Date(`${curntYear}-01-01`),
+              $lte: new Date(`${curntYear}-12-31`),
+              
+            },
+  
+          },
+        },
+  
+        {
+          $group: {
+            _id: { $month: "$createdAt" },
+            totalAmount: { $sum: "$total" },
+          },
+        },
+  
+        {
+          $sort: { _id: 1 },
+        },
+  
+      ]);
+  
+      const salesData = Array.from({ length: 12 }, (_, i) => {
+  
+        const monthData = monData.find((item) => item._id === i + 1);
+  
+        return monthData ? monthData.totalAmount : 0;
+  
+      });
+  
+      res.json({ months: monthName, salesData });
+  
+    } catch (error) {
+  
+      next(error,req,res);
+  
+    }
+  
+};
   
 
 //----------------- userlist  page -----------------//
@@ -458,6 +575,8 @@ module.exports = {
     editOfferPost,
     deleteOffer,
     loadSalesReport,
-    generateExcel
+    generateExcel,
+    chartYear,
+    monthChart
 
 }

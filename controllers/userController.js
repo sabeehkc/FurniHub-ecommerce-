@@ -521,23 +521,17 @@ const deleteWishlistProduct = async (req,res) => {
     }
 };
 
-const loadWallet = async(req,res) => {
+const loadAllCategoryPage = async(req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        const userId = req.session.user ? req.session.user._id : null;
-        const wallets = await Wallet.findOne({user:userId});
-        if(!wallets){
-            console.log('Wallet not found');
-        }
-
-        res.render('wallet',{userName:userName,isLoggedIn:isLoggedIn,wallets});
+        res.render('allCategory',{userName:userName,isLoggedIn:isLoggedIn})
+        
     } catch (error) {
         console.log(error.message);
     }
 }
-
 
 // Exporting functions
 module.exports = {
@@ -558,5 +552,6 @@ module.exports = {
     wishlist,
     addProductWishlist,
     deleteWishlistProduct,
-    loadWallet
+    loadAllCategoryPage
+   
 };

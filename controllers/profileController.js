@@ -201,6 +201,24 @@ const deleteAddress = async(req,res) => {
 };
 
 
+const loadWallet = async(req,res) => {
+    try {
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+
+        const userId = req.session.user ? req.session.user._id : null;
+        const wallets = await Wallet.findOne({user:userId});
+        if(!wallets){
+            console.log('Wallet not found');
+        }
+
+        res.render('wallet',{userName:userName,isLoggedIn:isLoggedIn,wallets});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
 module.exports = {
     loadProfile,
     editProfile,
@@ -209,5 +227,6 @@ module.exports = {
     addAddress,
     loadEditAddress,
     editAddress,
-    deleteAddress
+    deleteAddress,
+    loadWallet
 }

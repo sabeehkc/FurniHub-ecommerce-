@@ -115,7 +115,7 @@
                                 <div class="accordion-summary" id="accordion-payment">
                                     <label for="paymentOption">Select Payment Option:</label>
                                     <select id="paymentOption" name="paymentOption" class="form-control">
-                                        <% if(cart[0].grandTotal >= 1000){%> 
+                                        <% if(cart[0].grandTotal <= 1000){%> 
                                             <option value="COD">Cash on Delivery</option>
                                         <% } %>
                                         <option value="Razorpay">Razor pay</option>

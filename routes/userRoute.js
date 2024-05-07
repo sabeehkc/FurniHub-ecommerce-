@@ -103,7 +103,9 @@ user_route.get("/wishlist",auth.checkuser,auth.isBlock,userController.wishlist);
 user_route.get("/add-wishlist/:id", auth.checkuser, auth.isBlock, userController.addProductWishlist);
 user_route.get("/wishlist/remove", auth.checkuser, auth.isBlock, userController.deleteWishlistProduct);
 
-user_route.get("/wallet",  auth.checkuser, auth.isBlock,userController.loadWallet);
+user_route.get("/wallet",  auth.checkuser, auth.isBlock,profileController.loadWallet);
+
+user_route.get("/allCategories",auth.isBlock,userController.loadAllCategoryPage);
 
 user_route.get('*',userController.Error404);
 

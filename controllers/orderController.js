@@ -129,6 +129,8 @@ const placeOrder =  async (req, res) => {
             res.status(400).json({error: 'Unsupported payment method'});
         }
 
+        
+
         // change product quantity
         for (const product of cart.products) {
             await Product.findByIdAndUpdate(product.product._id, {

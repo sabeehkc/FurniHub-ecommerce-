@@ -93,9 +93,9 @@ const updateProductQuantity = async (req, res) => {
   try {
       const productName = req.query.name;
       const quantity = parseInt(req.query.qtyValue || 1);
-      console.log(quantity);
+      console.log("Quantity",quantity);
       const currentQuantity = parseInt(req.query.current);
-      console.log(currentQuantity);
+      console.log("current quantity",currentQuantity);
       
       const userMail = req.session.user ? req.session.user.email : null;
 
@@ -110,13 +110,9 @@ const updateProductQuantity = async (req, res) => {
           if (existingProductIndex !== -1) {
               // Product already exists in the cart
               const existingProduct = cartFind.products[existingProductIndex];
-              if(quantity > currentQuantity ){
-                existingProduct.quantity += 1;
-              }else{
-                existingProduct.quantity -= 1;
-              }
-              
-
+    
+                existingProduct.quantity = quantity;
+                
               if (existingProduct.offerPrice) {
                   existingProduct.subtotal = existingProduct.quantity * existingProduct.offerPrice;
               } else {
