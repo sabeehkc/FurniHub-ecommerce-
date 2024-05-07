@@ -8,95 +8,198 @@
 
         <div class="main-panel">
           <div class="content-wrapper">
-                   
             <div class="row">
-              <div class="col-sm-4 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <h5>Revenue</h5>
-                    <div class="row">
-                      <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                        <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0"><%= totalprice  %></h2>
-                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p> -->
-                        </div>
-                        <h6 class="text-muted font-weight-normal">Revenue based on order delivered</h6>
-                      </div>
-                      <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                        <i class="icon-lg mdi mdi-codepen text-primary ml-auto"></i>
-                      </div>
-                    </div>
-                  </div>
+              <div class="col-md-3 mb-3">
+                <div class="list-group">
+                  <h5 class="list-group-item list-group-item-dark font-weight-bold">
+                    Placed Orders
+                  </h5>
+                  <% if (orders.length === 0) { %>
+                  <a href="#" class="list-group-item list-group-item-action">
+                    Total Products: <span class="badge bg-primary"></span>
+                  </a>
+                  <% } else { %> 
+                    <% let placedCount = 0; %>
+                        <% orders.forEach(order => { %>
+                            <% order.products.forEach(product => { %>
+                                <% if (product.orderStatus === 'placed') { %>
+                                    <% placedCount++; %>
+                                <% } %>
+                            <% }); %>
+                        <% }); %>
+                        <a href="#" class="list-group-item text-white bg-dark list-group-item-action">
+                            Total Products: <span class="badge  bg-dark text-white"> <%= placedCount %> </span>
+                        </a>
+                  <% } %>
                 </div>
               </div>
-              <div class="col-sm-4 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <h5>Pending Orders</h5>
-                    <div class="row">
-                      <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                        <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0"><%= pendingorder  %></h2>
-                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+8.3%</p> -->
-                        </div>
-                        <h6 class="text-muted font-weight-normal">Order yet to be delivered</h6>
-                      </div>
-                      <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                        <i class="icon-lg mdi mdi-wallet-travel text-danger ml-auto"></i>
-                      </div>
-                    </div>
-                  </div>
+  
+              <div class="col-md-3 mb-3">
+                <div class="list-group">
+                    <h5 class="list-group-item list-group-item-dark font-weight-bold">
+                        Shipped Orders
+                    </h5>
+                    <% if (orders.length === 0) { %>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        Total Products: <span class="badge bg-dark"></span>
+                    </a>
+                    <% } else { %>
+                        <% let shippedCount = 0; %>
+                        <% orders.forEach(order => { %>
+                            <% order.products.forEach(product => { %>
+                                <% if (product.orderStatus === 'shipped') { %>
+                                    <% shippedCount++; %>
+                                <% } %>
+                            <% }); %>
+                        <% }); %>
+                        <a href="#" class="list-group-item text-white bg-dark list-group-item-action">
+                            Total Products: <span class="badge bg-dark text-white"> <%= shippedCount %> </span>
+                        </a>
+                    <% } %>
                 </div>
-              </div>
-              
             </div>
 
-            <div class="row">
-              <div class="col-sm-4 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <h5>Sales</h5>
-                    <div class="row">
-                      <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                        <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0"><%= orders  %></h2>
-                          <!-- <p class="text-success ml-2 mb-0 font-weight-medium">+8.3%</p> -->
-                        </div>
-                        <h6 class="text-muted font-weight-normal">Total number of sales</h6>
-                      </div>
-                      <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                        <i class="icon-lg mdi mdi-wallet-travel text-success ml-auto"></i>
-                      </div>
-                    </div>
-                  </div>
+            <div class="col-md-3 mb-3">
+                <div class="list-group">
+                    <h5 class="list-group-item list-group-item-dark font-weight-bold">
+                        Returned Orders
+                    </h5>
+                    <% if (orders.length === 0) { %>
+                    <a href="#" class="list-group-item list-group-item-action">
+                        Total Products: <span class="badge bg-primary"></span>
+                    </a>
+                    <% } else { %>
+                        <% let returnedCount = 0; %>
+                        <% orders.forEach(order => { %>
+                            <% order.products.forEach(product => { %>
+                                <% if (product.orderStatus === 'returned') { %>
+                                    <% returnedCount++; %>
+                                <% } %>
+                            <% }); %>
+                        <% }); %>
+                        <a href="#" class="list-group-item text-white bg-dark list-group-item-action">
+                            Total Products: <span class="badge  bg-dark text-white"> <%= returnedCount %> </span>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+              <div class="col-md-3 mb-3">
+                <div class="list-group">
+                  <h5 class="list-group-item list-group-item-dark font-weight-bold">
+                    Delivered Orders
+                  </h5>
+                  <% if (orders.length === 0) { %>
+                  <a href="#" class="list-group-item list-group-item-action">
+                    Total Products: <span class="badge bg-primary"></span>
+                  </a>
+                  <% } else { %> 
+                    <% let deliveryCount = 0; %>
+                        <% orders.forEach(order => { %>
+                            <% order.products.forEach(product => { %>
+                                <% if (product.orderStatus === 'delivered') { %>
+                                    <% deliveryCount++; %>
+                                <% } %>
+                            <% }); %>
+                        <% }); %>
+                        <a href="#" class="list-group-item text-white bg-dark list-group-item-action">
+                            Total Products: <span class="badge  bg-dark text-white"> <%= deliveryCount %> </span>
+                        </a>
+                  <% } %>
                 </div>
               </div>
-              <div class="col-sm-4 grid-margin">
-                <div class="card">
+  
+              <div class="col-md-3 mb-3">
+                <div class="list-group">
+                  <h5 class="list-group-item list-group-item-dark font-weight-bold">
+                    Cancelled Orders
+                  </h5>
+                  <% if (orders.length === 0) { %>
+                  <a href="#" class="list-group-item list-group-item-action">
+                    Total Products: <span class="badge bg-primary"></span>
+                  </a>
+                  <% } else { %> 
+                    <% let cancellCount = 0; %>
+                    <% orders.forEach(order => { %>
+                        <% order.products.forEach(product => { %>
+                            <% if (product.orderStatus === 'cancelled') { %>
+                                <% cancellCount++; %>
+                            <% } %>
+                        <% }); %>
+                    <% }); %>
+                    <a href="#" class="list-group-item text-white bg-dark list-group-item-action">
+                        Total Products: <span class="badge bg-dark text-white"> <%= cancellCount %> </span>
+                    </a>
+                  <% } %>
+                </div>
+              </div>
+
+              <div class="col-md-3 mb-3">
+                <div class="list-group">
+                  <h5 class="list-group-item list-group-item-dark font-weight-bold">
+                   Total Users
+                  </h5>
+                    <a href="#" class="list-group-item text-white bg-dark list-group-item-action">
+                        Total Users: <span class="badge bg-dark text-white"> <%= userCount %> </span>
+                    </a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+            
+  
+            <div class="row">
+              <!-- Cards for various order statuses -->
+              <!-- ...existing code for cards... -->
+  
+              <!-- Chart -->
+              <div class="col-md-12 mb-6">
+                <div class="card border-dark">
                   <div class="card-body">
-                    <h5>Users</h5>
-                    <div class="row">
-                      <div class="col-8 col-sm-12 col-xl-8 my-auto">
-                        <div class="d-flex d-sm-block d-md-flex align-items-center">
-                          <h2 class="mb-0"><%= userCount  %></h2>
-                          <!-- <p class="text-danger ml-2 mb-0 font-weight-medium">-2.1% </p> -->
-                        </div>
-                        <h6 class="text-muted font-weight-normal">Number of users registered</h6>
-                      </div>
-                      <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
-                        <i class="icon-lg mdi mdi-account text-muted ml-auto"></i>
-                      </div>
-                    </div>
+                    <h5 class="card-title text-white font-weight-bold">
+                      Orders per Day
+                    </h5>
+                    <!-- Canvas element for the chart -->
+                    <canvas id="ordersChart" width="" height=""></canvas>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          </div>
-      </div>
-    </div>
-               
-        
+  
+                      
+                      <div class="card mt-3">
+                          <div class="card-header bg-primary text-white">
+                              Top Selling Details
+                          </div>
+                          <div class="card-body">
+                              <div class="row">
+                                  <div class="col-md-6">
+                                      <div class="card border-primary mb-3">
+                                          <div class="card-header bg-primary text-white">Top Selling Product</div>
+                                          <div class="card-body">
+                                              <h5 class="card-title"><%= mostSoldProduct ? mostSoldProduct.name : '0' %></h5>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-6">
+                                      <div class="card border-primary mb-3">
+                                          <div class="card-header bg-primary text-white">Top Selling Category</div>
+                                          <div class="card-body">
+                                              <h5 class="card-title"><%= mostSoldCategory ? mostSoldCategory.name : '0' %></h5>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+          </div>  
+       
+  </div>
+    
+</div>
+</div>
+             
 <footer class="footer">
   <div class="d-sm-flex justify-content-center justify-content-sm-between">
       <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © FurniHub.com 2024</span>
@@ -104,12 +207,135 @@
   </div>
 </footer>
 
-      
-    </div>
-       
-  </div>
-    
-</div>
-   
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  
+  let orders = JSON.stringify(orders) ;
+  // Function to count orders per day
+  function countOrdersPerDay(orders) {
+    const ordersPerDay = {};
+    orders.forEach(order => {
+      const date = new Date(order.createdAt).toLocaleDateString();
+      ordersPerDay[date] = (ordersPerDay[date] || 0) + 1;
+    });
+    return ordersPerDay;
+  }
+
+  // Get orders count per day
+  const ordersPerDay = countOrdersPerDay(orders);
+
+  // Prepare data for Chart.js
+  const chartData = {
+    labels: Object.keys(ordersPerDay),
+    datasets: [{
+      label: 'Orders per Day',
+      data: Object.values(ordersPerDay),
+      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      borderColor: 'rgba(54, 162, 235, 1)',
+      borderWidth: 1
+    }]
+  };
+
+  // Create Chart
+  const ctx = document.getElementById('ordersChart').getContext('2d');
+  const ordersChart = new Chart(ctx, {
+    type: 'bar',
+    data: chartData,
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Number of Orders'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        }
+      }
+    }
+  });
+
+  // Filter data for Yearly
+  document.getElementById('yearlyFilter').addEventListener('click', function() {
+    const ordersPerYear = {};
+    Object.keys(ordersPerDay).forEach(date => {
+      const year = new Date(date).getFullYear();
+      ordersPerYear[year] = (ordersPerYear[year] || 0) + ordersPerDay[date];
+    });
+
+    ordersChart.data.labels = Object.keys(ordersPerYear);
+    ordersChart.data.datasets[0].data = Object.values(ordersPerYear);
+    ordersChart.update();
+  });
+
+  // Filter data for Monthly
+  document.getElementById('monthlyFilter').addEventListener('click', function() {
+    const ordersPerMonth = {};
+    Object.keys(ordersPerDay).forEach(date => {
+      const [year, month] = date.split('/');
+      const formattedMonth = `${year}/${month}`;
+      ordersPerMonth[formattedMonth] = (ordersPerMonth[formattedMonth] || 0) + ordersPerDay[date];
+    });
+
+    ordersChart.data.labels = Object.keys(ordersPerMonth);
+    ordersChart.data.datasets[0].data = Object.values(ordersPerMonth);
+    ordersChart.update();
+  });
+</script>
+  
+<script>
+  
+  function countTopSellingItems(orders) {
+      const productCounts = {};
+      const categoryCounts = {};
+  
+      // Loop through orders to count products and categories
+      orders.forEach(order => {
+        const productName = order.product.productName;
+        const category = order.product.category;
+  
+        // Count products
+        if (productCounts[productName]) {
+          productCounts[productName]++;
+        } else {
+          productCounts[productName] = 1;
+        }
+  
+        // Count categories
+        if (categoryCounts[category]) {
+          categoryCounts[category]++;
+        } else {
+          categoryCounts[category] = 1;
+        }
+      });
+  
+      // Find top-selling product
+      const topSellingProduct = Object.keys(productCounts).reduce((a, b) => productCounts[a] > productCounts[b] ? a : b);
+  
+      // Find top-selling category
+      const topSellingCategory = Object.keys(categoryCounts).reduce((a, b) => categoryCounts[a] > categoryCounts[b] ? a : b);
+  
+      return {
+        topSellingProduct,
+        topSellingCategory
+      };
+    }
+  
+    // Get top-selling product and category
+    const {
+      topSellingProduct,
+      topSellingCategory
+    } = countTopSellingItems(orders);
+  
+    // Display the top-selling product and category
+    document.querySelector('.top-selling-product').textContent = topSellingProduct;
+    document.querySelector('.top-selling-category').textContent = topSellingCategory;
+</script> 
+
    
 <%- include('./layout/adfooter.ejs') %>    

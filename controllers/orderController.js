@@ -179,6 +179,21 @@ const verifyrazorpayment = async (req, res) => {
     }
 };
 
+const retryRazorpay = async(req,res) => {
+    try {
+        let orderId = req.query.orderid;
+        let total = req.query.total;
+
+        if(orderId && total ){
+        const retryrazorpayOrder = await generateRazorpay(orderId, total);
+        res.json({retryrazorpayOrder,pay:'razor'});
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 //----------------- Display Coupon checkout time -----------------//
 const displyaCoupons = async(req,res) => {
     try {
@@ -408,7 +423,7 @@ const cancelandReturnOrder = async (req, res) => {
 const loadOrdersAd = async (req,res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const pageSize = 5;
+        const pageSize = 4;
 
         const skip = (page-1)* pageSize;
 
@@ -419,7 +434,7 @@ const loadOrdersAd = async (req,res) => {
                 path: 'user',
                 model: User
             }
-        });
+        }).sort({ createdAt: -1 }) ;
 
         const totalCount = await Order.countDocuments();
 
@@ -477,5 +492,6 @@ module.exports = {
     loadOrdersAd,
     ChangeOrderStatus,
     displyaCoupons,
-    applyCoupon
+    applyCoupon,
+    retryRazorpay
 }

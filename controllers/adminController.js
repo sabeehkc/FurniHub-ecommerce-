@@ -50,27 +50,79 @@ const Loginverifying = async(req,res) => {
 
 //----------------- Admin load Dashboard -----------------//
 
-const loadDashboard = async(req,res) => {
+const loadDashboard = async (req, res) => {
     try {
-        let userCount = await User.find().countDocuments();
-        let orders = await Order.find({'products.orderStatus': { $in: ['delivered'] }}).countDocuments();
-        let pendingorder = await Order.find({'products.orderStatus': { $in: ['placed','shipped'] }}).countDocuments();
+      const orders = await Order.find()
+        .populate({
+          path: 'products.product',
+          model: Product
+        })
+        .populate({
+          path: 'user',
+          model: User
+        })
+        .populate({
+          path: 'address',
+          model: Address
+        });
 
-        let Revenue = await Order.find({'products.orderStatus': { $in: ['delivered'] }})
-        let totalprice = 0;
 
-        for (const order of Revenue) {
-            const orderPrice = order.products.reduce((acc, product) => {
-                return acc + product.price;
-            }, 0);
-            totalprice += orderPrice;
+     let userCount = await User.find().countDocuments();
+  
+      let mostOrderedProduct = null;
+      let mostOrderedCategory = null;
+      let maxProductCount = 0;
+      let maxCategoryCount = 0;
+  
+      const productCounts = new Map();
+      const categoryCounts = new Map();
+  
+      orders.forEach((order) => {
+        order.products.forEach((product) => {
+          const productId = product.product._id.toString();
+          const count = productCounts.get(productId) || 0;
+          productCounts.set(productId, count + 1);
+  
+          const categoryId = product.product.category ? product.product.category.toString() : null;
+          if (categoryId) {
+            const categoryCount = categoryCounts.get(categoryId) || 0;
+            categoryCounts.set(categoryId, categoryCount + 1);
+          }
+        });
+      });
+  
+      productCounts.forEach((count, productId) => {
+        if (count > maxProductCount) {
+          maxProductCount = count;
+          mostOrderedProduct = productId;
         }
-
-        res.render('dashboard',{userCount,orders,pendingorder,totalprice});
+      });
+  
+      categoryCounts.forEach((count, categoryId) => {
+        if (count > maxCategoryCount) {
+          maxCategoryCount = count;
+          mostOrderedCategory = categoryId;
+        }
+      });
+  
+      console.log("Most Ordered Product:", mostOrderedProduct);
+      console.log("Most Ordered Category:", mostOrderedCategory);
+  
+      const mostSoldProduct = await Product.findOne({ _id: mostOrderedProduct });
+      const mostSoldCategory = await Category.findOne({ _id: mostOrderedCategory });
+  
+      res.render("dashboard", {
+        orders,
+        mostSoldProduct,
+        mostSoldCategory,
+        userCount
+      });
     } catch (error) {
-        console.log(error.message);
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
     }
 };
+  
 
 //----------------- userlist  page -----------------//
 const loadCustomer = async (req, res) => {

@@ -91,6 +91,7 @@ user_route.post("/order-placed", auth.checkuser, auth.isBlock, orderController.p
 user_route.get("/thank-you",auth.checkuser,auth.isBlock,orderController.ThankYou);
 user_route.get("/orders",auth.checkuser,auth.isBlock,orderController.loadOrders);
 user_route.post('/verify-payment',orderController.verifyrazorpayment)
+user_route.post('/retryRazorpay',orderController.retryRazorpay);
 
 user_route.put('/orders/status',orderController.cancelandReturnOrder);
 user_route.get('/orderdetails', auth.checkuser, auth.isBlock, orderController.orderDetails);

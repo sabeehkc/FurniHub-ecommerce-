@@ -56,6 +56,12 @@
                                         <th style="text-align: center;">Price</th>
                                         <th style="text-align: center;">Order Status</th>
                                         <th style="text-align: center;">Action</th>
+                                        <% if (orders.length > 0 && orders[0].paymentMethod === 'Razorpay') { %>
+                                            <% if(orders[0].paymentStatus === 'pending') {%> 
+                                            <th style="text-align: center;">Payment pending</th> 
+                                            <% } %>
+                                        <% } %>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -85,7 +91,8 @@
                                                 <td  style="text-align: center; color: rgb(13, 197, 13);"><%= product.orderStatus %></td>
                                             <% }else { %> 
                                                 <td  style="text-align: center; color: red;"><%= product.orderStatus %></td>
-                                            <% } %>  
+                                            <% } %> 
+                                            
                                                 <td class="action-column" style="text-align: center;">
                                                     <button  class="btn-primary" style="border: none"><a class="text-white" href="/orderdetails?orderId=<%= order._id %>&productId=<%= product._id %>"> Details</a></button>
                                                     <% if (product.orderStatus === 'placed' || product.orderStatus === 'shipped' ) { %> 
@@ -96,6 +103,14 @@
                                                         <button class="btn-danger" style="border: none" onclick="returnOrder('<%= order._id %>', '<%= product._id %>')">Return</button>
                                                     <% } %>  
                                                 </td>
+                                                <td>
+                                                    <% if(order.paymentMethod === 'Razorpay'){ %> 
+                                                        <% if(order.paymentStatus === 'pending'){%> 
+                                                            
+                                                            <button class="btn-mute" style="border: none" onclick="retryRazorpay('<%= order._id %>','<%=product.subtotal %>')">Pay now!</button>
+                                                        <% } %>    
+                                                    <% } %> 
+                                                </td>    
                                         </tr>
                                     <% }) %>
                                     <% }) %>
@@ -149,7 +164,8 @@
 
 <%- include('../layout/mobile.ejs') %>
 
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function cancelOrder(orderId, productId) {
         Swal.fire({
@@ -226,7 +242,117 @@
         }
     });
 }
+
+function retryRazorpay(orderId,orderTotal){
+    fetch(`/retryRazorpay?orderid=${orderId}&total=${orderTotal}`, {
+    method: 'POST', 
+    headers: {
+        'Content-Type': 'application/json',
+    },
+        
+    }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(data.pay=='razor'){
+                    razorpayPayment(data.retryrazorpayOrder)
+                }else {
+                window.location.href = "/thank-you";
+                }
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+            });
+}
+
+
+
+function razorpayPayment(order) {
+    var options = {
+        "key": "rzp_test_PFPeHk6DFR6c5M", 
+        "amount": order.amount , 
+        "currency": "INR",
+        "name": "FurniHub",
+        "description": "Test Transaction",
+        "image": "https://example.com/your_logo",
+        "order_id": order.id, 
+        "callback_url": "https://eneqd3r9zrjok.x.pipedream.net/",
+        "handler": function (response) {
+            verifyPayment(response, order);
+        },
+        "prefill": {
+            "name": "Gaurav Kumar",
+            "email": "gaurav.kumar@example.com",
+            "contact": "9000090000"
+        },
+        "notes": {
+            "address": "Razorpay Corporate Office"
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+}
+
+    function verifyPayment(payment, order) {
+        console.log("payment",payment);
+        fetch('/verify-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ payment, order }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("data",data.success)
+            if (data.success == true) {
+                // Show success alert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful',
+                    showConfirmButton: false,
+                    timer: 1500,
+                }).then(() => {
+                    window.location.href = '/orders';
+                });
+            } else {
+                // Show error alert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment has failed',
+                    showConfirmButton: false,
+                    timer: 1500,
+                })
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'An error occurred',
+                text: 'Please try again later.',
+            })
+        });
+    }
+
+
+
 </script>
+
+
+
+
 
 
 <!-- Plugins JS File -->
