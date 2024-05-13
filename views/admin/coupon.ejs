@@ -18,7 +18,8 @@
                                 <th>Coupon Code</th>
                                 <th>Discount Persentage</th>
                                 <th>Minimum Amount</th>
-                                <th>expiry Date</th>
+                                <th>Expiry Date</th>
+                                <th>Status</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -32,6 +33,7 @@
                                     <td><%= coupon.discountPercent %></td>
                                     <td><%= coupon.minAmount %></td>
                                     <td><%= new Date(coupon.expiryDate).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                    <td class="<%= coupon.status ? 'text-success' : 'text-danger' %>"><%= coupon.status %></td>
                                     <td>
                                         <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="/admin/coupons/edit/<%= coupon._id %>">Edit</a></button>
                                         <button type="button" class="btn btn-danger"  onclick="deleteCoupon('<%= coupon._id %>')"> Delete</button>

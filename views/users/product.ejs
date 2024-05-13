@@ -97,7 +97,7 @@
                                 </div>
                             <% } else { %>
                                 <div class="product-details-action">
-                                    <a href="/cart-Products/<%= product._id %>" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    <button class="btn-product btn-cart" style="border: none;" onclick="addToCart('<%= product._id %>')"><span>add to cart</span> </button>
     
                                     <div class="details-action-wrapper">
                                         <a href="/add-wishlist/<%= product._id %>" class="btn-product btn-wishlist" title="Wishlist"><span>Add to Wishlist</span></a>
@@ -283,7 +283,7 @@
                             </div><!--End .product-action-vertical -->
     
                             <div class="product-action">
-                                <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                <button class="btn-product btn-cart" style="border: none;" onclick="addToCart('<%= product._id %>')"><span>add to cart</span> </button>
                             </div><!--End .product-action -->
                            <% } else { %>
                             <p class="text-danger">This product is not available</p>
@@ -335,6 +335,43 @@
 <%- include('../layout/mobile.ejs') %>
 
 
+ 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function addToCart(productId) {
+        console.log("Inside addToCart function");
+        fetch(`/cart-Products/${productId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            console.log("Response status:", response.status);
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+            console.log("Data received from server:", data);
+            // Handle success message
+            if (data && data.message) {
+                Swal.fire({
+                title: "Good job!",
+                text: data.message,
+                icon: "success"
+                }).then(() => {
+                    // Redirect to the same page
+                    window.location.href = window.location.href;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }
+</script>
 
     
     <!-- Plugins JS File -->

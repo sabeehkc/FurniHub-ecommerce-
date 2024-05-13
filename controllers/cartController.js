@@ -8,16 +8,15 @@ const addProductsCart = async (req, res) => {
     try {
         const productId = req.params.id;
         const product = await Product.findOne({ _id: productId });
-
+        
         if (!product) {
-            console.log("Product not found");
+            return res.status(404).json({ message: 'Product not found' });
         }
 
         const userId = req.session.user ? req.session.user._id : null;
 
         if (!userId) {
-            alert("Your not Loged,Please Login")
-            console.log("User not found");
+            return res.status(401).json({ message: 'User not logged in' });
         }
 
         let cart = await Cart.findOne({ user: userId });
@@ -43,31 +42,29 @@ const addProductsCart = async (req, res) => {
             
         } else {
             const subtotal = product.offerPrice ? product.offerPrice : product.discount;
-            // Add new product to the cart
             cart.products.push({
                 product: productId,
                 price: product.price,
                 name: product.name,
-                discount:product.discount,
+                discount: product.discount,
                 quantity: 1,
                 subtotal: subtotal,
                 images: product.pictures 
             });
         }
 
+        // Calculate grandTotal
         cart.grandTotal = cart.products.reduce((total, item) => total + item.subtotal, 0);
 
         await cart.save();
 
-        res.redirect(req.headers.referer);
+        res.status(200).json({ message: 'Product added to cart successfully' });
 
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 };
-
-
 
 //----------------- load cart page (user side) -----------------//
 

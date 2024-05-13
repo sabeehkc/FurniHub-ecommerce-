@@ -1,7 +1,7 @@
 const User = require('../models/userModel.js');
 const Address = require('../models/addressModel.js'); 
 const bcrypt = require('bcrypt');
-
+const Wallet = require('../models/walletModel.js')
 
 //----------------- Hash Password -----------------//
 const securePassword = async (password) => {

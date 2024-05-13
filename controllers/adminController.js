@@ -49,78 +49,86 @@ const Loginverifying = async(req,res) => {
 };
 
 //----------------- Admin load Dashboard -----------------//
-
 const loadDashboard = async (req, res) => {
-    try {
+  try {
       const orders = await Order.find()
-        .populate({
-          path: 'products.product',
-          model: Product
-        })
-        .populate({
-          path: 'user',
-          model: User
-        })
-        .populate({
-          path: 'address',
-          model: Address
-        });
+          .populate({
+              path: 'products.product',
+              model: Product
+          })
+          .populate({
+              path: 'user',
+              model: User
+          })
+          .populate({
+              path: 'address',
+              model: Address
+          });
 
+      const userCount = await User.countDocuments();
 
-     let userCount = await User.find().countDocuments();
-  
       let mostOrderedProduct = null;
       let mostOrderedCategory = null;
       let maxProductCount = 0;
       let maxCategoryCount = 0;
-  
+
       const productCounts = new Map();
       const categoryCounts = new Map();
-  
+
       orders.forEach((order) => {
-        order.products.forEach((product) => {
-          const productId = product.product._id.toString();
-          const count = productCounts.get(productId) || 0;
-          productCounts.set(productId, count + 1);
-  
-          const categoryId = product.product.category ? product.product.category.toString() : null;
-          if (categoryId) {
-            const categoryCount = categoryCounts.get(categoryId) || 0;
-            categoryCounts.set(categoryId, categoryCount + 1);
-          }
-        });
+          order.products.forEach((product) => {
+              const productId = product.product?._id?.toString();
+              if (productId) {
+                  const count = productCounts.get(productId) || 0;
+                  productCounts.set(productId, count + 1);
+              }
+
+              const categoryId = product.product?.category?._id?.toString();
+              if (categoryId) {
+                  const categoryCount = categoryCounts.get(categoryId) || 0;
+                  categoryCounts.set(categoryId, categoryCount + 1);
+              }
+          });
       });
-  
+
       productCounts.forEach((count, productId) => {
-        if (count > maxProductCount) {
-          maxProductCount = count;
-          mostOrderedProduct = productId;
-        }
+          if (count > maxProductCount) {
+              maxProductCount = count;
+              mostOrderedProduct = productId;
+          }
       });
-  
+
       categoryCounts.forEach((count, categoryId) => {
-        if (count > maxCategoryCount) {
-          maxCategoryCount = count;
-          mostOrderedCategory = categoryId;
-        }
+          if (count > maxCategoryCount) {
+              maxCategoryCount = count;
+              mostOrderedCategory = categoryId;
+          }
       });
-  
+
       console.log("Most Ordered Product:", mostOrderedProduct);
       console.log("Most Ordered Category:", mostOrderedCategory);
-  
-      const mostSoldProduct = await Product.findOne({ _id: mostOrderedProduct });
-      const mostSoldCategory = await Category.findOne({ _id: mostOrderedCategory });
-  
+
+      let mostSoldProduct = null;
+      let mostSoldCategory = null;
+
+      if (mostOrderedProduct) {
+          mostSoldProduct = await Product.findOne({ _id: mostOrderedProduct });
+      }
+
+      if (mostOrderedCategory) {
+          mostSoldCategory = await Category.findOne({ _id: mostOrderedCategory });
+      }
+
       res.render("dashboard", {
-        orders,
-        mostSoldProduct,
-        mostSoldCategory,
-        userCount
+          orders,
+          mostSoldProduct,
+          mostSoldCategory,
+          userCount
       });
-    } catch (error) {
+  } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });
-    }
+  }
 };
 
 const chartYear = async (req, res , next) => {

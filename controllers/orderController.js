@@ -23,13 +23,13 @@ const LoadCheckOut = async (req,res) => {
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
         const userId = req.session.user ? req.session.user._id : null;
-
+        const coupons = await Coupon.find();
         const addresses = await Address.find({user:userId}).populate({path:'user',model:User});
         const cart = await Cart.find({ user: userId })
         .populate({ path: 'products.product', model: Product })
         .populate({ path: 'coupon', model: Coupon})
 
-        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn,addresses,cart});
+        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn,addresses,cart,coupons});
         
     } catch (error) {
         console.log(error.message);
@@ -237,7 +237,7 @@ const applyCoupon = async (req, res) => {
         cart.products.forEach(item => {
             const itemSubtotal = item.subtotal;
             const itemDiscount = Math.floor(itemSubtotal * discountPerProduct / 100);
-            item.discount = itemDiscount;
+            // item.discount = itemDiscount;
             const subtotalAfterDiscount =  itemSubtotal - itemDiscount;
             item.subtotal = subtotalAfterDiscount;
             item.save();

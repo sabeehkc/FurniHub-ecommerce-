@@ -91,11 +91,11 @@
 
                                         
                                         <% }); %>
-                                        <tr class="summary-subtotal">
+                                        <!-- <tr class="summary-subtotal">
                                             <td>Subtotal:</td>
                                             <td></td>
                                             <td>₹<%= cart[0].grandTotal %></td>
-                                        </tr><!-- End .summary-subtotal -->
+                                        </tr> End .summary-subtotal  -->
                                         <tr>
                                             <td>Shipping:</td>
                                             <td></td>
@@ -109,7 +109,7 @@
                                     </tbody>
                                 </table><!-- End .table table-summary -->
                                 <% if(cart[0].coupon){ %>
-                                    <p class="mb-1"><span class="text-primary"><%= cart[0].coupon.couponName  %></span> couponAppied</p>
+                                    <p class="mb-1"><span class="text-primary"><%= cart[0].coupon.couponName  %></span> Coupon Applied</p>
                                 <% } %>
                                
                                 <div class="accordion-summary" id="accordion-payment">
