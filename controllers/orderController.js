@@ -71,6 +71,16 @@ const placeOrder =  async (req, res) => {
             return res.status(400).json({ message: "Cart is empty" });
         }
 
+        for(const cartProduct of cart.products){
+            const product = await Product.findById(cartProduct.product._id);
+            if(!product){
+                return res.status(400).json({message: `Product ${cartProduct.product.name} not found`});
+            }
+            if(cartProduct.quantity > product.quantity) {
+                return res.status(400).json({message: `Product ${cartProduct.product.name} is out of stock.  Available quantity: ${product.quantity} `})
+            }
+        }
+
         const { addressId, paymentMethod } = req.body;
         console.log(paymentMethod);
 
@@ -92,32 +102,47 @@ const placeOrder =  async (req, res) => {
 
         await newOrder.save();
 
-        const wallet = await Wallet.find({user:user._id})
+        const wallet = await Wallet.findOne({user:user._id})
 
         if (paymentMethod === 'COD') {
             await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'pending' } });
             return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
         } else if (paymentMethod === 'Wallet') {
+            if (!wallet) {
+                return res.status(400).json({ error: "Wallet not found" });
+            }
+
             if (wallet.amount >= cart.grandTotal) {
-                await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'paid' } });
+                 const session = await mongoose.startSession();
+                session.startTransaction();
 
-                await Wallet.updateOne({ user: user._id }, { $inc: { amount: -cart.grandTotal } });
+                try {
+                    await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'paid' } }).session(session);
 
-                await Wallet.updateOne(
-                    { user: user._id },
-                    {
-                        $push: {
-                            order: {
-                                orderId: newOrder._id,
-                                name: newOrder.name, 
-                                price: cart.grandTotal,
-                                status: 'debited',
+                    await Wallet.updateOne({ user: user._id }, { $inc: { amount: -cart.grandTotal } }).session(session);
+
+                    await Wallet.updateOne(
+                        { user: user._id },
+                        {
+                            $push: {
+                                order: {
+                                    orderId: newOrder._id,
+                                    price: cart.grandTotal,
+                                    status: 'debited',
+                                },
                             },
-                        },
-                    }
-                );
+                        }
+                    ).session(session);
 
-                return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
+                    await session.commitTransaction();
+                    session.endSession();
+
+                    return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
+                } catch (err) {
+                    await session.abortTransaction();
+                    session.endSession();
+                    throw err;
+                }
             } else {
                 return res.status(400).json({ error: "Insufficient wallet balance" });
             }

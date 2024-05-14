@@ -239,9 +239,14 @@
                 }
             })
             .catch(error => {
-                console.error('There was a problem with your fetch operation:', error);
+            console.error('There was a problem with your fetch operation:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'There was a problem with your order. Please try again later.',
             });
-        }
+        });
+    }
 
     function razorpayPayment(order) {
     var options = {
