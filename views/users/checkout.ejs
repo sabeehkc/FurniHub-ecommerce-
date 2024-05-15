@@ -226,26 +226,26 @@
                 body: JSON.stringify(data)
             })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.message); });
+            }
+            return response.json();
             })
             .then(data => {
-                if(data.pay=='razor'){
-                    razorpayPayment(data.razorpayOrder)
-                }else {
-                window.location.href = "/thank-you";
+                if (data.pay === 'razor') {
+                    razorpayPayment(data.razorpayOrder);
+                } else {
+                    window.location.href = "/thank-you";
                 }
             })
             .catch(error => {
-            console.error('There was a problem with your fetch operation:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'There was a problem with your order. Please try again later.',
+                console.error('There was a problem with your fetch operation:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'There was a problem with your order. Please try again later.',
+                });
             });
-        });
     }
 
     function razorpayPayment(order) {

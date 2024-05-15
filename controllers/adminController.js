@@ -65,7 +65,7 @@ const loadDashboard = async (req, res) => {
               model: Address
           });
 
-      const userCount = await User.countDocuments();
+      const userCount = await User.countDocuments({ is_admin: 0 });
 
       let mostOrderedProduct = null;
       let mostOrderedCategory = null;

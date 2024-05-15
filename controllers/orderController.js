@@ -74,10 +74,10 @@ const placeOrder =  async (req, res) => {
         for(const cartProduct of cart.products){
             const product = await Product.findById(cartProduct.product._id);
             if(!product){
-                return res.status(400).json({message: `Product ${cartProduct.product.name} not found`});
+                return res.status(400).json({ message: `Product ${cartProduct.product.name} not found` });
             }
             if(cartProduct.quantity > product.quantity) {
-                return res.status(400).json({message: `Product ${cartProduct.product.name} is out of stock.  Available quantity: ${product.quantity} `})
+                return res.status(400).json({ message: `Product ${cartProduct.product.name} is out of stock. Available quantity: ${product.quantity}` });
             }
         }
 
@@ -109,49 +109,36 @@ const placeOrder =  async (req, res) => {
             return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
         } else if (paymentMethod === 'Wallet') {
             if (!wallet) {
-                return res.status(400).json({ error: "Wallet not found" });
+                return res.status(400).json({ message: "Wallet not found" });
             }
 
             if (wallet.amount >= cart.grandTotal) {
-                 const session = await mongoose.startSession();
-                session.startTransaction();
+                await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'paid' } });
 
-                try {
-                    await Order.updateOne({ _id: newOrder._id }, { $set: { paymentStatus: 'paid' } }).session(session);
+                await Wallet.updateOne({ user: user._id }, { $inc: { amount: -cart.grandTotal } });
 
-                    await Wallet.updateOne({ user: user._id }, { $inc: { amount: -cart.grandTotal } }).session(session);
-
-                    await Wallet.updateOne(
-                        { user: user._id },
-                        {
-                            $push: {
-                                order: {
-                                    orderId: newOrder._id,
-                                    price: cart.grandTotal,
-                                    status: 'debited',
-                                },
+                await Wallet.updateOne(
+                    { user: user._id },
+                    {
+                        $push: {
+                            order: {
+                                orderId: newOrder._id,
+                                name: newOrder.products.map(product => product.name).join(', '),
+                                price: cart.grandTotal,
+                                status: 'debited',
                             },
-                        }
-                    ).session(session);
-
-                    await session.commitTransaction();
-                    session.endSession();
-
-                    return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
-                } catch (err) {
-                    await session.abortTransaction();
-                    session.endSession();
-                    throw err;
-                }
+                        },
+                    }
+                );
             } else {
-                return res.status(400).json({ error: "Insufficient wallet balance" });
+                return res.status(400).json({ message: "Insufficient wallet balance" });
             }
         } else if(paymentMethod === 'Razorpay') {
             const razorpayOrder = await generateRazorpay(newOrder._id, newOrder.total);
             res.json({razorpayOrder,pay:'razor'});
         }else {
             console.log("Unsupported payment method:",paymentMethod);
-            res.status(400).json({error: 'Unsupported payment method'});
+            return res.status(400).json({ message: 'Unsupported payment method' });
         }
 
         
@@ -171,6 +158,7 @@ const placeOrder =  async (req, res) => {
 
     } catch (error) {
         console.error('Error placing order:', error);
+        res.status(500).json({ message: 'Error placing order', error: error.message });
     }
 };
 

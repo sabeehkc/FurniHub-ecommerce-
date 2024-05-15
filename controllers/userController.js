@@ -131,7 +131,7 @@ const insertUser = async (req, res) => {
             await wallet.save();
         }
 
-        req.session.user = userData;
+        // req.session.user = userData;
 
         const otp = generateOTP();
         console.log(otp);
@@ -195,12 +195,12 @@ const verifyOtp = async (req, res) => {
 
     try {
         const checkotp = req.body.otp;
-        const a = await Otp.findOne({otp:checkotp}) 
-        if(!a){
+        const otp = await Otp.findOne({otp:checkotp}) 
+        if(!otp){
             console.log('incorect Otp')
             return  res.render('otp',{message: "incorrect OTP"});
         }
-        const userId = a.userId
+        const userId = otp.userId
         
         // Check if userId and otp are present 
         if (!userId || !checkotp) {
@@ -224,6 +224,7 @@ const verifyOtp = async (req, res) => {
                 console.log("User not found:", userId);
                 return res.render('otp',{message:"Invalied user"})
             }
+            req.session.user = user;
             user.verified = true;
             await user.save();
 
@@ -457,7 +458,6 @@ const addProductWishlist = async (req,res) => {
         const existingProduct = wishlist.products.find(item => item.product.toString() === productId);
 
         if(existingProduct){
-            alert("Product already in Your Wishlist")
             console.log("user already selected this product");
         }else {
             wishlist.products.push({
@@ -482,6 +482,7 @@ const wishlist = async(req,res) => {
 
         const userId = req.session.user ? req.session.user._id : null
         const wishlistProducts = await Wishlist.find({ user: userId }).populate({ path: 'products.product', model: Product });
+
         res.render('wishlist',{userName:userName,isLoggedIn:isLoggedIn,wishlistProducts:wishlistProducts});
     } catch (error) {
         console.log(error.message);

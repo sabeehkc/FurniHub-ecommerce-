@@ -26,7 +26,7 @@
                         <th>Product</th>
                         <th>Price</th>
                         <th>
-                            <% if (wishlistProducts.length > 0 && wishlistProducts[0].products[0].product.offer) { %>
+                            <% if (wishlistProducts[0].products[0].product.offer) { %>
                                 Offer Price   
                             <% } else { %> 
                                 Discount Price
@@ -71,7 +71,7 @@
                         </td>
                         <td class="action-col">
                             <% if(product.product.quantity > 0){ %> 
-                                <button class="btn  btn-primary"> <a class="text-white" href="/cart-Products/<%= product.product._id %>"><i class="icon-cart-plus"></i>Add to Cart</a></button>     
+                                <button class="btn  btn-primary"  onclick="addToCart('<%= product.product._id %>')"><span><i class="icon-cart-plus"></i> Add to Cart</span> </button>  
                             <% }else { %> 
                                 <button class="btn btn-block btn-outline-primary-2 disabled">Out of Stock</button>    
                             <% } %>
@@ -108,6 +108,52 @@
 
 
 <%- include('../layout/mobile.ejs') %>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function addToCart(productId) {
+        console.log("Inside addToCart function");
+        fetch(`/cart-Products/${productId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            console.log("Response status:", response.status);
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+            console.log("Data received from server:", data);
+            // Handle success message
+            if (data && data.message) {
+                Swal.fire({
+                title: "Good job!",
+                text: data.message,
+                icon: "success"
+                })
+                // .then(() => {
+                //     // Redirect to the same page
+                //     window.location.href = window.location.href;
+                // });
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with your fetch operation:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: error.message,
+            });
+        });
+    }
+</script>
+
+
+
 
  <!-- Plugins JS File -->
  <script src="assets/js/jquery.min.js"></script>

@@ -206,13 +206,31 @@ const loadWallet = async(req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
+        const page = parseInt(req.query.page) || 1; // Default to page 1 
+        const pageSize = 4; 
+
+        // Calculate the skip value 
+        const skip = (page - 1) * pageSize;
+
         const userId = req.session.user ? req.session.user._id : null;
-        const wallets = await Wallet.findOne({user:userId});
+        const wallets = await Wallet.findOne({user:userId}).limit(pageSize).skip(skip).sort({ createdAt: -1 }) ;
         if(!wallets){
             console.log('Wallet not found');
         }
 
-        res.render('wallet',{userName:userName,isLoggedIn:isLoggedIn,wallets});
+        const totalCount = await Wallet.countDocuments({user: userId});
+
+        // Calculate total number of pages
+        const totalPages = Math.ceil(totalCount / pageSize);
+
+
+        res.render('wallet',{
+            userName:userName,
+            isLoggedIn:isLoggedIn,
+            wallets,
+            currentPage: page,
+            totalPages: totalPages
+        });
     } catch (error) {
         console.log(error.message);
     }

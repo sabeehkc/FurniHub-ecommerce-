@@ -64,7 +64,8 @@
                                                 
                                             <td class="quantity-col">
                                                 <div class="cart-product-quantity">
-                                                    <input type="number" class="form-control" id="quantity" value="<%= product.quantity %>" min="1" max="<%= product.product.quantity %>" step="1" data-decimals="0" onchange="addtocart('<%=product.product.name%>','<%= cartProducts[0].user.email%>', this.value,'<%=product.product.quantity%>','<%= product.quantity %>')" required></div>
+                                                    <input type="number" class="form-control" id="quantity" value="<%= product.quantity %>" min="1" max="<%= product.product.quantity %>" step="1"  onchange="addtocart('<%=product.product.name%>','<%= cartProducts[0].user.email%>', this.value,'<%=product.product.quantity%>','<%= product.quantity %>')" required>
+                                                </div>
                                                 </div>
                                             </td>
                                             <td class="total-col">₹<%= product.subtotal %></td>
