@@ -49,16 +49,12 @@
                             <h3 style="font-family: Arial, Helvetica, sans-serif; margin-bottom: 10px;">Wallet</h3>
                             
                         </div>
-                        <% if(wallets){ %>
+                        <% if(transactions && transactions.length > 0){ %>
                         
                         <div>
                            
                             <h4 style="margin-bottom: 10px;">
-                                <% if(wallets.amount) { %>
-                                    Balance: ₹<%=wallets.amount %>
-                                <% }else{ %>
-                                    Balance: ₹0.00
-                                <% } %>
+                                Balance: ₹<%=wallet.amount || 0 %>
                             </h4>
                             
                         </div>
@@ -71,21 +67,21 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% wallets.order.forEach(wallet => { %>
-                                <tr>
-                                <td><%=wallet.status %></td>
-                                <% if(wallet.status === 'credited'){ %> 
-                                    <td class="text-success">+<%= wallet.price %></td>
-                                <% }else { %> 
-                                    <td class="text-danger">-<%= wallet.price %></td>
-                                <% } %>
-                                <td><%= new Date(wallet.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
-                                </tr>
-                                <% }) %>
-                            </tbody>
+                                <% transactions.forEach(transaction => { %>
+                                    <tr>
+                                    <td><%= transaction.status %></td>
+                                    <% if(transaction.status === 'credited'){ %> 
+                                        <td class="text-success">+<%= transaction.price %></td>
+                                    <% }else { %> 
+                                        <td class="text-danger">-<%= transaction.price %></td>
+                                    <% } %>
+                                    <td><%= new Date(transaction.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }) %></td>
+                                    </tr>
+                                    <% }) %>
                         </table>
-                        <% }else { %>
+                        <% } else { %>
                             <h6 style="margin-bottom: 10px;">Balance: ₹0.00</h6>
+                            <p>No transactions found.</p>
                         <% } %>
 
                         <nav aria-label="Page navigation">

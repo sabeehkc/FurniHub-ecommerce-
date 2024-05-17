@@ -159,25 +159,25 @@
     
     function addtocart(prodname,email,qtyValue,real,currentQuantity){
          
-    fetch(`/updateQuantity?name=${prodname}&email=${email}&qtyValue=${qtyValue}&current=${currentQuantity}&cart='yes'`, {
-    method: 'POST', 
-    headers: {
-        'Content-Type': 'application/json',
-    },
-        
-    }).then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            // You can handle the response if needed
-            return response.json();
-        })
-        .then(data => {
-            window.location.reload();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+        fetch(`/updateQuantity?name=${prodname}&email=${email}&qtyValue=${qtyValue}&current=${currentQuantity}&cart='yes'`, {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+        },
+            
+        }).then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                // You can handle the response if needed
+                return response.json();
+            })
+            .then(data => {
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
     }
 
 </script>

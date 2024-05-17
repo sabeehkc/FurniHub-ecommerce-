@@ -213,23 +213,33 @@ const loadWallet = async(req,res) => {
         const skip = (page - 1) * pageSize;
 
         const userId = req.session.user ? req.session.user._id : null;
-        const wallets = await Wallet.findOne({user:userId}).limit(pageSize).skip(skip).sort({ createdAt: -1 }) ;
-        if(!wallets){
+        const wallet = await Wallet.findOne({ user: userId });
+        if(!wallet){
             console.log('Wallet not found');
         }
+        wallet.order.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        const totalCount = await Wallet.countDocuments({user: userId});
+        // Find the latest transaction
+        const latestTransaction = wallet.order[0];
+
+        // Get the paginated transactions
+        const transactions = wallet.order.slice(skip, skip + pageSize);
+
+        // Count the total number of transactions
+        const totalCount = wallet.order.length;
 
         // Calculate total number of pages
         const totalPages = Math.ceil(totalCount / pageSize);
 
-
-        res.render('wallet',{
-            userName:userName,
-            isLoggedIn:isLoggedIn,
-            wallets,
+        res.render('wallet', {
+            userName: userName,
+            isLoggedIn: isLoggedIn,
+            transactions: transactions,
+            latestTransaction: latestTransaction,
             currentPage: page,
-            totalPages: totalPages
+            totalPages: totalPages,
+            totalCount: totalCount,
+            wallet
         });
     } catch (error) {
         console.log(error.message);

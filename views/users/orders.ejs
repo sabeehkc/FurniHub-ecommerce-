@@ -107,7 +107,7 @@
                                                     <% if(order.paymentMethod === 'Razorpay'){ %> 
                                                         <% if(order.paymentStatus === 'pending'){%> 
                                                             
-                                                            <button class="btn-mute" style="border: none" onclick="retryRazorpay('<%= order._id %>','<%=product.subtotal %>')">Pay now!</button>
+                                                            <button class="btn-mute" style="border: none" onclick="retryRazorpay('<%= order._id %>','<%=order.total%>')">Pay now!</button>
                                                         <% } %>    
                                                     <% } %> 
                                                 </td>    
@@ -226,7 +226,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    newStatus: 'returned',
+                    newStatus: 'request return',
                     orderId,
                     productId,
                     reason, // Include the reason in the request

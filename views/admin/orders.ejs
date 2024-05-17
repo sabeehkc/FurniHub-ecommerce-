@@ -90,9 +90,9 @@
                                                                     <% if (product.orderStatus == 'shipped') { %>
                                                                     <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'delivered')">Delivered</a>
                                                                     <% } %>
-                                                                    <!-- <% if(product.orderStatus === 'request return'){ %> 
+                                                                    <% if(product.orderStatus === 'request return'){ %> 
                                                                         <a class="dropdown-item text-danger" onclick="changeProductStatus('<%= order._id %>', '<%= product._id %>', 'returned')">Return</a>
-                                                                    <% } %> -->
+                                                                    <% } %>
                                                                 </div>
                                                             </div>
                                                         </td>

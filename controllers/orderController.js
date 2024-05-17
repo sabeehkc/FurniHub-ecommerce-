@@ -135,7 +135,7 @@ const placeOrder =  async (req, res) => {
             }
         } else if(paymentMethod === 'Razorpay') {
             const razorpayOrder = await generateRazorpay(newOrder._id, newOrder.total);
-            res.json({razorpayOrder,pay:'razor'});
+            return res.json({razorpayOrder,pay:'razor'});
         }else {
             console.log("Unsupported payment method:",paymentMethod);
             return res.status(400).json({ message: 'Unsupported payment method' });
@@ -154,7 +154,7 @@ const placeOrder =  async (req, res) => {
         await Cart.findOneAndDelete({ user: user._id });
 
         // Send success response
-        res.status(201).json({ message: 'Order placed successfully', order: newOrder });
+        return res.status(201).json({ message: 'Order placed successfully', order: newOrder });
 
     } catch (error) {
         console.error('Error placing order:', error);
@@ -381,48 +381,58 @@ const cancelandReturnOrder = async (req, res) => {
         const order = await Order.findOne({ _id: orderId });
 
         const productIndex = order.products.findIndex(product => product._id.toString() === productId);
-
-        if (productIndex !== -1) {
-            if (order.paymentStatus === "paid") {
-
-                const user = await User.findOne({_id:order.user});
-                if (user) {
-                    const wallet = await Wallet.findOne({ user: user._id });
-                    const refundedAmount =order.total - order.products[productIndex].subtotal;
-                    console.log("Refunded Amount",refundedAmount);
-                    const name = order.products[productIndex].name;
-                    console.log("name",name);
-                    if (wallet) {
-                        wallet.amount += order.products[productIndex].subtotal;
-                        wallet.order.push({
-                            orderId: order._id,
-                            name: name,
-                            price:order.products[productIndex].subtotal,
-                            status: "credited",
-                        });
-                        await wallet.save();
-                    }
-                }
-            }
-
-            if(order.paymentMethod === 'Razorpay' || order.paymentMethod === 'Wallet' || order.products[productIndex].orderStatus === 'delivered' ){
-                order.paymentStatus = 'Refunded'
-            }
-            order.products[productIndex].orderStatus = newStatus;
-            order.products[productIndex].reason = reason;
-            order.total -= order.products[productIndex].subtotal;
-
         
-            const product = await Product.findById(productId);
-            if (product) {
-                product.quantity += order.products[productIndex].quantity;
-                await product.save();
-            }
+        if (productIndex !== -1) {
+            if(newStatus === 'cancelled'){
+                if (order.paymentStatus === "paid") {
 
-            // Save the updated order
-            await order.save();
+                    const user = await User.findOne({_id:order.user});
+                    if (user) {
+                        const wallet = await Wallet.findOne({ user: user._id });
+                        const refundedAmount =order.total - order.products[productIndex].subtotal;
+                        console.log("Refunded Amount",refundedAmount);
+                        const name = order.products[productIndex].name;
+                        console.log("name",name);
+                        if (wallet) {
+                            wallet.amount += order.products[productIndex].subtotal;
+                            wallet.order.push({
+                                orderId: order._id,
+                                name: name,
+                                price:order.products[productIndex].subtotal,
+                                status: "credited",
+                            });
+                            await wallet.save();
+                        }
+                    }
 
-            res.json({ success: true });
+                    const allProductsCancelledOrReturned = order.products.every(p => p.orderStatus === 'cancelled' || p.orderStatus === 'returned');
+                    if (allProductsCancelledOrReturned) {
+                        order.paymentStatus = 'Refunded';
+                    }
+
+                }
+
+                order.products[productIndex].orderStatus = newStatus;
+                order.products[productIndex].reason = reason;
+                order.total -= order.products[productIndex].subtotal;
+
+            
+                const product = await Product.findById(productId);
+                if (product) {
+                    product.quantity += order.products[productIndex].quantity;
+                    await product.save();
+                }
+
+            }else{
+
+                order.products[productIndex].orderStatus = newStatus;
+                order.products[productIndex].reason = reason;
+            }  
+            
+             // Save the updated order
+             await order.save();
+
+             res.json({ success: true });
         } else {
             res.json({ success: false, message: "Product not found in order" });
         }
@@ -469,30 +479,73 @@ const ChangeOrderStatus = async (req, res) => {
         const { orderId, productId } = req.params;
         const { newStatus } = req.body;
 
+       
         const order = await Order.findById(orderId);
-
-        const product = order.products.find(p => p._id.toString() === productId);
-
-        if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
         }
 
+        const product = order.products.find(p => p._id.toString() === productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found in order' });
+        }
+
+    
+        const productIndex = order.products.findIndex(p => p._id.toString() === productId);
+
+    
+        if (newStatus === 'returned') {
+            if (order.paymentStatus === "paid") {
+                const user = await User.findOne({_id: order.user});
+                if (user) {
+                    const wallet = await Wallet.findOne({ user: user._id });
+                    if (wallet) {
+                        wallet.amount += product.subtotal;
+                        wallet.order.push({
+                            orderId: order._id,
+                            name: product.name,
+                            price: product.subtotal,
+                            status: "credited",
+                        });
+                        await wallet.save();
+                    }
+                }
+                const allProductsCancelledOrReturned = order.products.every(p => p.orderStatus === 'cancelled' || p.orderStatus === 'returned');
+                    if (allProductsCancelledOrReturned) {
+                        order.paymentStatus = 'Refunded';
+                    }
+            }
+
+            order.total -= product.subtotal;
+
+            // Restock the product
+            const productInDb = await Product.findById(productId);
+            if (productInDb) {
+                productInDb.quantity += product.quantity;
+                await productInDb.save();
+            }
+        }
+
+        // Update the product's order status
         product.orderStatus = newStatus;
-        
+
+        // Check if all products are delivered
         const allProductsDelivered = order.products.every(p => p.orderStatus === 'delivered');
-        
         if (allProductsDelivered) {
             order.paymentStatus = 'paid';
         }
-        
+
+        // Save the updated order
         await order.save();
-        
+
         return res.status(200).json({ message: 'Product status changed successfully' });
 
     } catch (error) {
-        console.log(error.message);
+        console.error("Error changing product status:", error.message);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 };
+
 
 
  
