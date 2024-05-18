@@ -437,6 +437,12 @@ const deleteOffer = async(req,res) => {
 
 const loadSalesReport = async (req, res) => {
     try {
+
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = 4;
+
+        const skip = (page-1)* pageSize;
+
         const startDate = req.query.startDate;
         const endDate = req.query.endDate;
         const filterOption = req.query.filterOption;
@@ -478,7 +484,7 @@ const loadSalesReport = async (req, res) => {
         const combinedFilter = { ...createdAtFilter, ...orderStatusFilter };
 
         // Fetch sales report data from the database with optional date range and status filtering
-        const orders = await Order.find(combinedFilter)
+        const orders = await Order.find(combinedFilter).limit(pageSize).skip(skip)
             .populate({
                 path: 'address',
                 model: Address,
@@ -487,6 +493,10 @@ const loadSalesReport = async (req, res) => {
                     model: User
                 }
             });
+
+            const totalCount = await Order.countDocuments({'products.orderStatus': { $in: ['delivered'] }});
+
+            const totalPages = Math.ceil(totalCount/pageSize);    
 
         let totalOrderProductCount = 0;
         let totalOrderPrice = 0;
@@ -499,7 +509,7 @@ const loadSalesReport = async (req, res) => {
             totalOrderPrice += orderPrice;
         }
 
-        res.render('salesReport', { orders, totalOrderProductCount, totalOrderPrice });
+        res.render('salesReport', { orders, totalOrderProductCount, totalOrderPrice,currentPage:page,totalPages:totalPages });
     } catch (error) {
         console.error("Error fetching sales report:", error);
         res.status(500).json({ message: "Internal server error" });
