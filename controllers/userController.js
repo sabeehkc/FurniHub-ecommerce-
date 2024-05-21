@@ -9,7 +9,7 @@ const Order = require('../models/orderModel.js');
 const { product } = require('./productController.js');
 const Wishlist = require('../models/wishlistModel.js');
 const Wallet = require("../models/walletModel.js");
-
+const Category = require("../models/categoryModel.js");
 //-----------------  hash password -----------------//
 
 const securePassword = async (password) => {
