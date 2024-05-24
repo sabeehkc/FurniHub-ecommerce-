@@ -96,9 +96,6 @@ user_route.post('/retryRazorpay',orderController.retryRazorpay);
 user_route.put('/orders/status',orderController.cancelandReturnOrder);
 user_route.get('/orderdetails', auth.checkuser, auth.isBlock, orderController.orderDetails);
 
-// user_route.get("/filter-category/:id",auth.isBlock,productController.FilterCategory);
-// user_route.get('/all-products',  auth.checkuser, auth.isBlock, productController.sortProducts);
-
 user_route.get("/wishlist",auth.checkuser,auth.isBlock,userController.wishlist);
 user_route.get("/add-wishlist/:id", auth.checkuser, auth.isBlock, userController.addProductWishlist);
 user_route.get("/wishlist/remove", auth.checkuser, auth.isBlock, userController.deleteWishlistProduct);

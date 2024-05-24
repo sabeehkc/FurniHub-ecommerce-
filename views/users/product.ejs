@@ -271,7 +271,11 @@
                     <% relProducts.forEach(product => { %>
                         <figure class="product-media">
                             <% if(product.status === 'active') { %>
-                            <!-- <span class="product-label label-new">New</span> -->
+                                <% if(product.quantity === 0) { %> 
+                                    <span class="product-label label-out">Out of Stock</span>
+                                <% }else if(product.offer && product.offer.status === true) { %> 
+                                    <span class="product-label bg-danger label-new">- <%= product.offer.discount %>%</span>    
+                                <% } %>
                             <a href="/product/<%=product._id %>">
                                 <img src="<%=product.pictures[0] %>" alt="Product image" class="product-image">
                             </a>

@@ -26,15 +26,16 @@
                                 <thead>
                                     <tr>
                                         <th>Product</th>
-                                        <th>Price</th>
+                                        <!-- <th>Price</th> -->
                                         <th>
                                             <% if (cartProducts.length > 0 && cartProducts[0].products[0].product.offer) { %>
                                                 Offer Price   
                                             <% } else { %> 
-                                                Discount Price
+                                                 Price
                                             <% } %>
                                         </th>
                                         <th>Quantity</th>
+                                        <th>Status</th>
                                         <th>Total</th>
                                         <th></th>
                                     </tr>
@@ -54,7 +55,7 @@
                                                     </h3>
                                                 </div>
                                             </td>
-                                            <td class="price-col"><del>₹<%= product.product.price %></del></td>
+                                            <!-- <td class="price-col"><del>₹<%= product.product.price %></del></td> -->
                                             <td class="price-col">
                                                 <% if(product.product.offer) { %>
                                                     ₹<%= product.product.offerPrice %>    
@@ -68,8 +69,21 @@
                                                 </div>
                                                 </div>
                                             </td>
+                                            <td class="stock-col">
+                                                <% if(product.product.quantity > 0 ) { %> 
+                                                    <% if(product.quantity <= product.product.quantity){ %> 
+                                                        <span class="in-stock">In stock</span> 
+                                                    <% }else{ %>  
+                                                        <span class="out-of-stock">Out of stock</span>    
+                                                    <% } %>   
+                                                <% }else { %> 
+                                                    <span class="out-of-stock">Out of stock</span>
+                                                <% } %>
+                                                
+                                            </td>
                                             <td class="total-col">₹<%= product.subtotal %></td>
-                                            <td class="remove-col"><a href="/cart/remove?productId=<%= product._id %>"><i class="icon-close"></i></a></td>
+                                            
+                                            <td class=""><a href="/cart/remove?productId=<%= product._id %>"><i class="icon-close"></i></a></td>
                                         </tr>
                                     <% }); %>
                                 </tbody>
@@ -132,7 +146,8 @@
                                     </tbody>
                                 </table><!-- End .table table-summary -->
     
-                                <a href="/check-out" class="btn btn-outline-primary-2 btn-order btn-block">PROCEED TO CHECKOUT</a>
+                               
+                                <a href="/check-out" class="btn btn-outline-primary-2 btn-order btn-block" id="proceedButton">PROCEED TO CHECKOUT</a>
                             </div><!-- End .summary -->
     
                             <a href="/all-products" class="btn btn-outline-dark-2 btn-block mb-3"><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i></a>
@@ -179,6 +194,32 @@
                 console.error('Error:', error);
             });
     }
+
+
+
+    window.onload = function() {
+        var cartProducts = JSON.parse('<%- JSON.stringify(cartProducts) %>');
+        console.log('cart Product',cartProducts);
+        if (cartProducts && cartProducts.length > 0) {
+            var proceedToCheckout = document.getElementById('proceedButton');
+            var hideButton = false;
+
+            cartProducts[0].products.forEach(product => {
+                if (product.quantity >= product.product.quantity) {
+                    hideButton = true;
+                }
+            });
+
+            if (hideButton === true) {
+                proceedToCheckout.style.display = 'none';
+                
+            } else {
+                proceedToCheckout.style.display = 'block';
+            }
+            console.log(hideButton);
+        }
+    };
+
 
 </script>
 
