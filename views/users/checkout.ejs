@@ -1,6 +1,7 @@
 <%- include('../layout/header.ejs') %>
 <%- include('../layout/navbar.ejs') %>
 
+
 <main class="main">
     <div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
         <div class="container">
@@ -70,66 +71,66 @@
                         <aside class="col-lg-4">
                             <div class="summary">
                                 <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
-
+                        
                                 <table class="table table-summary">
                                     <thead>
                                         <tr>
                                             <th>Product</th>
-                                            <th class="pl-4">Qty</th>
-                                            <th>Total</th>
+                                            <th class="text-center" style="padding-right: 15px;">Qty</th>
+                                            <th class="text-right">Price</th>
+                                            <th class="text-right">Total</th>
                                         </tr>
                                     </thead>
-
+                                
                                     <tbody>
                                         <% cart[0].products.forEach(product => { %>
-                                        
                                         <tr>
                                             <td><a href="#"><%= product.product.name %></a></td>
-                                            <td class="pl-5"><%= product.quantity %></td>
-                                            <td>₹<%= product.subtotal %></td>
+                                            <td class="text-center" style="padding-right: 15px;"><%= product.quantity %></td>
+                                            <td class="text-center" style="padding-right: 5px;">₹<%= product.product.discount %></td>
+                                            <td class="text-right" >₹<%= product.subtotal %></td>
                                         </tr>
-
-                                        
                                         <% }); %>
-                                        <!-- <tr class="summary-subtotal">
-                                            <td>Subtotal:</td>
-                                            <td></td>
-                                            <td>₹<%= cart[0].grandTotal %></td>
-                                        </tr> End .summary-subtotal  -->
                                         <tr>
                                             <td>Shipping:</td>
                                             <td></td>
-                                            <td>Free shipping</td>
+                                            <td></td>
+                                            <td class="text-right">Free shipping</td>
                                         </tr>
                                         <tr class="summary-total">
                                             <td>Total:</td>
                                             <td></td>
-                                            <td>₹<%= cart[0].grandTotal %></td>
+                                            <td></td>
+                                            <td class="text-right">₹<%= cart[0].grandTotal %></td>
                                         </tr><!-- End .summary-total -->
                                     </tbody>
                                 </table><!-- End .table table-summary -->
+                        
                                 <% if(cart[0].coupon){ %>
-                                    <p class="mb-1"><span class="text-primary"><%= cart[0].coupon.couponName  %></span> Coupon Applied</p>
+                                <div class="mb-3 d-flex " style="justify-content: space-between;">
+                                    <p class="mb-1">Coupon Applied: <span class="text-primary"><%= cart[0].coupon.couponName %></span></p>
+                                    <a href="/remove-coupon-cart" class="text-danger"><i class="icon-close"></i></a>
+                                </div>
                                 <% } %>
-                               
+                        
                                 <div class="accordion-summary" id="accordion-payment">
                                     <label for="paymentOption">Select Payment Option:</label>
-                                    <select id="paymentOption" name="paymentOption" class="form-control">
-                                        <% if(cart[0].grandTotal <= 1000){%> 
+                                    <select id="paymentOption" name="paymentOption" class="form-control mb-3">
+                                        <% if(cart[0].grandTotal <= 2500){%> 
                                             <option value="COD">Cash on Delivery</option>
                                         <% } %>
-                                        <option value="Razorpay">Razor pay</option>
+                                        <option value="Razorpay">Razor Pay</option>
                                         <option value="Wallet">Wallet</option>
-                                         
                                     </select>
                                 </div><!-- End .accordion -->
-
+                        
                                 <button type="button" class="btn btn-outline-primary-2 btn-order btn-block" onclick="placeclick()">
                                     <span class="btn-text">Place Order</span>
                                     <span class="btn-hover-text">Proceed to Checkout</span>
                                 </button>
                             </div><!-- End .summary -->
                         </aside><!-- End .col-lg-4 -->
+                        
                     </div><!-- End .row -->
                 </form>
             </div><!-- End .container -->

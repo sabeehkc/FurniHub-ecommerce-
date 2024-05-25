@@ -237,31 +237,28 @@ const applyCoupon = async (req, res) => {
         const coupon = await Coupon.findById(couponId);
 
         const userId = req.session.user ? req.session.user._id : null;
-        const cart = await Cart.findOne({ user: userId }).populate('products.product');
+        const cart = await Cart.findOne({ user: userId }).populate({ path: 'products.product', model: Product });
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });
         }
 
         const discountPerProduct = coupon.discountPercent / cart.products.length;
-        console.log(discountPerProduct);
 
-       
-        cart.products.forEach(item => {
+        cart.products.forEach((item) => {
             const itemSubtotal = item.subtotal;
             const itemDiscount = Math.floor(itemSubtotal * discountPerProduct / 100);
-            // item.discount = itemDiscount;
-            const subtotalAfterDiscount =  itemSubtotal - itemDiscount;
+            const subtotalAfterDiscount = itemSubtotal - itemDiscount;
             item.subtotal = subtotalAfterDiscount;
-            item.save();
         });
 
         cart.grandTotal = cart.products.reduce((total, item) => total + item.subtotal, 0);
 
-        if (cart.grandTotal >= coupon.minAmount) {
+        if (cart.grandTotal) {
             cart.coupon = coupon._id;
-            await cart.save();
         }
+
+        await cart.save();
 
         res.redirect('/check-out');
     } catch (error) {
@@ -269,6 +266,34 @@ const applyCoupon = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+//----------------- Remove Coupon From Cart -----------------//
+const removeCoponCart = async (req,res) => {
+    try {
+        const userId = req.session.user ? req.session.user._id : null;
+        const cart = await Cart.findOne({user : userId});
+
+        if(!cart){
+            console.log("Cart is not Found");
+        }
+
+        await Cart.updateOne({ user: userId }, { $unset: { coupon: "" } });
+
+       
+        cart.products.forEach(product => {
+            const originalPrice = product.discount * product.quantity;
+            console.log("pricceee",originalPrice);
+            product.subtotal = originalPrice;
+        });
+
+        cart.grandTotal = cart.products.reduce((total, product) => total + product.subtotal, 0);
+        await cart.save();
+
+        res.redirect('/check-out');
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 
 //----------------- Load Order Page (user side) -----------------//
@@ -561,5 +586,6 @@ module.exports = {
     ChangeOrderStatus,
     displyaCoupons,
     applyCoupon,
-    retryRazorpay
+    retryRazorpay,
+    removeCoponCart
 }
