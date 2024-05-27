@@ -212,6 +212,7 @@
           startDate = new Date(currentYear, currentMonth, 1) 
           endDate = new Date(currentYear, currentMonth + 1, 0) 
           break
+          
       }
 
       
@@ -250,13 +251,17 @@
         let totalAmount = 0;
 
         data.data.forEach(row => {
-            const subtotal = parseFloat(row[4].content);
-            if (!isNaN(subtotal)) {
-                totalAmount += subtotal;
+            const priceContent = row[4].content; // Assumes the 5th column is the Price
+            const price = parseFloat(priceContent.replace(/[^\d.-]/g, ""));
+            if (!isNaN(price)) {
+                totalAmount += price;
             } else {
-                console.log("Invalid subtotal value:", row[4].content);
+                console.log("Invalid price value:", priceContent);
             }
         });
+
+        console.log("Total amount:", totalAmount);
+
 
 
         // Add total sales count and total amount to the document

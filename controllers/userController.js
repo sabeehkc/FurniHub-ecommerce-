@@ -131,7 +131,7 @@ const insertUser = async (req, res) => {
             await wallet.save();
         }
 
-        // req.session.user = userData;
+        req.session.user = userData;
 
         const otp = generateOTP();
         console.log(otp);
@@ -168,13 +168,147 @@ function generateReferralCode() {
 }
 
 //----------------- load OTP verification page -----------------//
-
 const loadOtp = async (req, res) => {
     try {
-        res.render('otp',{message:""});
+        const userId = req.session.user ? req.session.user._id : null;
+        const user = await User.findOne({ _id: userId });
+
+        const ses = !!user; // Boolean indicating if the user is logged in
+        const categories = await Category.find({ status: 'active' });
+
+        // Current date and time in ISO format
+        const nowisoFormattedDate = new Date().toISOString();
+        // console.log(nowisoFormattedDate);
+
+        // Date and time 2 minutes from now in ISO format
+        const isoFormattedDate = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+        // console.log(isoFormattedDate);
+
+        const message = req.query.message || '';
+
+        res.render('otp', { message, userId, isoFormattedDate, nowisoFormattedDate, user, categories, ses });
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
+    }
+};
+
+
+//----------------- OTP verification(post) -----------------//
+const verifyOtp = async (req, res) => {
+    try {
+      if (req.session.user) {
+        let { otp } = req.body;
+  
+        if (!otp) {
+          throw new Error("Empty OTP details are not allowed");
+        } else {
+
+            const UserOTPVerificationRecords = await Otp.find({ userId: req.session.user._id }).sort({createdAt:-1});
+    
+            if (UserOTPVerificationRecords.length === 0) {
+                throw new Error("No OTP records found for this user");
+            }
+    
+            const { expiresAt, createdAt, otp: storedOtp } = UserOTPVerificationRecords[0];
+    
+            if (expiresAt < Date.now()) {
+                // await Otp.deleteMany({ userId: req.session.user._id });
+    
+                const userRecord = await User.findOne({ _id: req.session.user._id, is_verified: false });
+    
+                // if (userRecord) {
+                //     await User.deleteOne({ _id: req.session.user._id });
+                // }
+        
+                res.json({
+                success: false,
+                message: 'OTP expired,please try again'
+                });
+
+            } else if(storedOtp !== otp) {
+                res.json({
+                    success: false,
+                    message: 'Wrong OTP, try again'
+                });
+            } else {
+                await User.updateOne({ _id: req.session.user._id }, { verified: true });
+                await Otp.deleteMany({ userId: req.session.user._id });
+    
+                res.json({
+                    success: true,
+                    message: 'Successfully registered'
+                });
+            } 
+        
+        }
+    }else {
+        res.json({
+          success: false,
+          message: 'User not logged in'
+        });
+      }
+
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({
+        success: false,
+        message: 'An error occurred'
+      });
+    }
+};
+  
+
+
+const backRegister = async (req,res) => {
+    try {
+        await User.deleteMany({ verified: false });
+        res.redirect('/register');
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+//----------------- Resent OTP -----------------//
+const resendOtp = async (req, res) => {
+    try {
+        const userId = req.session.user ? req.session.user._id : null;
+        
+        if (!userId) {
+            console.log('User not logged in');
+            return res.redirect('/login');
+        }
+
+        // Find the OTP record for the current user
+        const myotp = await Otp.findOne({ userId });
+        if (!myotp) {
+            console.log('OTP record not found');
+            return res.render('otp', { message: "No OTP record found for the user" });
+        }
+
+        // Find the user by userId
+        const user = await User.findById(userId);
+        if (!user) {
+            console.log('User not found');
+            return res.render('otp', { message: "User not found" });
+        }
+
+        // Generate new OTP
+        const otp = generateOTP();
+        console.log("Resend OTP:", otp);
+
+        // Delete the old OTP record for the user
+        await Otp.deleteOne({ userId });
+
+
+        // Send OTP mail
+        await sendOtpMail(user.name, user.email, otp, userId);
+
+        return res.redirect('/otp-verification');
+    } catch (error) {
+        console.error("Error resending OTP:", error.message);
+        return res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
@@ -188,70 +322,6 @@ const loadlogin = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 };
-
-//----------------- OTP verification(post) -----------------//
-
-const verifyOtp = async (req, res) => {
-
-    try {
-        const checkotp = req.body.otp;
-        const otp = await Otp.findOne({otp:checkotp}) 
-        if(!otp){
-            console.log('incorect Otp')
-            return  res.render('otp',{message: "incorrect OTP"});
-        }
-        const userId = otp.userId
-        
-        // Check if userId and otp are present 
-        if (!userId || !checkotp) {
-            console.log("Missing userId or otp in request body");
-            return res.render('otp', { message: "Please Enter OTP" });
-        }
-
-        // Find the OTP record for the user
-        const otpRecord = await Otp.findOne({ userId: userId }).sort({ createdAt: -1 });
-
-        if (!otpRecord) {
-            console.log("No OTP record found for user:", userId);
-            return res.render('otp', { message: "Invalid OTP, please try again" });
-        }
-
-        // Check OTP matches and is not expired
-        if (checkotp === otpRecord.otp && Date.now() < otpRecord.expiresAt) {
-            // Update user's verified 
-            const user = await User.findById(userId);
-            if (!user) { 
-                console.log("User not found:", userId);
-                return res.render('otp',{message:"Invalied user"})
-            }
-            req.session.user = user;
-            user.verified = true;
-            await user.save();
-
-            //  delete the OTP record 
-            await otpRecord.deleteOne();
-
-            console.log("OTP verified successfully for user:", userId);
-            return res.redirect('/');
-        } else {
-            console.log("Invalid OTP or expired for user:", userId);
-            return res.render('otp', { message: "OTP expired or Invalid OTP, please try again" });
-        }
-
-    } catch (error) {
-        console.error("Error verifying OTP:", error.message);
-    }
-};
-
-
-const backRegister = async (req,res) => {
-    try {
-        await User.deleteOne({ verified: false });
-        res.redirect('/register');
-    } catch (error) {
-        console.log(error.message);
-    }
-}
 
 //----------------- verifyLogin -----------------//
 
@@ -294,37 +364,6 @@ const verifyLogin = async (req, res) => {
     }
 };
 
-//----------------- Resent OTP -----------------//
-
-const resendOtp = async (req, res) => {
-    try {
-        const myotp = await Otp.findOne();
-        console.log(myotp.userId);
-
-        // Find the user by userId
-        const user = await User.findById(myotp.userId);
-
-        if (!user) {
-            console.log('user not found');
-            return res.render('otp',{message:""});
-            
-        }
-
-        // Generate new OTP
-        const otp = generateOTP();
-        console.log("Resend OTP:",otp);
-
-        await Otp.deleteOne();
-
-        // Send OTP mail
-        await sendOtpMail(user.name, user.email, otp, myotp.userId);
-
-        return res.redirect('/otp-verification')
-    } catch (error) {
-        console.error("Error resending OTP:", error.message);
-        return res.status(500).json({ message: "Internal Server Error" });
-    }
-};
 
 //----------------- User Logout -----------------//
 

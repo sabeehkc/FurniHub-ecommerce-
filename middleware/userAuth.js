@@ -47,9 +47,12 @@ const logUser = async (req,res,next) => {
   }
 }
 
+
+
 module.exports = {
   isBlock,
   checkuser,
-  logUser
+  logUser,
+  
     
 }
