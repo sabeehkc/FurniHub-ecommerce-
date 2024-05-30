@@ -285,13 +285,12 @@ const blockUser = async (req, res) => {
         console.log(email);
 
         const user = await User.findOne({ email });
-        console.log(user);
+        // console.log(user);
         if (!user) {
             res.render('userlist');
             alert("user not found");
         }
         user.is_blocked = !user.is_blocked
-        
         
         await user.save();
 

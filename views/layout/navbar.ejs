@@ -1,3 +1,4 @@
+
 <div class="page-wrapper">
     <header class="header">
         <div class="header-top">
@@ -97,9 +98,13 @@
                         </div>   wishlist end -->
 
                         <div class="cart ml-3">
-                            <a href="/cart" role="button">
+                            <a href="/cart" role="button" style="position: relative;">
                                 <i class="icon-shopping-cart" style="font-size: 35px;"></i>
-                                <!-- <span class="cart-count">2</span> -->
+                                <% if (isLoggedIn) { %> 
+                                    <span class="cart-badge"><%= cartCount  %></span>
+                                <% }else{ %>
+                                    <span class="cart-badge"><i class="icon-close"></i></span>
+                                <% } %>    
                             </a>
                         </div><!-- End .cart -->
                         

@@ -22,6 +22,12 @@ const LoadCheckOut = async (req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+
         const userId = req.session.user ? req.session.user._id : null;
         const coupons = await Coupon.find();
         const addresses = await Address.find({user:userId}).populate({path:'user',model:User});
@@ -29,7 +35,7 @@ const LoadCheckOut = async (req,res) => {
         .populate({ path: 'products.product', model: Product })
         .populate({ path: 'coupon', model: Coupon})
 
-        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn,addresses,cart,coupons});
+        res.render('checkout',{userName:userName,isLoggedIn:isLoggedIn,addresses,cart,coupons,cartCount});
         
     } catch (error) {
         console.log(error.message);
@@ -215,6 +221,11 @@ const displyaCoupons = async(req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
         const coupons = await Coupon.find();
 
         const userId = req.session.user ? req.session.user._id : null;
@@ -223,7 +234,7 @@ const displyaCoupons = async(req,res) => {
             console.log("Cart is not found");
         }
 
-        res.render('disCoupons',{userName:userName,isLoggedIn:isLoggedIn,coupons,cart})
+        res.render('disCoupons',{userName:userName,isLoggedIn:isLoggedIn,coupons,cart,cartCount})
 
     } catch (error) {
         console.log(error.message);
@@ -309,6 +320,12 @@ const loadOrders = async (req,res) => {
         // Calculate the skip value 
         const skip = (page - 1) * pageSize;
 
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+
         const userId = req.session.user ? req.session.user._id : null;
         const orders = await Order.find({user: userId}).limit(pageSize).skip(skip).populate({
             path: 'address',
@@ -329,7 +346,8 @@ const loadOrders = async (req,res) => {
             isLoggedIn:isLoggedIn,
             orders,
             currentPage: page,
-            totalPages: totalPages
+            totalPages: totalPages,
+            cartCount
         });
         
     } catch (error) {
@@ -365,6 +383,12 @@ const orderDetails = async (req,res) => {
         console.log("myorder:",myorder);
 
 
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+
         let i=0
       
         for( i=0;i<myorder.products.length;i++)
@@ -376,7 +400,7 @@ const orderDetails = async (req,res) => {
           }
         }
   
-        res.render('orderdetails',{userName:userName,isLoggedIn:isLoggedIn,myorder,i})
+        res.render('orderdetails',{userName:userName,isLoggedIn:isLoggedIn,myorder,i,cartCount})
 
     } catch (error) {
         console.log(error.message);
@@ -389,7 +413,13 @@ const ThankYou = async (req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        res.render('thankyou',{userName:userName,isLoggedIn:isLoggedIn})
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+
+        res.render('thankyou',{userName:userName,isLoggedIn:isLoggedIn,cartCount})
     } catch (error) {
         console.log(error.message);
     }

@@ -9,6 +9,8 @@ const isBlock = async (req, res, next) => {
 
       if (!user) {
         console.log("User not found");
+        await req.session.destroy(); 
+        res.redirect('/'); 
       }else if (user.is_blocked) {
         await req.session.destroy(); 
         res.redirect('/'); 

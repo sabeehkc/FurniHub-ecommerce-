@@ -3,6 +3,7 @@ const Product = require("../models/productModel");
 const Sharp = require("sharp");
 const path = require("path");
 const Offer = require("../models/offerModal");
+const Cart = require("../models/cartModel");
 
 //-----------------  load Product Mangement page -----------------//
 const loadProducts = async(req,res) => {
@@ -234,6 +235,12 @@ const loadAllProduct = async (req,res) => {
         const { s } = req.query; 
         const {a} = req.query;
 
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+
 
         let products;
         let totalCount;
@@ -277,7 +284,8 @@ const loadAllProduct = async (req,res) => {
             products:products,
             categories:categories,
             currentPage: page,
-            totalPages: totalPages
+            totalPages: totalPages,
+            cartCount
         });
     } catch (error) {
         console.log(error.message);
@@ -320,8 +328,19 @@ const product = async(req,res) => {
             console.log( relatedProducts);
                 
         }
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
 
-        res.render('product',{userName:userName,isLoggedIn:isLoggedIn,product:productData, relProducts: relatedProducts });
+        res.render('product',{
+            userName:userName,
+            isLoggedIn:isLoggedIn,
+            product:productData, 
+            relProducts: relatedProducts,
+            cartCount
+        });
 
     } catch (error) {
         console.log(error.message);

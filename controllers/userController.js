@@ -77,10 +77,16 @@ const loadHome = async (req, res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+
         const products1 = await Product.find().limit(6).sort({ _id: -1 });
         const products2 = await Product.find().limit(8);
 
-        res.render('home', { userName: userName, isLoggedIn: isLoggedIn, products1,products2});
+        res.render('home', { userName: userName, isLoggedIn: isLoggedIn, products1,products2,cartCount});
 
     } catch (error) {
         console.log(error.message);
@@ -91,7 +97,9 @@ const loadHome = async (req, res) => {
 
 const loadRegister = async (req, res) => {
     try {
-        res.render('register',{message:""});
+        const userName = req.session.user ? req.session.user.name : null;
+        const isLoggedIn = req.session.user ? true : false; //hide login button
+        res.render('register',{message:"",userName,isLoggedIn: isLoggedIn});
     } catch (error) {
         console.log(error.message);
     }
@@ -281,7 +289,7 @@ const resendOtp = async (req, res) => {
         }
 
         // Find the OTP record for the current user
-        const myotp = await Otp.findOne({ userId });
+        const myotp = await Otp.findOne({userId: userId });
         if (!myotp) {
             console.log('OTP record not found');
             return res.render('otp', { message: "No OTP record found for the user" });
@@ -316,7 +324,7 @@ const resendOtp = async (req, res) => {
 
 const loadlogin = async (req, res) => {
     try {
-        res.render('login');
+        res.render('login',{message:""});
     } catch (error) {
         console.log(error.message);
         res.status(500).send("Internal Server Error");
@@ -450,7 +458,12 @@ const loadAbout = async(req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
-        res.render('about',{userName:userName,isLoggedIn:isLoggedIn});
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+        res.render('about',{userName:userName,isLoggedIn:isLoggedIn,cartCount});
     } catch (error) {
         console.log(error.message);
     }
@@ -461,7 +474,12 @@ const Error404 = async(req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
-        res.render('404',{userName:userName,isLoggedIn:isLoggedIn})
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+        res.render('404',{userName:userName,isLoggedIn:isLoggedIn,cartCount})
     } catch (error) {
         console.log(Error.message);
     }
@@ -520,9 +538,16 @@ const wishlist = async(req,res) => {
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
         const userId = req.session.user ? req.session.user._id : null
+
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+
         const wishlistProducts = await Wishlist.find({ user: userId }).populate({ path: 'products.product', model: Product });
 
-        res.render('wishlist',{userName:userName,isLoggedIn:isLoggedIn,wishlistProducts:wishlistProducts});
+        res.render('wishlist',{userName:userName,isLoggedIn:isLoggedIn,wishlistProducts:wishlistProducts,cartCount});
     } catch (error) {
         console.log(error.message);
     }
@@ -566,7 +591,13 @@ const loadAllCategoryPage = async(req,res) => {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
 
-        res.render('allCategory',{userName:userName,isLoggedIn:isLoggedIn})
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
+
+        res.render('allCategory',{userName:userName,isLoggedIn:isLoggedIn,cartCount})
         
     } catch (error) {
         console.log(error.message);

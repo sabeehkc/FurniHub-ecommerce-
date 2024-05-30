@@ -192,14 +192,9 @@
                         <input type="password" class="form-control" id="singin-password" name="password"  required >
                         <small id="passwordError" class="text-danger"></small>
                     </div><!-- End .form-group -->
-                    <% 
-                    if(typeof message !== 'undefined'){
-                      %>
-                       <small style="color: rgb(241, 134, 134);">  <%= message %>   </small>
-                       <%
-                    }
-            
-            %>
+                    <% if(typeof message !== 'undefined'){%>
+                       <p style="color: rgb(238, 78, 78);">  <%= message %>   </p>
+                    <% } %>
     
             <div class="form-footer">
                 <button type="submit" class="btn btn-outline-primary">

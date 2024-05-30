@@ -181,6 +181,8 @@
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
 <%- include('../layout/mobile.ejs') %>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // Function to update the timer display
     function updateTimer(minutes, seconds) {
@@ -209,8 +211,9 @@
 
         if (timer <= 0) {
             clearInterval(countdownInterval);
-            countdownElement.innerHTML = 'Timer Expired';
+            countdownElement.innerHTML = '<span style="color: red;">Timer Expired</span>';
         }
+
 
         timer -= 1000;
     }, 1000);
@@ -254,15 +257,20 @@
 </script>
 
 <script>
-setTimeout(function() {
-    document.getElementById('button-container').style.display = 'block';
-},120000);
+        setTimeout(function() {
+            document.getElementById('button-container').style.display = 'block';
+        },120000);
 
-
-function alerts(){
-     alert("Re-sennd OTP has been send your Email")
-}</script>
-
+        function alerts() {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Re-send OTP has been sent to your Email',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        }
+        
+</script>
    
       
    

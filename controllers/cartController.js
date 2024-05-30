@@ -74,11 +74,17 @@ const LoadCart = async (req, res) => {
         const isLoggedIn = req.session.user ? true : false;
 
         const userId = req.session.user ? req.session.user._id : '';
+
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
         
         const cartProducts = await Cart.find({ user: userId }).populate({ path: 'products.product', model: Product })
         .populate({ path: 'coupon', model: Coupon});
         
-        res.render('cart', { userName: userName, isLoggedIn: isLoggedIn, cartProducts: cartProducts });
+        res.render('cart', { userName: userName, isLoggedIn: isLoggedIn, cartProducts: cartProducts,cartCount });
 
     } catch (error) {
         console.log(error.message);

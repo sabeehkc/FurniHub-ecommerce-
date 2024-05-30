@@ -2,6 +2,7 @@ const User = require('../models/userModel.js');
 const Address = require('../models/addressModel.js'); 
 const bcrypt = require('bcrypt');
 const Wallet = require('../models/walletModel.js')
+const Cart = require('../models/cartModel.js');
 
 //----------------- Hash Password -----------------//
 const securePassword = async (password) => {
@@ -25,8 +26,13 @@ const loadProfile = async (req,res) => {
         if(!user){
             console.log("user not found");
         }
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
 
-        res.render('profile',{userName:userName,isLoggedIn:isLoggedIn,user:user,message:"",message1:""});
+        res.render('profile',{userName:userName,isLoggedIn:isLoggedIn,user:user,message:"",message1:"",cartCount});
     } catch (error) {
         console.log(error.message);
     }
@@ -103,9 +109,14 @@ const loadAddress = async (req,res) => {
 
         console.log(addresses);
 
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
 
 
-        res.render('address',{userName:userName,isLoggedIn:isLoggedIn,addresses})
+        res.render('address',{userName:userName,isLoggedIn:isLoggedIn,addresses,cartCount})
     } catch (error) {
         console.log(error.message);
     }
@@ -152,9 +163,13 @@ const loadEditAddress = async (req,res) => {
         const id = req.params.id
 
         const address = await Address.findById(id)
-
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
         
-        res.render('editAddress',{userName:userName,isLoggedIn:isLoggedIn,address})
+        res.render('editAddress',{userName:userName,isLoggedIn:isLoggedIn,address,cartCount})
 
     } catch (error) {
         console.log(error.message);
@@ -205,6 +220,11 @@ const loadWallet = async(req,res) => {
     try {
         const userName = req.session.user ? req.session.user.name : null;
         const isLoggedIn = req.session.user ? true : false; //hide login button
+        let cartCount = 0;
+        if (isLoggedIn) {
+            const cart = await Cart.findOne({ user: req.session.user._id });
+            cartCount = cart ? cart.products.length : 0; 
+        }
 
         const page = parseInt(req.query.page) || 1; // Default to page 1 
         const pageSize = 4; 
@@ -239,7 +259,8 @@ const loadWallet = async(req,res) => {
             currentPage: page,
             totalPages: totalPages,
             totalCount: totalCount,
-            wallet
+            wallet,
+            cartCount
         });
     } catch (error) {
         console.log(error.message);
