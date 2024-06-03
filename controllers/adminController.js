@@ -288,7 +288,7 @@ const blockUser = async (req, res) => {
         // console.log(user);
         if (!user) {
             res.render('userlist');
-            alert("user not found");
+            // alert("user not found");
         }
         user.is_blocked = !user.is_blocked
         
