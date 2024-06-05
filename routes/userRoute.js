@@ -16,10 +16,7 @@ require("../passport"); //passport.js
 user_route.use(passport.initialize());
 user_route.use(passport.session());
 
-user_route.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["email", "profile"] })
-);
+user_route.get("/auth/google",passport.authenticate("google", { scope: ["email", "profile"] }));
 
 user_route.get(
   "/auth/google/callback",
