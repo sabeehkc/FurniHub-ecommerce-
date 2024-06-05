@@ -332,43 +332,43 @@ const loadlogin = async (req, res) => {
 };
 
 //----------------- verifyLogin -----------------//
-
 const verifyLogin = async (req, res) => {
-    try { 
+    try {
         const email = req.body.email;
         const password = req.body.password;
 
         if (!email || !password) {
-            return res.render('login', { message: "Email and password are required" });
+            return res.status(400).json({ message: "Email and password are required" });
         }
 
-        const userData = await User.findOne({ email: email, is_blocked: false});
-        
+        const userData = await User.findOne({ email: email});
+
         if (!userData) {
-            return res.render('login', { message: "Your Not Registered, or Your account admin is blocked please contact our support team" });
+            return res.status(404).json({ message: "Your Not Registered or Eamil is incorrect" });
         }
-        
 
         const passwordMatch = await bcrypt.compare(password, userData.password);
-       
+
         if (!passwordMatch) {
-            return res.render('login', { message: "Email or password is incorrect" });
+            return res.status(401).json({ message: "Password is incorrect" });
+        }
+
+        if(userData.is_blocked){
+            return res.status(403).json({ message: "Your account is admin blocked contact our support team" });
         }
 
         if (!userData.verified) {
-            return res.render('login', { message: "Your account is not verified " });
+            return res.status(403).json({ message: "Your account is not verified contact our support team " });
         }
 
-       
         req.session.user = userData;
         req.session.save(() => {
-            res.redirect('/');
+            res.status(200).json({ message: "Login successful" });
         });
-       
 
     } catch (error) {
         console.error("Error verifying login:", error.message);
-        res.status(500).render('login', { message: "Internal Server Error" });
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 

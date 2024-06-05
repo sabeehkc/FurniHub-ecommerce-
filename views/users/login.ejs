@@ -179,7 +179,7 @@
                     <hr style="border-color: rgb(230, 151, 4);">
                 </div>
                
-                <form action="/login-verify" method="post">
+                <form action="/login-verify" method="post" onsubmit="event.preventDefault(); loginUser()">
                    
                     <div class="form-group">
                         <label for="singin-email">Username or Email address *</label>
@@ -240,6 +240,73 @@
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
 <%- include('../layout/mobile.ejs') %>
+<script>
+    async function loginUser() {
+        let email = document.getElementById("singin-email").value.trim();
+        let password = document.getElementById("singin-password").value.trim();
+
+        let emailError = document.getElementById("emailError");
+        let passwordError = document.getElementById("passwordError");
+
+        emailError.textContent = '';
+        passwordError.textContent = '';
+
+        let isValid = true;
+
+        if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
+            emailError.textContent = 'Please enter a valid email address.';
+            isValid = false;
+        }
+
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(password)) {
+            passwordError.textContent = 'Password must be at least 6 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.';
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/login-verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Login successful
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login Successful',
+                    text: 'Welcome back!',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = '/'; // Redirect to homepage
+                });
+            } else {
+                // Display error message
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: data.message
+                });
+            }
+        } catch (error) {
+            console.error("Error logging in:", error.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong! Please try again later.'
+            });
+        }
+    }
+</script>
 
 <!-- Plugins JS File -->
 <script src="assets/js/jquery.min.js"></script>

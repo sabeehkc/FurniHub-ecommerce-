@@ -66,7 +66,9 @@ user_route.get("/about", auth.isBlock, userController.loadAbout);
 
 user_route.get("/profile/",auth.checkuser,auth.isBlock,profileController.loadProfile);
 user_route.post("/profile/:id", profileController.editProfile);
-user_route.post("/profile", profileController.changePassword);
+user_route.get('/changePassword',auth.checkuser,auth.isBlock,profileController.loadChangePassword);
+user_route.post("/changePassword", profileController.changePassword);
+
 
 user_route.get("/address",auth.checkuser,auth.isBlock,profileController.loadAddress);
 user_route.post("/address", profileController.addAddress);
