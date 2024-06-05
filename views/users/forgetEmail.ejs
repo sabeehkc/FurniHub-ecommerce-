@@ -165,7 +165,7 @@
         <div class="container">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Sign In</li>
+                <li class="breadcrumb-item active" aria-current="page">Forgotten Password</li>
             </ol>
         </div><!-- End .container -->
     </nav><!-- End .breadcrumb-nav -->
@@ -175,38 +175,28 @@
            
             <div class="form-box" style="background-color: rgb(204, 202, 202);">
                 <div class="text-center">
-                    <h3>Sign In</h3>
+                    <h3>Forgotten Password</h3>
                     <hr style="border-color: rgb(230, 151, 4);">
                 </div>
                
-                <form action="/login-verify" method="post" onsubmit="event.preventDefault(); loginUser()">
+                <form action="/forgetEmail" method="post" onsubmit="return validate()">
                    
                     <div class="form-group">
-                        <label for="singin-email">Username or Email address *</label>
-                        <input type="text" class="form-control" id="singin-email" name="email"  required>
+                        <label for="singin-email">Email address *</label>
+                        <input type="text" class="form-control" id="singin-email" name="email" placeholder="Enter Your valid Email"  required>
                         <small id="emailError" class="text-danger"></small>
                     </div><!-- End .form-group -->
+                    <p style="color: rgb(238, 78, 78);">  <%= message %>   </p>
+                   
     
-                    <div class="form-group">
-                        <label for="singin-password">Password *</label>
-                        <input type="password" class="form-control" id="singin-password" name="password"  required >
-                        <small id="passwordError" class="text-danger"></small>
-                    </div><!-- End .form-group -->
-                    <% if(typeof message !== 'undefined'){%>
-                       <p style="color: rgb(238, 78, 78);">  <%= message %>   </p>
-                    <% } %>
-    
-            <div class="form-footer">
-                <button type="submit" class="btn btn-outline-primary">
-                    <span>LOG IN</span>
-                    <i class="icon-long-arrow-right"></i>
-                </button>
-                        <div>
-                            <a style="margin-left: 190px;" href="/forgotEmail" class="text-dark">Forgotten Password?</a>
-                        </div>
-                        <div class=" mt-3 " style="margin-left: 100px;">
-                            <p>Don't have an account? <a class="text-white" href="/register">Sign Up</a></p>
-                        </div>
+                    <div class="form-footer d-flex " style="justify-content: space-between;" >
+                        <button type="submit" class="btn btn-outline-primary">
+                            <span>SUBMIT</span>
+                            <i class="icon-long-arrow-right"></i>
+                        </button>
+                                <div class="">
+                                    <p>Don't have an account? <a class="text-white" href="/register">Sign Up</a></p>
+                                </div>
                     </div><!-- End .form-footer -->
                 </form>
                 <hr>
@@ -240,16 +230,16 @@
 <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
 
 <%- include('../layout/mobile.ejs') %>
-<script>
-    async function loginUser() {
-        let email = document.getElementById("singin-email").value.trim();
-        let password = document.getElementById("singin-password").value.trim();
 
+<script>
+    function validate(){
+        let email = document.getElementById("singin-email").value.trim();
+      
         let emailError = document.getElementById("emailError");
-        let passwordError = document.getElementById("passwordError");
+       
 
         emailError.textContent = '';
-        passwordError.textContent = '';
+      
 
         let isValid = true;
 
@@ -257,54 +247,8 @@
             emailError.textContent = 'Please enter a valid email address.';
             isValid = false;
         }
+        return isValid;
 
-        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(password)) {
-            passwordError.textContent = 'Password must be at least 6 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.';
-            isValid = false;
-        }
-
-        if (!isValid) {
-            return;
-        }
-
-        try {
-            const response = await fetch('/login-verify', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Login successful
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Login Successful',
-                    text: 'Welcome back!',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(() => {
-                    window.location.href = '/'; // Redirect to homepage
-                });
-            } else {
-                // Display error message
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Login Failed',
-                    text: data.message
-                });
-            }
-        } catch (error) {
-            console.error("Error logging in:", error.message);
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Something went wrong! Please try again later.'
-            });
-        }
     }
 </script>
 

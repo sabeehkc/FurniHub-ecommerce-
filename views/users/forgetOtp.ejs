@@ -115,6 +115,7 @@
         <div class="container">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="">Forgotten Password</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Otp</li>
             </ol>
         </div><!-- End .container -->
@@ -144,18 +145,9 @@
                                         <i class="icon-long-arrow-right"></i>
                                     </button>
 
-                                    <a href="/back-register" style="text-decoration: none;" class="btn btn-outline-dark-2">
-                                        <span>GO BACK</span>
-                                        <i class="icon-long-arrow-left"></i>
-                                    </a>
-
                                 </div><!-- End .form-footer -->
                               
                             </form>
-                            <!-- <div class="form-choice">
-                                <p>If you do not have an account</p>
-                                 Remove the G Register button 
-                            </div>End .form-choice -->
                         </div><!-- .End .tab-pane -->
                     </div><!-- End .tab-content -->
                 </div><!-- End .form-tab -->
@@ -169,7 +161,7 @@
                     </button>
                 </div>
 
-                <div class="text-dark" id="countdown"></div>
+                <div class="text-dark" id="timer"></div>
             </div><!-- End .form-box -->
             
         </div><!-- End .container -->
@@ -184,45 +176,32 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Function to update the timer display
-    function updateTimer(minutes, seconds) {
-        document.getElementById('timer-message').textContent = `Session expires in ${minutes}m ${seconds}s`;
-    }
 
-    // TIMER
-    const startDate = '<%= nowisoFormattedDate %>';
-    const endDate = '<%= isoFormattedDate %>';
-    console.log("Start Date:", startDate);
-    console.log("End Date:", endDate);
+   let timeLimit = 2 * 60;
 
-    const startDateObject = new Date(startDate);
-    const endDateObject = new Date(endDate);
-    const timeDifference = endDateObject - startDateObject;
+    // Update the countdown every second
+    const countdown = setInterval(() => {
+        // Calculate the minutes and seconds
+        let minutes = Math.floor(timeLimit / 60);
+        let seconds = timeLimit % 60;
 
-    let timer = timeDifference;
-    console.log("Timer:", timer);
-    const countdownElement = document.getElementById('countdown');
-
-    const countdownInterval = setInterval(() => {
-        const minutes = Math.floor((timer % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timer % (1000 * 60)) / 1000);
-
-        updateTimer(minutes, seconds);
-
-        if (timer <= 0) {
-            clearInterval(countdownInterval);
-            countdownElement.innerHTML = '<span style="color: red;">Timer Expired</span>';
+        // Add leading zero to seconds if needed
+        if (seconds < 10) {
+            seconds = '0' + seconds;
         }
 
+        // Display the countdown
+        document.getElementById('timer').innerHTML = `Time Remaining: ${minutes} minutes and ${seconds} seconds`;
 
-        timer -= 1000;
+        // Decrement the time
+        timeLimit--;
+
+        // If time is up, clear the interval and take action
+        if (timeLimit < 0) {
+            clearInterval(countdown);
+            document.getElementById('timer').innerHTML = '<span style="color: red;">Time Expired</span>';
+        }
     }, 1000);
-
-    function updateTimer(minutes, seconds) {
-        countdownElement.innerHTML = `Time Remaining: ${minutes} minutes and ${seconds} seconds`;
-    }
-
-   
 
     function verifyOTP() {
         const otp = document.getElementById('otp').value;

@@ -23,7 +23,7 @@ const securePassword = async (password) => {
 
 //-----------------  send OTP mail -----------------//
 
-const sendOtpMail = async (name, email, otp, user_Id) => {
+const sendOtpMail = async (name, email, otp, user_Id,message) => {
     try {
         // Your nodemailer configuration...
         const transporter = nodemailer.createTransport({
@@ -42,7 +42,7 @@ const sendOtpMail = async (name, email, otp, user_Id) => {
             to: email,
             subject: "OTP for Signup to FurniHub",
             html: `<h3>Hello ${name}, Welcome to FurniHub</h3>
-            <br><p>Enter ${otp} on the signup page to register</p>
+            <br><p>Enter ${otp} on the ${message}</p>
             <br><p>This code expires after 2 minutes</p>`
         };
 
@@ -143,7 +143,8 @@ const insertUser = async (req, res) => {
 
         const otp = generateOTP();
         console.log(otp);
-        await sendOtpMail(req.body['reg-name'], req.body['reg-email'], otp, userData._id);
+        let message = "Otp page to register"
+        await sendOtpMail(req.body['reg-name'], req.body['reg-email'], otp, userData._id,message);
         res.redirect('/otp-verification');
     } catch (error) {
         console.error("Error inserting user:", error.message);
@@ -309,9 +310,9 @@ const resendOtp = async (req, res) => {
         // Delete the old OTP record for the user
         await Otp.deleteOne({ userId });
 
-
+        let message = "Otp page to register"
         // Send OTP mail
-        await sendOtpMail(user.name, user.email, otp, userId);
+        await sendOtpMail(user.name, user.email, otp, userId,message);
 
         return res.redirect('/otp-verification');
     } catch (error) {
@@ -451,7 +452,43 @@ const successGoogleLogin = async (req, res) => {
 
 const failureGoogleLogin = (req,res) => {
     res.redirect('/register');
+};
+
+const loadForgetEmail = async(req,res) => {
+    try {
+        res.render('forgetEmail',{message:""});
+    } catch (error) {
+        console.log(error.message);
+    }
 }
+
+const verifyForgetEmail = async (req,res) => {
+    try {
+        const email = req.body.email;
+        const user = await User.findOne({email:email});
+        if(!user){
+           return res.render('forgetEmail',{message:"Your not Registered"});
+        }else{
+            req.session.user = user;
+            const otp = generateOTP(); // Generate OTP
+            console.log(otp);
+            let message = "Otp page to reset your password"
+            await sendOtpMail(user.name, user.email, otp, user._id,message);
+            res.redirect('/forgotOtp');
+        }
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const loadForgetOtp = async(req,res) => {
+    try {
+        res.render('forgetOtp');
+    } catch (error) {
+        console.log(error.message);
+    }
+};
 
 //----------------- Load About Page -----------------//
 const loadAbout = async(req,res) => {
@@ -623,6 +660,9 @@ module.exports = {
     wishlist,
     addProductWishlist,
     deleteWishlistProduct,
-    loadAllCategoryPage
+    loadAllCategoryPage,
+    loadForgetEmail,
+    verifyForgetEmail,
+    loadForgetOtp
    
 };

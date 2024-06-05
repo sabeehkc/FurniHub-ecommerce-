@@ -61,6 +61,11 @@ user_route.get("/product/:id", auth.isBlock, productController.product);
 //----------------- Logout -----------------//
 user_route.get("/logout", userController.logOut);
 
+user_route.get("/forgotEmail", auth.logUser, userController.loadForgetEmail);
+user_route.post("/forgetEmail",userController.verifyForgetEmail);
+user_route.get("/forgotOtp",userController.loadForgetOtp);
+// user_route.post("/verfyForgetOtp",userController.verifyForgetOtp);
+
 //----------------- About page -----------------//
 user_route.get("/about", auth.isBlock, userController.loadAbout);
 
