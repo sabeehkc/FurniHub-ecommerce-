@@ -138,7 +138,7 @@
     
     
                                 <div class="form-footer">
-                                    <button type="submit" class="btn btn-outline-dark-2" onclick="verifyOTP()" >
+                                    <button type="submit" class="btn btn-outline-dark-2" onclick="verifyOTP(event)" >
     
                                         <span>VERIFY OTP</span>
                                         <i class="icon-long-arrow-right"></i>
@@ -224,7 +224,8 @@
 
    
 
-    function verifyOTP() {
+    function verifyOTP(event) {
+        event.preventDefault();
         const otp = document.getElementById('otp').value;
         console.log(otp);
         fetch('/verify-otp', {

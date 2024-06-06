@@ -55,25 +55,29 @@ user_route.get("/back-register", auth.logUser, userController.backRegister);
 user_route.get("/login", auth.logUser, userController.loadlogin);
 user_route.post("/login-verify", auth.logUser, userController.verifyLogin);
 
+//----------------- Display all Products -----------------//
 user_route.get("/all-products/", auth.isBlock, productController.loadAllProduct);
 user_route.get("/product/:id", auth.isBlock, productController.product);
 
 //----------------- Logout -----------------//
 user_route.get("/logout", userController.logOut);
 
+//----------------- Forget Password routes -----------------//
 user_route.get("/forgotEmail", auth.logUser, userController.loadForgetEmail);
 user_route.post("/forgetEmail",userController.verifyForgetEmail);
 user_route.get("/forgotOtp",userController.loadForgetOtp);
-// user_route.post("/verfyForgetOtp",userController.verifyForgetOtp);
+user_route.post("/verfyForgetOtp",userController.verfiyForgetOtp);
+user_route.get("/forgetChangePassword",userController.loadForgetChangePassword);
+user_route.post("/forgetPassword",userController.changePassword);
 
 //----------------- About page -----------------//
 user_route.get("/about", auth.isBlock, userController.loadAbout);
 
+//----------------- User Profile routes -----------------//
 user_route.get("/profile/",auth.checkuser,auth.isBlock,profileController.loadProfile);
 user_route.post("/profile/:id", profileController.editProfile);
 user_route.get('/changePassword',auth.checkuser,auth.isBlock,profileController.loadChangePassword);
 user_route.post("/changePassword", profileController.changePassword);
-
 
 user_route.get("/address",auth.checkuser,auth.isBlock,profileController.loadAddress);
 user_route.post("/address", profileController.addAddress);
@@ -87,11 +91,13 @@ user_route.get("/cart-Products/:id",  auth.checkuser, auth.isBlock, cartControll
 user_route.get("/cart/remove", auth.checkuser, auth.isBlock, cartController.deleteCartProduct);
 user_route.post("/updateQuantity", cartController.updateProductQuantity);
 
+//----------------- Cart routes -----------------//
 user_route.get("/check-out",auth.checkuser,auth.isBlock,orderController.LoadCheckOut);
 user_route.get("/displayCoupons",auth.checkuser,auth.isBlock,orderController.displyaCoupons);
 user_route.get("/apply-coupon/:id",auth.checkuser,auth.isBlock,orderController.applyCoupon);
 user_route.get("/remove-coupon-cart",auth.checkuser,auth.isBlock,orderController.removeCoponCart);
 
+//----------------- Order routes -----------------//
 user_route.post("/order-placed", auth.checkuser, auth.isBlock, orderController.placeOrder);
 user_route.get("/thank-you",auth.checkuser,auth.isBlock,orderController.ThankYou);
 user_route.get("/orders",auth.checkuser,auth.isBlock,orderController.loadOrders);
@@ -101,6 +107,7 @@ user_route.post('/retryRazorpay',orderController.retryRazorpay);
 user_route.put('/orders/status',orderController.cancelandReturnOrder);
 user_route.get('/orderdetails', auth.checkuser, auth.isBlock, orderController.orderDetails);
 
+//----------------- Wishlist routes -----------------//
 user_route.get("/wishlist",auth.checkuser,auth.isBlock,userController.wishlist);
 user_route.get("/add-wishlist/:id", auth.checkuser, auth.isBlock, userController.addProductWishlist);
 user_route.get("/wishlist/remove", auth.checkuser, auth.isBlock, userController.deleteWishlistProduct);

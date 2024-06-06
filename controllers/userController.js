@@ -454,6 +454,7 @@ const failureGoogleLogin = (req,res) => {
     res.redirect('/register');
 };
 
+//----------------- Load Email Page for forgott Password -----------------//
 const loadForgetEmail = async(req,res) => {
     try {
         res.render('forgetEmail',{message:""});
@@ -462,6 +463,7 @@ const loadForgetEmail = async(req,res) => {
     }
 }
 
+//----------------- verfiy email (post) -----------------//
 const verifyForgetEmail = async (req,res) => {
     try {
         const email = req.body.email;
@@ -469,6 +471,9 @@ const verifyForgetEmail = async (req,res) => {
         if(!user){
            return res.render('forgetEmail',{message:"Your not Registered"});
         }else{
+            user.verified = false;
+            await user.save();
+
             req.session.user = user;
             const otp = generateOTP(); // Generate OTP
             console.log(otp);
@@ -482,9 +487,92 @@ const verifyForgetEmail = async (req,res) => {
     }
 };
 
+//----------------- Load otp page for mail confermation (forgetpassword) -----------------//
 const loadForgetOtp = async(req,res) => {
     try {
         res.render('forgetOtp');
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const verfiyForgetOtp = async (req, res) => {
+    try {
+        const { otp } = req.body;
+        const userId = req.session.user._id;
+
+        // Assume Otp and User are your models
+        const otpRecord = await Otp.findOne({ userId }).sort({ createdAt: -1 });
+
+        if (!otpRecord) {
+            console.log('No OTP records found for this user');
+            return res.json({
+                success: false,
+                message: 'No OTP records found for this user',
+            });
+        }
+
+        if (otpRecord.expiresAt < Date.now()) {
+            console.log('OTP expired');
+            return res.json({
+                success: false,
+                message: 'OTP expired, please try again',
+            });
+        }
+
+        if (otpRecord.otp !== otp) {
+            console.log('Wrong OTP');
+            return res.json({
+                success: false,
+                message: 'Wrong OTP, try again',
+            });
+        }
+
+        // await User.updateOne({ _id: userId }, { verified: true });
+        await Otp.deleteMany({ userId });
+
+        console.log('OTP verified successfully');
+        res.json({
+            success: true,
+            message: 'Successfully Completed',
+        });
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred',
+        });
+    }
+};
+
+
+//----------------- Load Change Password page -----------------//
+const loadForgetChangePassword = async(req,res) => {
+    try {
+        res.render('forgetPassword');
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+//----------------- change new password -----------------//
+const changePassword = async (req,res) => {
+    try {
+        console.log("entered");
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findById(req.session.user._id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        
+        const hashedPassword = await securePassword(newPassword);
+        user.password = hashedPassword;
+        user.verified = true;
+        await user.save();
+
+        return res.status(200).json({ success: true, message: 'Password changed successfully' });
+
     } catch (error) {
         console.log(error.message);
     }
@@ -663,6 +751,8 @@ module.exports = {
     loadAllCategoryPage,
     loadForgetEmail,
     verifyForgetEmail,
-    loadForgetOtp
-   
+    loadForgetOtp,
+    loadForgetChangePassword,
+    changePassword,
+    verfiyForgetOtp
 };

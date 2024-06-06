@@ -139,7 +139,7 @@
     
     
                                 <div class="form-footer">
-                                    <button type="submit" class="btn btn-outline-dark-2" onclick="verifyOTP()" >
+                                    <button type="submit" class="btn btn-outline-dark-2" onclick="verifyOTP(event)" >
     
                                         <span>VERIFY OTP</span>
                                         <i class="icon-long-arrow-right"></i>
@@ -203,10 +203,12 @@
         }
     }, 1000);
 
-    function verifyOTP() {
+    function verifyOTP(event) {
+        event.preventDefault();
         const otp = document.getElementById('otp').value;
-        console.log(otp);
-        fetch('/verify-otp', {
+        console.log('Entered OTP:', otp);
+        
+        fetch('/verfyForgetOtp', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -220,12 +222,12 @@
             return response.json();
         })
         .then(data => {
-            console.log(data);
-            if (data.success) {
-                // Handle success if needed
-                window.location.href = '/';
+            console.log('Response data:', data);
+            if (data.success === true) {
+                console.log('OTP verified successfully, redirecting...');
+                window.location.href = '/forgetChangePassword';
             } else {
-                // Handle failure
+                console.log('OTP verification failed:', data.message);
                 document.getElementById('error-message').innerText = data.message;
             }
         })
