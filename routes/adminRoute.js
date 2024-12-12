@@ -90,7 +90,6 @@ admin_route.get("/salesReport",adminController.loadSalesReport);
 admin_route.get("/excel", adminController.generateExcel);
 
 admin_route.get("/logout", adminController.logout);
-
 admin_route.put('/chartYear', adminController.chartYear);
 
 admin_route.put('/monthChart', adminController.monthChart);
